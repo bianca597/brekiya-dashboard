@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brekiya · SEM Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ───────────────────────────────────────────── */
+:root {
+  --ink:   #0D1B2A;
+  --ink2:  #162638;
+  --gold:  #B8892A;
+  --gold2: #D4A84B;
+  --ash:   #F2EDE4;
+  --ash2:  #E8E1D5;
+  --teal:  #217A62;
+  --rust:  #B84A2E;
+  --slate: #5A7A9A;
+  --smoke: rgba(13,27,42,0.06);
+  --line:  rgba(184,137,42,0.18);
+
+  --t1: #0D1B2A;
+  --t2: rgba(13,27,42,0.62);
+  --t3: rgba(13,27,42,0.38);
+
+  --r: 8px;
+  --r2: 14px;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Mono', monospace;
+  background: var(--ash);
+  color: var(--t1);
+  min-height: 100vh;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* ── HEADER ───────────────────────────────────────────── */
+.hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 36px;
+  background: var(--ink);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  border-bottom: 1px solid rgba(184,137,42,0.25);
+}
+.hdr-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.hdr-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ash);
+}
+.hdr-name em { color: var(--gold2); font-style: normal; }
+.hdr-tag {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(242,237,228,0.38);
+}
+.hdr-right { display: flex; align-items: center; gap: 10px; }
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border: 1px solid rgba(184,137,42,0.3);
+  border-radius: 20px;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: rgba(242,237,228,0.5);
+}
+.dot { width: 5px; height: 5px; border-radius: 50%; background: var(--t3); flex-shrink: 0; }
+.dot.live { background: var(--teal); animation: blink 2s ease infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+.hbtn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: var(--r);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.hbtn-gold { background: var(--gold); color: var(--ink); font-weight: 500; }
+.hbtn-gold:hover { background: var(--gold2); }
+.hbtn-gold:disabled { opacity: 0.45; cursor: not-allowed; }
+.hbtn-ghost { background: transparent; color: var(--gold2); border: 1px solid rgba(184,137,42,0.3); }
+.hbtn-ghost:hover { border-color: var(--gold2); color: var(--ash); }
+
+/* ── CONNECT SCREEN ───────────────────────────────────── */
+.connect-wrap {
+  min-height: calc(100vh - 57px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+.connect-card {
+  width: 100%;
+  max-width: 560px;
+  background: var(--ink);
+  border-radius: var(--r2);
+  padding: 44px;
+  border: 1px solid rgba(184,137,42,0.2);
+}
+.cc-eye { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+.cc-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ash);
+  margin-bottom: 8px;
+}
+.cc-desc {
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  line-height: 1.7;
+  color: rgba(242,237,228,0.55);
+  margin-bottom: 28px;
+}
+.field { margin-bottom: 14px; }
+.fl { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(242,237,228,0.38); margin-bottom: 6px; }
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 9px 13px;
+  background: rgba(242,237,228,0.05);
+  border: 1px solid rgba(184,137,42,0.2);
+  border-radius: var(--r);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--ash);
+  outline: none;
+  transition: border-color 0.18s;
+}
+input:focus { border-color: var(--gold); }
+input::placeholder { color: rgba(242,237,228,0.22); }
+.hint { font-size: 10px; color: rgba(242,237,228,0.3); margin-top: 5px; line-height: 1.5; }
+.hint a { color: var(--gold); text-decoration: none; }
+.err-box {
+  font-size: 11px;
+  color: #E07060;
+  padding: 9px 12px;
+  background: rgba(184,74,46,0.1);
+  border: 1px solid rgba(184,74,46,0.25);
+  border-radius: var(--r);
+  margin-top: 12px;
+  display: none;
+  line-height: 1.6;
+}
+.dbg-box {
+  font-size: 10px;
+  color: rgba(242,237,228,0.4);
+  padding: 10px 12px;
+  background: rgba(242,237,228,0.03);
+  border-radius: var(--r);
+  margin-top: 10px;
+  display: none;
+  line-height: 1.7;
+}
+.cc-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+.cc-btn {
+  padding: 9px 20px;
+  border: none;
+  border-radius: var(--r);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-weight: 500;
+}
+.cc-btn-primary { background: var(--gold); color: var(--ink); }
+.cc-btn-primary:hover { background: var(--gold2); }
+.cc-btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.cc-btn-ghost { background: transparent; color: rgba(242,237,228,0.5); border: 1px solid rgba(184,137,42,0.2); }
+.cc-btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+.cc-divider { border: none; border-top: 1px solid rgba(184,137,42,0.12); margin: 22px 0; }
+.cc-checklist { display: flex; flex-direction: column; gap: 8px; }
+.cc-check { display: flex; gap: 10px; font-size: 11px; color: rgba(242,237,228,0.4); line-height: 1.6; }
+.cc-check-num { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(184,137,42,0.3); display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--gold); flex-shrink: 0; margin-top: 1px; }
+.cc-check strong { color: rgba(242,237,228,0.65); }
+.cc-check a { color: var(--gold); text-decoration: none; }
+
+/* ── DASHBOARD LAYOUT ─────────────────────────────────── */
+.dash { display: none; }
+
+/* Metric strip */
+.mstrip {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: var(--ink2);
+  border-bottom: 1px solid var(--line);
+}
+.mtile {
+  padding: 18px 24px;
+  border-right: 1px solid var(--line);
+  position: relative;
+}
+.mtile:last-child { border-right: none; }
+.mt-label { font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242,237,228,0.35); margin-bottom: 7px; }
+.mt-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ash);
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.mt-delta { font-size: 9px; letter-spacing: 0.04em; }
+.up { color: var(--teal); } .dn { color: var(--rust); } .flat { color: rgba(242,237,228,0.3); }
+
+/* Nav tabs */
+.nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--ash);
+  padding: 0 36px;
+  position: sticky;
+  top: 57px;
+  z-index: 100;
+}
+.ntab {
+  padding: 12px 20px 11px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--t3);
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: 'DM Mono', monospace;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s;
+}
+.ntab:hover { color: var(--t2); }
+.ntab.on { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* Content panels */
+.panels { padding: 28px 36px; max-width: 1440px; margin: 0 auto; }
+.panel { display: none; }
+.panel.on { display: block; }
+
+/* Cards */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.card {
+  background: #fff;
+  border: 1px solid var(--ash2);
+  border-radius: var(--r2);
+  padding: 20px 22px;
+  box-shadow: 0 1px 3px rgba(13,27,42,0.05);
+}
+.card-eye { font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 2px; }
+.card-sub { font-family: 'Lora', serif; font-size: 11px; color: var(--t3); margin-bottom: 16px; font-style: italic; }
+canvas { max-height: 200px; }
+
+/* Month chips */
+.mrow { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 16px; }
+.mchip {
+  padding: 3px 11px;
+  font-size: 9px;
+  letter-spacing: 0.07em;
+  border: 1px solid var(--ash2);
+  border-radius: 20px;
+  background: none;
+  color: var(--t2);
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+  transition: all 0.14s;
+}
+.mchip:hover { border-color: var(--gold); color: var(--gold); }
+.mchip.on { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+/* Tables */
+.tbl { width: 100%; border-collapse: collapse; font-size: 11px; }
+.tbl th { text-align: left; padding: 7px 10px; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--t3); border-bottom: 1px solid var(--ash2); white-space: nowrap; }
+.tbl td { padding: 8px 10px; border-bottom: 1px solid var(--smoke); vertical-align: middle; color: var(--t2); }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td { background: var(--ash); color: var(--t1); }
+.tbl td:first-child { color: var(--t1); font-weight: 500; }
+
+/* Badges */
+.bdg { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 8px; letter-spacing: 0.06em; text-transform: uppercase; }
+.bdg-a { background: rgba(184,74,46,0.1); color: var(--rust); border: 1px solid rgba(184,74,46,0.2); }
+.bdg-ah { background: rgba(90,122,154,0.1); color: var(--slate); border: 1px solid rgba(90,122,154,0.2); }
+.bdg-d { background: rgba(33,122,98,0.1); color: var(--teal); border: 1px solid rgba(33,122,98,0.2); }
+.bdg-h { background: rgba(184,137,42,0.1); color: var(--gold); border: 1px solid rgba(184,137,42,0.25); }
+
+/* Account cards */
+.acct-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 14px; margin-bottom: 16px; }
+.acct-card { background: #fff; border: 1px solid var(--ash2); border-radius: var(--r2); padding: 18px; box-shadow: 0 1px 3px rgba(13,27,42,0.05); }
+.acct-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 2px; color: var(--t1); }
+.acct-id { font-size: 8px; color: var(--t3); letter-spacing: 0.06em; margin-bottom: 12px; }
+.arow { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--smoke); }
+.arow:last-child { border-bottom: none; }
+.arow-k { font-size: 10px; color: var(--t3); }
+.arow-v { font-size: 11px; color: var(--t1); font-weight: 500; }
+
+/* Insight cards */
+.ins-list { display: flex; flex-direction: column; gap: 10px; }
+.ins {
+  display: flex;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  border-left: 3px solid;
+  background: #fff;
+  border-top: 1px solid var(--ash2);
+  border-right: 1px solid var(--ash2);
+  border-bottom: 1px solid var(--ash2);
+  box-shadow: 0 1px 3px rgba(13,27,42,0.04);
+}
+.ins.gold { border-left-color: var(--gold); }
+.ins.teal { border-left-color: var(--teal); }
+.ins.rust { border-left-color: var(--rust); }
+.ins.slate { border-left-color: var(--slate); }
+.ins-icon { font-size: 14px; flex-shrink: 0; margin-top: 2px; }
+.ins-tag { font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+.ins.gold .ins-tag { color: var(--gold); }
+.ins.teal .ins-tag { color: var(--teal); }
+.ins.rust .ins-tag { color: var(--rust); }
+.ins.slate .ins-tag { color: var(--slate); }
+.ins-body { font-family: 'Lora', serif; font-size: 13px; line-height: 1.65; color: var(--t2); }
+.ins-body strong { color: var(--t1); }
+
+/* Footer */
+.ftr {
+  margin-top: 48px;
+  padding: 18px 36px;
+  border-top: 1px solid var(--ash2);
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--t3);
+  letter-spacing: 0.06em;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .hdr, .nav, .panels { padding-left: 18px; padding-right: 18px; }
+  .g2, .g3 { grid-template-columns: 1fr; }
+  .mstrip { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .mstrip { grid-template-columns: 1fr; }
+  .hdr-tag { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ────────────────────────────────────── -->
+<header class="hdr">
+  <div class="hdr-brand">
+    <div>
+      <div class="hdr-name">BREKIYA <em>·</em> SEM</div>
+      <div class="hdr-tag">Good Apple Media · 2026 YTD</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span id="lastUp" style="font-size:9px;color:rgba(242,237,228,0.3);letter-spacing:.05em"></span>
+    <div class="pill"><span class="dot" id="sDot"></span><span id="sTxt">Not connected</span></div>
+    <button class="hbtn hbtn-ghost" id="btnRefresh" onclick="refresh()" style="display:none">↺ Refresh</button>
+    <button class="hbtn hbtn-ghost" id="btnSettings" onclick="goSettings()" style="display:none">⚙</button>
+  </div>
+</header>
+
+<!-- ── CONNECT SCREEN ─────────────────────────────── -->
+<div class="connect-wrap" id="connectWrap">
+  <div class="connect-card">
+    <div class="cc-eye">Google Sheets · One-time setup</div>
+    <div class="cc-title">Connect your data source</div>
+    <div class="cc-desc">This dashboard reads live from your Google Sheet every time you open it. Enter your API key once — it's saved locally so the dashboard auto-connects on every visit.</div>
+
+    <div class="field">
+      <div class="fl">API Key</div>
+      <input type="password" id="fKey" placeholder="AIza…" />
+      <div class="hint">From <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console → Credentials</a>. Sheets API must be enabled.</div>
+    </div>
+    <div class="field">
+      <div class="fl">Spreadsheet ID</div>
+      <input type="text" id="fId" placeholder="Paste from your Sheet URL" />
+      <div class="hint">The string between <code>/d/</code> and <code>/edit</code> in your Google Sheet URL.</div>
+    </div>
+    <div class="field">
+      <div class="fl">Tab Name</div>
+      <input type="text" id="fTab" value="Sheet1" />
+      <div class="hint">Exact tab name at the bottom of your sheet. Case-sensitive.</div>
+    </div>
+
+    <div class="err-box" id="errBox"></div>
+    <div class="dbg-box" id="dbgBox"></div>
+
+    <div class="cc-actions">
+      <button class="cc-btn cc-btn-primary" id="btnConnect" onclick="doConnect()">Connect & load</button>
+      <button class="cc-btn cc-btn-ghost" onclick="loadDemo()">Load demo data</button>
+      <button class="cc-btn cc-btn-ghost" id="btnClear" onclick="clearCreds()" style="display:none">Clear saved</button>
+    </div>
+
+    <hr class="cc-divider">
+    <div class="cc-checklist">
+      <div class="cc-check"><div class="cc-check-num">1</div><div>Your sheet must be set to <strong>"Anyone with the link can view"</strong> — Share → Change access.</div></div>
+      <div class="cc-check"><div class="cc-check-num">2</div><div><strong>Google Sheets API</strong> must be enabled in your Cloud project under APIs & Services.</div></div>
+      <div class="cc-check"><div class="cc-check-num">3</div><div>The <strong>tab name</strong> above must match the tab where your campaign data lives exactly.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ───────────────────────────────────── -->
+<div class="dash" id="dash">
+
+  <!-- Metric strip -->
+  <div class="mstrip" id="mstrip"></div>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <button class="ntab on" onclick="tab('mom',this)">Month-over-Month</button>
+    <button class="ntab" onclick="tab('accts',this)">Accounts</button>
+    <button class="ntab" onclick="tab('camps',this)">Campaigns</button>
+    <button class="ntab" onclick="tab('conv',this)">Conversions</button>
+    <button class="ntab" onclick="tab('ins',this)">Insights</button>
+  </nav>
+
+  <div class="panels">
+
+    <!-- MOM -->
+    <div class="panel on" id="panel-mom">
+      <div class="g2">
+        <div class="card"><div class="card-eye">Total Spend by Account</div><div class="card-sub">Monthly stacked · all accounts</div><canvas id="cSpend"></canvas></div>
+        <div class="card"><div class="card-eye">Clicks & Impressions</div><div class="card-sub">Total across all accounts</div><canvas id="cClicks"></canvas></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="card-eye">CTR Trend</div><div class="card-sub">Avg. click-through rate by account</div><canvas id="cCTR"></canvas></div>
+        <div class="card"><div class="card-eye">Avg. CPC Trend</div><div class="card-sub">Cost per click by account</div><canvas id="cCPC"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ACCOUNTS -->
+    <div class="panel" id="panel-accts">
+      <div class="mrow" id="acctMrow"></div>
+      <div class="acct-grid" id="acctGrid"></div>
+      <div class="card"><div class="card-eye">Spend Share</div><div class="card-sub">Proportional spend for selected month</div><canvas id="cDonut" style="max-height:200px"></canvas></div>
+    </div>
+
+    <!-- CAMPAIGNS -->
+    <div class="panel" id="panel-camps">
+      <div class="mrow" id="campMrow"></div>
+      <div class="card" style="overflow-x:auto">
+        <div class="card-eye">Top Ad Groups by Clicks</div>
+        <div class="card-sub">Top 30 · selected month · ranked by clicks</div>
+        <table class="tbl">
+          <thead><tr><th>Account</th><th>Campaign</th><th>Ad Group</th><th style="text-align:right">Impr.</th><th style="text-align:right">Clicks</th><th style="text-align:right">CTR</th><th style="text-align:right">CPC</th><th style="text-align:right">Spend</th></tr></thead>
+          <tbody id="campBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONVERSIONS -->
+    <div class="panel" id="panel-conv">
+      <div class="g2">
+        <div class="card"><div class="card-eye">DTC vs HCP QV Rate</div><div class="card-sub">Qualified visit rate by audience type</div><canvas id="cQV"></canvas></div>
+        <div class="card"><div class="card-eye">DTC Weighted KSA Value</div><div class="card-sub">Total conversion value by month</div><canvas id="cKSA"></canvas></div>
+      </div>
+      <div class="card" style="overflow-x:auto">
+        <div class="card-eye">Top Converting Ad Groups</div>
+        <div class="card-sub">Rows with HCP or DTC qualified visit activity</div>
+        <table class="tbl">
+          <thead><tr><th>Account</th><th>Month</th><th>Ad Group</th><th style="text-align:right">HCP QV Rate</th><th style="text-align:right">DTC QV Rate</th><th style="text-align:right">HCP QV Actions</th><th style="text-align:right">Rep Clicks</th><th style="text-align:right">KSA Value</th></tr></thead>
+          <tbody id="convBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- INSIGHTS -->
+    <div class="panel" id="panel-ins">
+      <div class="ins-list" id="insList"></div>
+    </div>
+
+  </div><!-- /panels -->
+
+  <footer class="ftr">
+    <span>Brekiya SEM Dashboard · Good Apple Media · <span id="fDate"></span></span>
+    <span>Reads live from Google Sheets · <a href="https://github.com/bianca597/brekiya-dashboard" style="color:var(--gold);text-decoration:none" target="_blank">github.com/bianca597/brekiya-dashboard</a></span>
+  </footer>
+</div><!-- /dash -->
+
+<script>
+// ── CONSTANTS ───────────────────────────────────────
+const SK = 'brekiya_cfg_v2';
+const MO = ['2026 M01','2026 M02','2026 M03','2026 M04','2026 M05','2026 M06','2026 M07','2026 M08','2026 M09','2026 M10','2026 M11','2026 M12'];
+const ML = {'2026 M01':'Jan','2026 M02':'Feb','2026 M03':'Mar','2026 M04':'Apr','2026 M05':'May','2026 M06':'Jun','2026 M07':'Jul','2026 M08':'Aug','2026 M09':'Sep','2026 M10':'Oct','2026 M11':'Nov','2026 M12':'Dec'};
+const AM = {
+  'Amneal - BREKIYA DTC': {s:'Amneal DTC', b:'bdg-a', c:'#B84A2E'},
+  'Amneal - BREKIYA HCP': {s:'Amneal HCP', b:'bdg-ah',c:'#5A7A9A'},
+  'Brekiya - DTC':        {s:'Brekiya DTC',b:'bdg-d', c:'#217A62'},
+  'Brekiya - HCP':        {s:'Brekiya HCP',b:'bdg-h', c:'#B8892A'},
+};
+
+// ── STATE ────────────────────────────────────────────
+let rows=[], charts={}, donut=null, acctMo=null, campMo=null;
+let K='',ID='',TAB='';
+
+document.getElementById('fDate').textContent = new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'});
+
+// ── CREDENTIALS ──────────────────────────────────────
+function saveCreds(k,id,tab){ localStorage.setItem(SK,JSON.stringify({k,id,tab})); }
+function loadCreds(){ try{return JSON.parse(localStorage.getItem(SK)||'null');}catch{return null;} }
+function clearCreds(){
+  localStorage.removeItem(SK);
+  document.getElementById('btnClear').style.display='none';
+  document.getElementById('fKey').value='';
+  document.getElementById('fId').value='';
+  alert('Saved credentials cleared.');
+}
+
+// ── AUTO-CONNECT ON LOAD ──────────────────────────────
+window.addEventListener('load',()=>{
+  const c=loadCreds();
+  if(c&&c.k&&c.id){
+    document.getElementById('fKey').value=c.k;
+    document.getElementById('fId').value=c.id;
+    document.getElementById('fTab').value=c.tab||'Sheet1';
+    document.getElementById('btnClear').style.display='inline-block';
+    K=c.k; ID=c.id; TAB=c.tab||'Sheet1';
+    document.getElementById('sTxt').textContent='Auto-connecting…';
+    fetchData().catch(e=>{ showErr(e.message); showDbg(e); });
+  } else {
+    document.getElementById('sTxt').textContent='Not connected';
+  }
+});
+
+// ── CONNECT ──────────────────────────────────────────
+async function doConnect(){
+  hideErr();
+  K  = document.getElementById('fKey').value.trim();
+  ID = document.getElementById('fId').value.trim();
+  TAB= document.getElementById('fTab').value.trim()||'Sheet1';
+  if(!K){ showErr('Please enter your API key.'); return; }
+  if(!ID){ showErr('Please enter the Spreadsheet ID.'); return; }
+  const btn=document.getElementById('btnConnect');
+  btn.disabled=true; btn.textContent='Connecting…';
+  try{
+    await fetchData();
+    saveCreds(K,ID,TAB);
+    document.getElementById('btnClear').style.display='inline-block';
+  }catch(e){
+    showErr(e.message||'Connection failed.'); showDbg(e);
+    btn.disabled=false; btn.textContent='Connect & load';
+  }
+}
+
+async function refresh(){
+  document.getElementById('sTxt').textContent='Refreshing…';
+  try{ await fetchData(); }
+  catch(e){ document.getElementById('sTxt').textContent='Refresh failed'; showDbg(e); }
+}
+
+function goSettings(){
+  document.getElementById('dash').style.display='none';
+  document.getElementById('connectWrap').style.display='flex';
+  document.getElementById('btnRefresh').style.display='none';
+  document.getElementById('btnSettings').style.display='none';
+  document.getElementById('btnConnect').disabled=false;
+  document.getElementById('btnConnect').textContent='Connect & load';
+}
+
+// ── FETCH ────────────────────────────────────────────
+async function fetchData(){
+  const url=`https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(ID)}/values/${encodeURIComponent(TAB)}?key=${encodeURIComponent(K)}&valueRenderOption=FORMATTED_VALUE`;
+  const res=await fetch(url);
+  if(!res.ok){
+    const j=await res.json().catch(()=>({}));
+    throw new Error(diagErr(res.status, j?.error?.message||`HTTP ${res.status}`));
+  }
+  const j=await res.json();
+  const raw=j.values||[];
+  if(raw.length<2) throw new Error(`Sheet "${TAB}" returned ${raw.length} row(s). Check the tab name matches exactly.`);
+  rows=parseRows(raw);
+  if(!rows.length) throw new Error(`Data fetched (${raw.length} raw rows) but no valid campaign rows found. Check "Account name" and "Month" columns exist and months look like "2026 M01".`);
+  showDash();
+}
+
+// ── PARSER ───────────────────────────────────────────
+function parseRows(raw){
+  const hdrs=raw[0].map(h=>(h||'').toString().trim().replace(/\s+/g,' '));
+  const out=[];
+  for(let i=1;i<raw.length;i++){
+    const cells=raw[i]||[];
+    if(!cells.length) continue;
+    const obj={};
+    hdrs.forEach((h,j)=>{ obj[h]=(cells[j]!==undefined?cells[j]:'').toString().trim(); });
+    const acct=obj['Account name']||obj['Account Name']||'';
+    const mo=obj['Month']||obj['month']||'';
+    if(!acct||!mo||!mo.match(/20\d\d\s*M\d\d?/)) continue;
+    obj['Month']=mo.replace(/\s+/g,' ').trim();
+    obj['Account name']=acct.trim();
+    out.push(obj);
+  }
+  return out;
+}
+
+// ── FIELD GETTERS ────────────────────────────────────
+function num(v,pct){
+  if(!v||v==='--'||v===''||v==='0') return 0;
+  const s=v.toString().replace(/[$,\s]/g,'');
+  if(!s) return 0;
+  if(s.endsWith('%')){ const x=parseFloat(s); return isNaN(x)?0:x; }
+  const x=parseFloat(s);
+  if(isNaN(x)) return 0;
+  if(pct&&x>0&&x<1) return x*100;
+  return x;
+}
+const gc  = r=>num(r['Clicks']);
+const gi  = r=>num(r['Impr.'])||num(r['Impr'])||num(r['Impressions']);
+const gs  = r=>num(r['Cost']);
+const gpc = r=>num(r['Avg. CPC'])||num(r['Avg CPC']);
+const gtr = r=>num(r['CTR'],true);
+const ghq = r=>num(r['Brekiya - HCP QV Rate'],true);
+const gdq = r=>num(r['Brekiya - DTC QV Rate'],true);
+const gksa= r=>num(r['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)'])||num(r['Brekiya - DTC Weighted KSAs 2025 (TOTAL)'])||num(r['Brekiya - DTC Weighted KSA (QV only)']);
+const ghqa= r=>num(r['Brekiya - HCP QV - 2P + Action']);
+const grc = r=>num(r['Brekiya - HCP - Request A Rep Click']);
+
+// ── FORMATTERS ───────────────────────────────────────
+const fm=v=>'$'+Math.round(v||0).toLocaleString();
+const fk=v=>(v||0)>=1000?((v||0)/1000).toFixed(1)+'k':Math.round(v||0).toString();
+const fp=v=>(v||0).toFixed(2)+'%';
+const fd=v=>'$'+(v||0).toFixed(2);
+function dlta(a,b){ if(!b) return '—'; const d=((a-b)/b*100); return (d>=0?'+':'')+d.toFixed(1)+'%'; }
+
+function getMo(){ const f=new Set(rows.map(r=>r['Month'])); return MO.filter(m=>f.has(m)); }
+function getAccts(){ return [...new Set(rows.map(r=>r['Account name'].trim()))].filter(a=>AM[a]); }
+
+function agg(m,acct){
+  const rs=rows.filter(r=>r['Month']===m&&(!acct||r['Account name'].trim()===acct));
+  const cpc=rs.filter(r=>gpc(r)>0), ctr=rs.filter(r=>gtr(r)>0);
+  return {
+    s:rs.reduce((t,r)=>t+gs(r),0), cl:rs.reduce((t,r)=>t+gc(r),0),
+    im:rs.reduce((t,r)=>t+gi(r),0),
+    ctr:ctr.length?ctr.reduce((t,r)=>t+gtr(r),0)/ctr.length:0,
+    cpc:cpc.length?cpc.reduce((t,r)=>t+gpc(r),0)/cpc.length:0,
+  };
+}
+
+// ── SHOW DASHBOARD ───────────────────────────────────
+function showDash(){
+  document.getElementById('connectWrap').style.display='none';
+  document.getElementById('dash').style.display='block';
+  document.getElementById('btnRefresh').style.display='inline-block';
+  document.getElementById('btnSettings').style.display='inline-block';
+  document.getElementById('sDot').classList.add('live');
+  document.getElementById('sTxt').textContent=rows.length+' rows · live';
+  document.getElementById('lastUp').textContent='Updated '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  buildAll();
+}
+
+function buildAll(){ buildStrip(); buildMoM(); buildAccts(); buildCamps(); buildConv(); buildIns(); }
+
+// ── METRIC STRIP ─────────────────────────────────────
+function buildStrip(){
+  const mos=getMo(); if(!mos.length) return;
+  const cur=agg(mos[mos.length-1]), prv=mos.length>1?agg(mos[mos.length-2]):null;
+  const lbl=ML[mos[mos.length-1]]||mos[mos.length-1];
+  const plbl=prv?(ML[mos[mos.length-2]]||''):'';
+  const tiles=[
+    {l:'Total Spend',v:fm(cur.s),d:prv?dlta(cur.s,prv.s):'—',inv:false},
+    {l:'Total Clicks',v:fk(cur.cl),d:prv?dlta(cur.cl,prv.cl):'—',inv:false},
+    {l:'Impressions',v:fk(cur.im),d:prv?dlta(cur.im,prv.im):'—',inv:false},
+    {l:'Avg CTR',v:fp(cur.ctr),d:prv?dlta(cur.ctr,prv.ctr):'—',inv:false},
+    {l:'Avg CPC',v:fd(cur.cpc),d:prv?dlta(cur.cpc,prv.cpc):'—',inv:true},
+  ];
+  document.getElementById('mstrip').innerHTML=tiles.map(t=>{
+    const pos=t.d!=='—'&&t.d.startsWith('+');
+    const cls=t.d==='—'?'flat':(t.inv?(pos?'dn':'up'):(pos?'up':'dn'));
+    return `<div class="mtile">
+      <div class="mt-label">${t.l} · ${lbl}</div>
+      <div class="mt-val">${t.v}</div>
+      <div class="mt-delta ${cls}">${t.d}${t.d!=='—'&&plbl?' vs '+plbl:''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── MOM CHARTS ───────────────────────────────────────
+function buildMoM(){
+  const mos=getMo(); if(!mos.length) return;
+  const lbls=mos.map(m=>ML[m]||m), accts=getAccts();
+
+  dch('cSpend');
+  charts['cSpend']=new Chart(document.getElementById('cSpend'),{
+    type:'bar',
+    data:{labels:lbls, datasets:accts.map(a=>({
+      label:AM[a]?.s||a, data:mos.map(m=>agg(m,a).s),
+      backgroundColor:AM[a]?.c||'#888', stack:'s', borderRadius:2,
+    }))},
+    options:copt({st:true, yf:v=>'$'+Math.round(v/1000)+'k'})
+  });
+
+  dch('cClicks');
+  charts['cClicks']=new Chart(document.getElementById('cClicks'),{
+    type:'line',
+    data:{labels:lbls, datasets:[
+      {label:'Clicks', data:mos.map(m=>agg(m).cl), borderColor:'#B8892A', backgroundColor:'rgba(184,137,42,0.08)', tension:.4, borderWidth:2, pointRadius:3, fill:true, yAxisID:'y'},
+      {label:'Impr÷100', data:mos.map(m=>Math.round(agg(m).im/100)), borderColor:'rgba(184,137,42,0.35)', tension:.4, borderWidth:1, borderDash:[4,3], pointRadius:2, yAxisID:'y2'},
+    ]},
+    options:{...copt({yf:fk}),scales:{x:xs(),y:ys(fk),y2:{position:'right',grid:{drawOnChartArea:false},ticks:{color:'rgba(13,27,42,0.25)',font:{family:"'DM Mono',monospace",size:9}}}}}
+  });
+
+  dch('cCTR');
+  charts['cCTR']=new Chart(document.getElementById('cCTR'),{
+    type:'line',
+    data:{labels:lbls, datasets:accts.map(a=>({
+      label:AM[a]?.s||a, data:mos.map(m=>{const r=agg(m,a);return r.ctr||null;}),
+      borderColor:AM[a]?.c||'#888', tension:.4, borderWidth:2, pointRadius:3, spanGaps:true, backgroundColor:'transparent',
+    }))},
+    options:copt({yf:fp})
+  });
+
+  dch('cCPC');
+  charts['cCPC']=new Chart(document.getElementById('cCPC'),{
+    type:'line',
+    data:{labels:lbls, datasets:accts.map(a=>({
+      label:AM[a]?.s||a, data:mos.map(m=>{const r=agg(m,a);return r.cpc||null;}),
+      borderColor:AM[a]?.c||'#888', tension:.4, borderWidth:2, pointRadius:3, spanGaps:true, backgroundColor:'transparent',
+    }))},
+    options:copt({yf:v=>'$'+v.toFixed(2)})
+  });
+}
+
+// ── ACCOUNTS ─────────────────────────────────────────
+function buildAccts(){
+  const mos=getMo(); if(!mos.length) return;
+  acctMo=mos[mos.length-1];
+  document.getElementById('acctMrow').innerHTML=mos.map(m=>`<button class="mchip${m===acctMo?' on':''}" onclick="setAMo('${m}',this)">${ML[m]||m}</button>`).join('');
+  renderAccts();
+}
+function setAMo(m,btn){ acctMo=m; document.querySelectorAll('#acctMrow .mchip').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); renderAccts(); }
+function renderAccts(){
+  const accts=getAccts();
+  document.getElementById('acctGrid').innerHTML=accts.map(a=>{
+    const r=agg(acctMo,a); const info=AM[a]||{s:a,b:'bdg-h'};
+    return `<div class="acct-card">
+      <div class="acct-name">${info.s}</div>
+      <div class="acct-id">${a}</div>
+      <div class="arow"><span class="arow-k">Spend</span><span class="arow-v">${fm(r.s)}</span></div>
+      <div class="arow"><span class="arow-k">Clicks</span><span class="arow-v">${Math.round(r.cl).toLocaleString()}</span></div>
+      <div class="arow"><span class="arow-k">Impressions</span><span class="arow-v">${Math.round(r.im).toLocaleString()}</span></div>
+      <div class="arow"><span class="arow-k">CTR</span><span class="arow-v">${fp(r.ctr)}</span></div>
+      <div class="arow"><span class="arow-k">Avg CPC</span><span class="arow-v">${fd(r.cpc)}</span></div>
+    </div>`;
+  }).join('');
+  if(donut){donut.destroy();donut=null;}
+  donut=new Chart(document.getElementById('cDonut'),{
+    type:'doughnut',
+    data:{labels:accts.map(a=>AM[a]?.s||a),datasets:[{data:accts.map(a=>agg(acctMo,a).s),backgroundColor:accts.map(a=>AM[a]?.c||'#888'),borderWidth:0,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'64%',plugins:{legend:{display:true,position:'right',labels:{color:'rgba(13,27,42,0.5)',font:{family:"'DM Mono',monospace",size:10},boxWidth:10,padding:10}},tooltip:{callbacks:{label:c=>' '+c.label+': '+fm(c.raw)}}}}
+  });
+}
+
+// ── CAMPAIGNS ────────────────────────────────────────
+function buildCamps(){
+  const mos=getMo(); if(!mos.length) return;
+  campMo=mos[mos.length-1];
+  document.getElementById('campMrow').innerHTML=mos.map(m=>`<button class="mchip${m===campMo?' on':''}" onclick="setCMo('${m}',this)">${ML[m]||m}</button>`).join('');
+  renderCamps();
+}
+function setCMo(m,btn){ campMo=m; document.querySelectorAll('#campMrow .mchip').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); renderCamps(); }
+function renderCamps(){
+  const rs=rows.filter(r=>r['Month']===campMo&&gc(r)>0).sort((a,b)=>gc(b)-gc(a)).slice(0,30);
+  document.getElementById('campBody').innerHTML=rs.map(r=>{
+    const a=(r['Account name']||'').trim(); const info=AM[a]||{s:a,b:'bdg-h'};
+    return `<tr>
+      <td><span class="bdg ${info.b}">${info.s}</span></td>
+      <td style="color:var(--t3)">${r['Campaign']||''}</td>
+      <td>${r['Ad group']||''}</td>
+      <td style="text-align:right">${Math.round(gi(r)).toLocaleString()}</td>
+      <td style="text-align:right;font-weight:600;color:var(--t1)">${Math.round(gc(r)).toLocaleString()}</td>
+      <td style="text-align:right">${fp(gtr(r))}</td>
+      <td style="text-align:right">${fd(gpc(r))}</td>
+      <td style="text-align:right;color:var(--gold)">${fm(gs(r))}</td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--t3);padding:24px">No data for this month</td></tr>';
+}
+
+// ── CONVERSIONS ──────────────────────────────────────
+function buildConv(){
+  const mos=getMo(); if(!mos.length) return;
+  const lbls=mos.map(m=>ML[m]||m);
+  const dtcQV=mos.map(m=>{const rs=rows.filter(r=>r['Month']===m&&gdq(r)>0);return rs.length?rs.reduce((t,r)=>t+gdq(r),0)/rs.length:null;});
+  const hcpQV=mos.map(m=>{const rs=rows.filter(r=>r['Month']===m&&ghq(r)>0);return rs.length?rs.reduce((t,r)=>t+ghq(r),0)/rs.length:null;});
+
+  dch('cQV');
+  charts['cQV']=new Chart(document.getElementById('cQV'),{
+    type:'line',
+    data:{labels:lbls,datasets:[
+      {label:'DTC QV Rate',data:dtcQV,borderColor:'#B8892A',backgroundColor:'rgba(184,137,42,0.08)',tension:.4,borderWidth:2,pointRadius:3,fill:true,spanGaps:true},
+      {label:'HCP QV Rate',data:hcpQV,borderColor:'#217A62',backgroundColor:'rgba(33,122,98,0.08)',tension:.4,borderWidth:2,pointRadius:3,fill:true,spanGaps:true},
+    ]},
+    options:copt({yf:v=>v.toFixed(1)+'%'})
+  });
+
+  dch('cKSA');
+  charts['cKSA']=new Chart(document.getElementById('cKSA'),{
+    type:'bar',
+    data:{labels:lbls,datasets:[{label:'KSA Value',data:mos.map(m=>rows.filter(r=>r['Month']===m).reduce((t,r)=>t+gksa(r),0)),backgroundColor:'#5A7A9A',borderRadius:3}]},
+    options:copt({yf:v=>'$'+Math.round(v/1000)+'k'})
+  });
+
+  const cvrs=rows.filter(r=>ghq(r)>0||gdq(r)>0).sort((a,b)=>ghqa(b)-ghqa(a)).slice(0,25);
+  document.getElementById('convBody').innerHTML=cvrs.map(r=>{
+    const a=(r['Account name']||'').trim();const info=AM[a]||{s:a,b:'bdg-h'};
+    return `<tr>
+      <td><span class="bdg ${info.b}">${info.s}</span></td>
+      <td style="color:var(--t3)">${ML[r['Month']]||r['Month']}</td>
+      <td>${r['Ad group']||''}</td>
+      <td style="text-align:right;color:var(--teal);font-weight:500">${fp(ghq(r))}</td>
+      <td style="text-align:right">${fp(gdq(r))}</td>
+      <td style="text-align:right">${Math.round(ghqa(r))||'—'}</td>
+      <td style="text-align:right">${Math.round(grc(r))||'—'}</td>
+      <td style="text-align:right;color:var(--gold)">${fm(gksa(r))}</td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--t3);padding:24px">No conversion data found</td></tr>';
+}
+
+// ── INSIGHTS ─────────────────────────────────────────
+function buildIns(){
+  const mos=getMo(); if(!mos.length) return;
+  const lat=mos[mos.length-1], lbl=ML[lat]||lat;
+
+  const topHCP=rows.filter(r=>r['Month']===lat&&ghq(r)>0).sort((a,b)=>ghq(b)-ghq(a))[0];
+  const topHCPtxt=topHCP?`<strong>${ghq(topHCP).toFixed(1)}% QV rate — ${topHCP['Ad group']}</strong> (${AM[(topHCP['Account name']||'').trim()]?.s||topHCP['Account name']})`:'<strong>N/A</strong>';
+
+  const bestCPC=rows.filter(r=>r['Month']===lat&&gpc(r)>0&&gc(r)>10).sort((a,b)=>gpc(a)-gpc(b))[0];
+  const bestCPCtxt=bestCPC?`<strong>${bestCPC['Ad group']} at ${fd(gpc(bestCPC))} CPC</strong> (${AM[(bestCPC['Account name']||'').trim()]?.s||bestCPC['Account name']})`:'<strong>N/A</strong>';
+
+  const zeroComp=rows.filter(r=>r['Campaign']==='Competitor - BC'&&gs(r)===0&&(r['Account name']||'').includes('Brekiya -')).length;
+  const topKSA=mos.map(m=>({m,v:rows.filter(r=>r['Month']===m).reduce((t,r)=>t+gksa(r),0)})).sort((a,b)=>b.v-a.v)[0];
+
+  // June specific: flag new month
+  const hasJun=mos.includes('2026 M06');
+
+  const items=[
+    {t:'teal',i:'↑',tag:`Top HCP QV Rate · ${lbl}`,body:`The highest qualified visit rate this month came from ${topHCPtxt}. HCP engagement quality remains the program's strongest signal — protect this budget and consider bid increases to capture more of the available impression share.`},
+    {t:'gold',i:'◎',tag:'Most Cost-Efficient Group',body:`${bestCPCtxt} is delivering the lowest cost per click among high-volume groups this month. Scaling here is the most direct path to improving share of voice without inflating average CPC program-wide.`},
+    {t:'rust',i:'⚠',tag:'Competitor Campaigns — No Spend',body:`<strong>${zeroComp} competitor-targeted ad groups</strong> in Brekiya-direct accounts have zero spend. Amneal accounts are actively bidding on these same terms. Activating Brekiya HCP/DTC competitor campaigns would intercept decision-stage searchers that currently only see Amneal ads.`},
+    {t:'slate',i:'→',tag:'Recommendation · Budget Efficiency',body:`Brekiya HCP Generic groups (Indication, Injection) consistently deliver 45–88% QV rates at CPCs of $2.74–$3.81 — significantly more efficient than Amneal HCP Treatment groups at $5–7 CPCs. Shifting budget from low-converting Amneal treatment terms to these HCP Generic groups would lower cost-per-qualified-visit program-wide.`},
+    {t:'gold',i:'→',tag:'Recommendation · DTC Symptom Scaling',body:`Migraine Symptoms and Cluster Headache Symptoms campaigns across both DTC accounts generate the program's highest impression volume at CPCs below $3.50. These symptom-intent audiences represent patients who haven't yet searched for a treatment — scaling here builds top-of-funnel pipeline efficiently.`},
+    hasJun?{t:'teal',i:'★',tag:'June 2026 — New Month Available',body:`June data is now included in the dashboard. Review the Campaign and Conversions tabs filtered to Jun to see the latest trends. Early June shows continued strength in Condition and Symptom campaigns with spend scaling across all four accounts.`}:null,
+    {t:'rust',i:'◎',tag:'Rep Submit Gap',body:`HCP Request A Rep Submit conversions remain low across all months despite strong click volume in Treatment and Competitor campaigns. This points to landing page or CTA friction — a form placement or copy test is likely to unlock meaningful conversion improvement.`},
+  ].filter(Boolean);
+
+  document.getElementById('insList').innerHTML=items.map((x,i)=>`
+    <div class="ins ${x.t}" style="animation:fadeUp 0.3s ease ${i*0.05}s both">
+      <div class="ins-icon">${x.i}</div>
+      <div>
+        <div class="ins-tag">${x.tag}</div>
+        <div class="ins-body">${x.body}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── CHART HELPERS ────────────────────────────────────
+function dch(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+function xs(){return{ticks:{color:'rgba(13,27,42,0.35)',font:{family:"'DM Mono',monospace",size:9}},grid:{display:false}};}
+function ys(fmt){return{ticks:{color:'rgba(13,27,42,0.35)',font:{family:"'DM Mono',monospace",size:9},callback:fmt},grid:{color:'rgba(13,27,42,0.06)'}};}
+function copt({st=false,yf=v=>v}={}){return{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{color:'rgba(13,27,42,0.45)',font:{family:"'DM Mono',monospace",size:9},boxWidth:10,padding:10}}},scales:{x:{stacked:st,...xs()},y:{stacked:st,...ys(yf)}}};}
+
+function tab(name,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('panel-'+name).classList.add('on');
+  btn.classList.add('on');
+}
+
+// ── ERRORS ───────────────────────────────────────────
+function showErr(msg){const el=document.getElementById('errBox');el.textContent=msg;el.style.display='block';}
+function hideErr(){document.getElementById('errBox').style.display='none';document.getElementById('dbgBox').style.display='none';}
+function showDbg(e){const b=document.getElementById('dbgBox');b.style.display='block';b.innerHTML=`Debug: ${e.message||e}<br><br>Check: (1) sheet is "Anyone with link can view" (2) tab name is exact (3) Sheets API is enabled (4) Apps Script has written data to the sheet`;}
+function diagErr(st,msg){
+  if(st===400)return`Bad request — check your Spreadsheet ID. (${msg})`;
+  if(st===403)return`Access denied — make sure the sheet is "Anyone with the link can view" and Sheets API is enabled in your Cloud project. (${msg})`;
+  if(st===404)return`Not found — check the Spreadsheet ID and tab name exactly. (${msg})`;
+  return`API error ${st}: ${msg}`;
+}
+
+// ── DEMO ─────────────────────────────────────────────
+function loadDemo(){
+  rows=[
+    {['Account name']:'Amneal - BREKIYA DTC',Campaign:'Branded',['Ad group']:'Brekiya General',Month:'2026 M01',['Impr.']:'1946',Clicks:'81',Cost:'188.30',['Avg. CPC']:'2.32',CTR:'4.16%',['Brekiya - HCP QV Rate']:'0%',['Brekiya - DTC QV Rate']:'102.47%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'1395',['Brekiya - HCP QV - 2P + Action']:'6',['Brekiya - HCP - Request A Rep Click']:'0'},
+    {['Account name']:'Amneal - BREKIYA HCP',Campaign:'Treatment',['Ad group']:'Prescription',Month:'2026 M01',['Impr.']:'2737',Clicks:'270',Cost:'1652',['Avg. CPC']:'6.12',CTR:'9.86%',['Brekiya - HCP QV Rate']:'77.78%',['Brekiya - DTC QV Rate']:'0%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'345',['Brekiya - HCP QV - 2P + Action']:'210',['Brekiya - HCP - Request A Rep Click']:'0'},
+    {['Account name']:'Brekiya - HCP',Campaign:'Generic',['Ad group']:'Indication',Month:'2026 M02',['Impr.']:'4511',Clicks:'179',Cost:'518',['Avg. CPC']:'2.90',CTR:'3.97%',['Brekiya - HCP QV Rate']:'45.81%',['Brekiya - DTC QV Rate']:'4.47%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'40',['Brekiya - HCP QV - 2P + Action']:'82',['Brekiya - HCP - Request A Rep Click']:'1'},
+    {['Account name']:'Amneal - BREKIYA DTC',Campaign:'Symptoms',['Ad group']:'Migraine Symptoms',Month:'2026 M03',['Impr.']:'53255',Clicks:'1631',Cost:'5139',['Avg. CPC']:'3.15',CTR:'3.06%',['Brekiya - HCP QV Rate']:'0%',['Brekiya - DTC QV Rate']:'70.32%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'5795',['Brekiya - HCP QV - 2P + Action']:'0',['Brekiya - HCP - Request A Rep Click']:'0'},
+    {['Account name']:'Brekiya - HCP',Campaign:'Branded',['Ad group']:'Prescribing',Month:'2026 M04',['Impr.']:'93',Clicks:'8',Cost:'38.16',['Avg. CPC']:'4.77',CTR:'9.09%',['Brekiya - HCP QV Rate']:'250%',['Brekiya - DTC QV Rate']:'200%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'210',['Brekiya - HCP QV - 2P + Action']:'20',['Brekiya - HCP - Request A Rep Click']:'4'},
+    {['Account name']:'Amneal - BREKIYA HCP',Campaign:'Competitor - BC',['Ad group']:'Imitrex',Month:'2026 M05',['Impr.']:'6236',Clicks:'572',Cost:'2926',['Avg. CPC']:'5.12',CTR:'9.17%',['Brekiya - HCP QV Rate']:'79.9%',['Brekiya - DTC QV Rate']:'33.39%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'975',['Brekiya - HCP QV - 2P + Action']:'457',['Brekiya - HCP - Request A Rep Click']:'1'},
+    {['Account name']:'Amneal - BREKIYA DTC',Campaign:'Condition',['Ad group']:'Cluster Migraine',Month:'2026 M06',['Impr.']:'27664',Clicks:'1017',Cost:'3219',['Avg. CPC']:'3.17',CTR:'3.68%',['Brekiya - HCP QV Rate']:'0%',['Brekiya - DTC QV Rate']:'71.48%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'3985',['Brekiya - HCP QV - 2P + Action']:'0',['Brekiya - HCP - Request A Rep Click']:'0'},
+    {['Account name']:'Brekiya - HCP',Campaign:'Branded',['Ad group']:'Brekiya General',Month:'2026 M06',['Impr.']:'633',Clicks:'72',Cost:'251.80',['Avg. CPC']:'3.50',CTR:'11.37%',['Brekiya - HCP QV Rate']:'80.56%',['Brekiya - DTC QV Rate']:'2.78%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'10',['Brekiya - HCP QV - 2P + Action']:'58',['Brekiya - HCP - Request A Rep Click']:'0'},
+  ];
+  document.getElementById('sDot').classList.add('live');
+  document.getElementById('sTxt').textContent='Demo · '+rows.length+' rows';
+  document.getElementById('lastUp').textContent='Demo data';
+  document.getElementById('btnRefresh').style.display='inline-block';
+  document.getElementById('btnSettings').style.display='inline-block';
+  document.getElementById('connectWrap').style.display='none';
+  document.getElementById('dash').style.display='block';
+  buildAll();
+}
+
+// ── ANIMATION ────────────────────────────────────────
+const st=document.createElement('style');
+st.textContent='@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}';
+document.head.appendChild(st);
+</script>
+</body>
+</html>
