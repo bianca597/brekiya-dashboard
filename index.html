@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brekiya · SEM Dashboard · Good Apple</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ga-green:#3D7A4E; --ga-green-dk:#2A5C38; --ga-green-lt:#EEF5F0;
+  --ga-apple:#5BA670; --ga-gold:#C8973A; --ga-gold-lt:#FDF6E9;
+  --ga-ink:#1A1A2E; --ga-slate:#4A5568; --ga-mist:#F7F8F9;
+  --ga-white:#FFFFFF; --ga-border:#E2E8F0; --ga-teal:#2D8A6E; --ga-red:#C0392B;
+  --t1:#1A1A2E; --t2:#4A5568; --t3:#94A3B8;
+  --r:8px; --r2:14px; --r3:20px;
+  --shadow-sm:0 1px 3px rgba(26,26,46,0.08),0 1px 2px rgba(26,26,46,0.04);
+  --shadow-md:0 4px 16px rgba(26,26,46,0.08),0 2px 4px rgba(26,26,46,0.04);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--ga-mist);color:var(--t1);min-height:100vh;}
+
+/* TOPBAR */
+.topbar{background:var(--ga-green-dk);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;box-shadow:0 2px 8px rgba(26,26,46,0.15);}
+.logo-wrap{display:flex;align-items:center;gap:12px;}
+.logo-mark{width:32px;height:32px;background:var(--ga-apple);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.logo-name{font-weight:600;font-size:14px;color:#fff;letter-spacing:-0.01em;line-height:1.1;}
+.logo-tagline{font-size:9px;color:rgba(255,255,255,0.5);letter-spacing:0.1em;text-transform:uppercase;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.status-pill{display:flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:20px;font-size:10px;color:rgba(255,255,255,0.7);font-family:'DM Mono',monospace;}
+.sdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);flex-shrink:0;}
+.sdot.live{background:#6EE7A0;animation:pulse 2s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.tbtn{padding:6px 14px;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .18s;}
+.tbtn-light{background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.2);}
+.tbtn-light:hover{background:rgba(255,255,255,0.25);}
+.tbtn-white{background:#fff;color:var(--ga-green-dk);font-weight:600;}
+.tbtn-white:hover{background:var(--ga-green-lt);}
+.tbtn-white:disabled{opacity:.5;cursor:not-allowed;}
+
+/* CONNECT */
+.connect-wrap{min-height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;padding:40px 20px;background:linear-gradient(135deg,var(--ga-green-lt) 0%,var(--ga-mist) 50%,#fff 100%);}
+.connect-card{width:100%;max-width:520px;background:var(--ga-white);border-radius:var(--r3);padding:44px;box-shadow:var(--shadow-md);border:1px solid var(--ga-border);}
+.cc-logo{display:flex;align-items:center;gap:10px;margin-bottom:24px;}
+.cc-logo-mark{width:40px;height:40px;background:var(--ga-green);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.cc-logo-txt{font-weight:600;font-size:16px;color:var(--t1);}
+.cc-logo-sub{font-size:11px;color:var(--t3);}
+.cc-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--t1);margin-bottom:6px;}
+.cc-desc{font-size:13px;color:var(--t2);line-height:1.65;margin-bottom:28px;}
+.field{margin-bottom:16px;}
+.fl{font-size:11px;font-weight:500;color:var(--t2);margin-bottom:6px;display:block;}
+input[type=text],input[type=password]{width:100%;padding:10px 14px;background:var(--ga-mist);border:1.5px solid var(--ga-border);border-radius:var(--r);font-family:'DM Mono',monospace;font-size:12px;color:var(--t1);outline:none;transition:border-color .18s,box-shadow .18s;}
+input:focus{border-color:var(--ga-green);box-shadow:0 0 0 3px rgba(61,122,78,0.1);}
+input::placeholder{color:var(--t3);}
+.hint{font-size:11px;color:var(--t3);margin-top:5px;line-height:1.5;}
+.hint a{color:var(--ga-green);text-decoration:none;}
+.err-box{font-size:12px;color:var(--ga-red);padding:10px 14px;background:#FEF2F2;border:1px solid #FCA5A5;border-radius:var(--r);margin-top:12px;display:none;line-height:1.6;}
+.dbg-box{font-size:11px;color:var(--t3);padding:10px 14px;background:var(--ga-mist);border-radius:var(--r);margin-top:8px;display:none;line-height:1.7;font-family:'DM Mono',monospace;}
+.cc-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;}
+.cc-btn{padding:10px 22px;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .18s;}
+.cc-btn-primary{background:var(--ga-green);color:#fff;}
+.cc-btn-primary:hover{background:var(--ga-green-dk);}
+.cc-btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+.cc-btn-ghost{background:transparent;color:var(--t2);border:1.5px solid var(--ga-border);font-weight:500;}
+.cc-btn-ghost:hover{border-color:var(--ga-green);color:var(--ga-green);}
+.cc-divider{border:none;border-top:1px solid var(--ga-border);margin:24px 0;}
+.cc-steps{display:flex;flex-direction:column;gap:10px;}
+.cc-step{display:flex;gap:12px;align-items:flex-start;font-size:12px;color:var(--t2);line-height:1.6;}
+.cc-step-n{width:20px;height:20px;border-radius:50%;background:var(--ga-green-lt);color:var(--ga-green);font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--ga-green-dk) 0%,var(--ga-green) 60%,var(--ga-apple) 100%);padding:36px 40px 32px;position:relative;overflow:hidden;}
+.hero::before{content:'🍎';position:absolute;right:40px;top:50%;transform:translateY(-50%);font-size:80px;opacity:.12;pointer-events:none;}
+.hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(255,255,255,0.06) 0%,transparent 60%);pointer-events:none;}
+.hero-date{font-size:11px;color:rgba(255,255,255,0.55);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;font-family:'DM Mono',monospace;}
+.hero-name{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:#fff;line-height:1.1;margin-bottom:6px;position:relative;z-index:1;}
+.hero-name em{color:#A8E6B8;font-style:normal;}
+.hero-sub{font-size:13px;color:rgba(255,255,255,0.65);position:relative;z-index:1;}
+.hero-stats{display:flex;gap:12px;flex-wrap:wrap;position:relative;z-index:1;margin-top:28px;}
+.hstat{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);border-radius:12px;padding:14px 20px;backdrop-filter:blur(8px);min-width:130px;}
+.hstat-label{font-size:10px;color:rgba(255,255,255,0.55);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px;font-family:'DM Mono',monospace;}
+.hstat-val{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;line-height:1;margin-bottom:3px;}
+.hstat-sub{font-size:10px;color:rgba(255,255,255,0.5);}
+.hstat-delta{font-size:10px;font-family:'DM Mono',monospace;}
+.hstat-delta.up{color:#6EE7A0;} .hstat-delta.dn{color:#FCA5A5;} .hstat-delta.fl{color:rgba(255,255,255,0.35);}
+
+/* METRIC STRIP */
+.mstrip{display:grid;grid-template-columns:repeat(5,1fr);background:var(--ga-white);border-bottom:1px solid var(--ga-border);box-shadow:var(--shadow-sm);}
+.mtile{padding:16px 22px;border-right:1px solid var(--ga-border);}
+.mtile:last-child{border-right:none;}
+.mt-label{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Mono',monospace;}
+.mt-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--t1);line-height:1;margin-bottom:4px;}
+.mt-delta{font-size:10px;font-family:'DM Mono',monospace;}
+.up{color:var(--ga-teal);} .dn{color:var(--ga-red);} .fl{color:var(--t3);}
+
+/* NAV */
+.nav{display:flex;background:var(--ga-white);border-bottom:1px solid var(--ga-border);padding:0 40px;position:sticky;top:56px;z-index:200;box-shadow:var(--shadow-sm);}
+.ntab{padding:13px 18px 12px;font-size:12px;font-weight:500;color:var(--t3);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s;}
+.ntab:hover{color:var(--t2);}
+.ntab.on{color:var(--ga-green);border-bottom-color:var(--ga-green);font-weight:600;}
+
+/* DATE FILTER BAR */
+.filter-bar{background:var(--ga-white);border-bottom:1px solid var(--ga-border);padding:10px 40px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.filter-label{font-size:11px;font-weight:500;color:var(--t2);}
+.filter-chips{display:flex;gap:6px;flex-wrap:wrap;flex:1;}
+.fchip{padding:4px 12px;font-size:11px;font-weight:500;border:1.5px solid var(--ga-border);border-radius:20px;background:none;color:var(--t2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .14s;}
+.fchip:hover{border-color:var(--ga-green);color:var(--ga-green);}
+.fchip.on{background:var(--ga-green);color:#fff;border-color:var(--ga-green);}
+.fchip.all{border-style:dashed;}
+.filter-reset{padding:4px 12px;font-size:11px;color:var(--t3);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;text-decoration:underline;}
+.filter-reset:hover{color:var(--ga-green);}
+
+/* PANELS */
+.panels{padding:28px 40px;max-width:1440px;margin:0 auto;}
+.panel{display:none;}
+.panel.on{display:block;animation:fadeUp .25s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.card{background:var(--ga-white);border:1px solid var(--ga-border);border-radius:var(--r2);padding:22px 24px;box-shadow:var(--shadow-sm);}
+.card-eye{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ga-green);font-weight:600;margin-bottom:2px;font-family:'DM Mono',monospace;}
+.card-sub{font-size:12px;color:var(--t3);margin-bottom:16px;}
+canvas{max-height:210px;}
+
+/* MONTH CHIPS */
+.mrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.mchip{padding:4px 14px;font-size:11px;font-weight:500;border:1.5px solid var(--ga-border);border-radius:20px;background:none;color:var(--t2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .14s;}
+.mchip:hover{border-color:var(--ga-green);color:var(--ga-green);}
+.mchip.on{background:var(--ga-green);color:#fff;border-color:var(--ga-green);}
+
+/* TABLES */
+.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.tbl th{text-align:left;padding:8px 12px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--t3);border-bottom:1.5px solid var(--ga-border);font-weight:500;white-space:nowrap;font-family:'DM Mono',monospace;}
+.tbl td{padding:10px 12px;border-bottom:1px solid #F1F5F9;color:var(--t2);vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:var(--ga-mist);color:var(--t1);}
+.tbl td:first-child{color:var(--t1);font-weight:500;}
+
+/* BADGES */
+.bdg{display:inline-block;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:500;}
+.bdg-a{background:#FEF2F2;color:#B91C1C;border:1px solid #FCA5A5;}
+.bdg-ah{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;}
+.bdg-d{background:#F0FDF4;color:#15803D;border:1px solid #86EFAC;}
+.bdg-h{background:#FEF9EC;color:#92400E;border:1px solid #FCD34D;}
+.delta-up{color:var(--ga-teal);font-weight:600;font-family:'DM Mono',monospace;font-size:11px;}
+.delta-dn{color:var(--ga-red);font-weight:600;font-family:'DM Mono',monospace;font-size:11px;}
+.delta-fl{color:var(--t3);font-family:'DM Mono',monospace;font-size:11px;}
+
+/* ACCOUNT CARDS */
+.acct-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-bottom:16px;}
+.acct-card{background:var(--ga-white);border:1px solid var(--ga-border);border-radius:var(--r2);padding:20px;box-shadow:var(--shadow-sm);border-top:3px solid var(--ga-green);}
+.acct-name{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;margin-bottom:2px;color:var(--t1);}
+.acct-id{font-size:10px;color:var(--t3);margin-bottom:14px;font-family:'DM Mono',monospace;}
+.arow{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F1F5F9;}
+.arow:last-child{border-bottom:none;}
+.arow-k{font-size:11px;color:var(--t3);}
+.arow-v{font-size:12px;color:var(--t1);font-weight:600;font-family:'DM Mono',monospace;}
+
+/* INSIGHTS */
+.ins-section{margin-bottom:28px;}
+.ins-section-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--t1);margin-bottom:4px;}
+.ins-section-sub{font-size:12px;color:var(--t3);margin-bottom:14px;}
+.ins-list{display:flex;flex-direction:column;gap:10px;}
+.ins{display:flex;gap:16px;padding:18px 20px;border-radius:var(--r2);border-left:4px solid;background:var(--ga-white);border-top:1px solid var(--ga-border);border-right:1px solid var(--ga-border);border-bottom:1px solid var(--ga-border);box-shadow:var(--shadow-sm);}
+.ins.green{border-left-color:var(--ga-green);}
+.ins.gold{border-left-color:var(--ga-gold);}
+.ins.red{border-left-color:var(--ga-red);}
+.ins.blue{border-left-color:#3B82F6;}
+.ins-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.ins-tag{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;margin-bottom:5px;font-family:'DM Mono',monospace;}
+.ins.green .ins-tag{color:var(--ga-green);}
+.ins.gold .ins-tag{color:var(--ga-gold);}
+.ins.red .ins-tag{color:var(--ga-red);}
+.ins.blue .ins-tag{color:#2563EB;}
+.ins-body{font-size:13px;line-height:1.65;color:var(--t2);}
+.ins-body strong{color:var(--t1);font-weight:600;}
+
+/* MOVER CARDS */
+.movers-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.mover-card{background:var(--ga-white);border:1px solid var(--ga-border);border-radius:var(--r2);padding:20px;box-shadow:var(--shadow-sm);}
+.mover-header{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.mover-title{font-size:13px;font-weight:600;color:var(--t1);}
+.mover-sub{font-size:11px;color:var(--t3);margin-left:auto;}
+.mover-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #F1F5F9;}
+.mover-row:last-child{border-bottom:none;}
+.mover-name{flex:1;font-size:12px;color:var(--t1);font-weight:500;min-width:0;}
+.mover-name small{display:block;font-size:10px;color:var(--t3);font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mover-vals{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;}
+.mover-delta{font-size:12px;font-weight:700;font-family:'DM Mono',monospace;}
+.mover-delta.up{color:var(--ga-teal);}
+.mover-delta.dn{color:var(--ga-red);}
+.mover-prev{font-size:10px;color:var(--t3);font-family:'DM Mono',monospace;}
+
+/* RECOMMENDATIONS */
+.rec-section{margin-bottom:28px;}
+.rec-section-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--t1);margin-bottom:4px;}
+.rec-section-sub{font-size:12px;color:var(--t3);margin-bottom:14px;}
+.rec-list{display:flex;flex-direction:column;gap:12px;}
+.rec-card{background:var(--ga-white);border:1px solid var(--ga-border);border-radius:var(--r2);box-shadow:var(--shadow-sm);overflow:hidden;}
+.rec-header{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;user-select:none;transition:background .15s;}
+.rec-header:hover{background:var(--ga-mist);}
+.rec-priority{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;flex-shrink:0;}
+.rec-priority.high{background:#FEF2F2;color:#B91C1C;border:1px solid #FCA5A5;}
+.rec-priority.med{background:#FEF9EC;color:#92400E;border:1px solid #FCD34D;}
+.rec-priority.low{background:#F0FDF4;color:#15803D;border:1px solid #86EFAC;}
+.rec-title{font-size:13px;font-weight:600;color:var(--t1);flex:1;}
+.rec-meta{font-size:11px;color:var(--t3);flex-shrink:0;}
+.rec-chevron{font-size:12px;color:var(--t3);transition:transform .2s;flex-shrink:0;}
+.rec-card.open .rec-chevron{transform:rotate(180deg);}
+.rec-body{display:none;padding:0 20px 20px;border-top:1px solid var(--ga-border);}
+.rec-card.open .rec-body{display:block;}
+.rec-summary{font-size:13px;color:var(--t2);line-height:1.65;padding:14px 0 12px;}
+.rec-summary strong{color:var(--t1);}
+.rec-actions{display:flex;flex-direction:column;gap:8px;}
+.rec-action{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;background:var(--ga-mist);border-radius:var(--r);font-size:12px;color:var(--t2);line-height:1.6;}
+.rec-action-num{width:20px;height:20px;border-radius:50%;background:var(--ga-green);color:#fff;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.rec-impact{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;}
+.rec-impact-pill{padding:4px 12px;border-radius:20px;font-size:10px;font-weight:500;background:var(--ga-green-lt);color:var(--ga-green);border:1px solid rgba(61,122,78,0.2);}
+
+/* FOOTER */
+.ftr{margin-top:48px;padding:20px 40px;border-top:1px solid var(--ga-border);display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--t3);background:var(--ga-white);}
+.ftr-logo{display:flex;align-items:center;gap:8px;}
+.ftr-logo-mark{width:22px;height:22px;background:var(--ga-green);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.ftr a{color:var(--ga-green);text-decoration:none;}
+
+@media(max-width:960px){
+  .topbar,.nav,.panels,.ftr,.filter-bar{padding-left:20px;padding-right:20px;}
+  .hero{padding:28px 20px 24px;}
+  .g2,.movers-grid{grid-template-columns:1fr;}
+  .mstrip{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:560px){
+  .mstrip{grid-template-columns:1fr;}
+  .hero-name{font-size:24px;}
+  .hero::before{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo-wrap">
+    <div class="logo-mark">🍎</div>
+    <div>
+      <div class="logo-name">Good Apple</div>
+      <div class="logo-tagline">Digital Media</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span id="lastUp" style="font-size:10px;color:rgba(255,255,255,0.4);font-family:'DM Mono',monospace"></span>
+    <div class="status-pill"><span class="sdot" id="sDot"></span><span id="sTxt">Not connected</span></div>
+    <button class="tbtn tbtn-light" id="btnRefresh" onclick="refresh()" style="display:none">↺ Refresh</button>
+    <button class="tbtn tbtn-light" id="btnSettings" onclick="goSettings()" style="display:none">⚙ Settings</button>
+  </div>
+</header>
+
+<!-- CONNECT -->
+<div class="connect-wrap" id="connectWrap">
+  <div class="connect-card">
+    <div class="cc-logo">
+      <div class="cc-logo-mark">🍎</div>
+      <div><div class="cc-logo-txt">Good Apple Digital</div><div class="cc-logo-sub">Brekiya SEM Dashboard</div></div>
+    </div>
+    <div class="cc-title">Connect your data</div>
+    <div class="cc-desc">Enter your Google Sheets API key once — it saves locally so the dashboard auto-connects every time.</div>
+    <div class="field"><label class="fl">Google Sheets API Key</label><input type="password" id="fKey" placeholder="AIza…"/><div class="hint">From <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console → Credentials</a>.</div></div>
+    <div class="field"><label class="fl">Spreadsheet ID</label><input type="text" id="fId" placeholder="Paste from your Sheet URL"/></div>
+    <div class="field"><label class="fl">Tab Name</label><input type="text" id="fTab" value="Sheet1"/><div class="hint">Exact tab name — case-sensitive.</div></div>
+    <div class="err-box" id="errBox"></div>
+    <div class="dbg-box" id="dbgBox"></div>
+    <div class="cc-actions">
+      <button class="cc-btn cc-btn-primary" id="btnConnect" onclick="doConnect()">Connect & Load</button>
+      <button class="cc-btn cc-btn-ghost" onclick="loadDemo()">Load Demo Data</button>
+      <button class="cc-btn cc-btn-ghost" id="btnClear" onclick="clearCreds()" style="display:none">Clear Saved</button>
+    </div>
+    <hr class="cc-divider">
+    <div class="cc-steps">
+      <div class="cc-step"><div class="cc-step-n">1</div><div>Sheet must be <strong>"Anyone with the link can view"</strong></div></div>
+      <div class="cc-step"><div class="cc-step-n">2</div><div><strong>Google Sheets API</strong> must be enabled in your Cloud project</div></div>
+      <div class="cc-step"><div class="cc-step-n">3</div><div>Tab name must match <strong>exactly</strong> including capitalization</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dash" style="display:none">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-date" id="heroDate"></div>
+    <div class="hero-name">Welcome back, <em>Jill!</em></div>
+    <div class="hero-sub">Brekiya SEM performance snapshot · Good Apple Digital</div>
+    <div class="hero-stats" id="heroStats"></div>
+  </div>
+
+  <!-- METRIC STRIP -->
+  <div class="mstrip" id="mstrip"></div>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <button class="ntab on"  onclick="tab('mom',this)">Month-over-Month</button>
+    <button class="ntab" onclick="tab('accts',this)">Accounts</button>
+    <button class="ntab" onclick="tab('camps',this)">Campaigns</button>
+    <button class="ntab" onclick="tab('conv',this)">Conversions</button>
+    <button class="ntab" onclick="tab('ins',this)">Insights</button>
+    <button class="ntab" onclick="tab('recs',this)">Recommendations</button>
+  </nav>
+
+  <!-- DATE FILTER BAR (shown per tab) -->
+  <div class="filter-bar" id="filterBar" style="display:none">
+    <span class="filter-label">Filter by month:</span>
+    <div class="filter-chips" id="filterChips"></div>
+    <button class="filter-reset" onclick="resetFilter()">Show all</button>
+  </div>
+
+  <div class="panels">
+
+    <!-- MOM -->
+    <div class="panel on" id="panel-mom">
+      <div class="g2">
+        <div class="card"><div class="card-eye">Total Spend by Account</div><div class="card-sub">Monthly stacked · all accounts</div><canvas id="cSpend"></canvas></div>
+        <div class="card"><div class="card-eye">Clicks & Impressions</div><div class="card-sub">Total across all accounts</div><canvas id="cClicks"></canvas></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="card-eye">CTR Trend</div><div class="card-sub">Avg. click-through rate by account</div><canvas id="cCTR"></canvas></div>
+        <div class="card"><div class="card-eye">Avg. CPC Trend</div><div class="card-sub">Cost per click by account</div><canvas id="cCPC"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ACCOUNTS -->
+    <div class="panel" id="panel-accts">
+      <div class="mrow" id="acctMrow"></div>
+      <div class="acct-grid" id="acctGrid"></div>
+      <div class="card"><div class="card-eye">Spend Share</div><div class="card-sub">Proportional spend for selected month</div><canvas id="cDonut" style="max-height:200px"></canvas></div>
+    </div>
+
+    <!-- CAMPAIGNS -->
+    <div class="panel" id="panel-camps">
+      <div class="mrow" id="campMrow"></div>
+      <div class="card" style="overflow-x:auto">
+        <div class="card-eye">Top Ad Groups by Clicks</div>
+        <div class="card-sub">Top 30 ranked by clicks · selected month · <span id="campFilterLabel"></span></div>
+        <table class="tbl">
+          <thead><tr><th>Account</th><th>Campaign</th><th>Ad Group</th><th style="text-align:right">Impr.</th><th style="text-align:right">Clicks</th><th style="text-align:right">CTR</th><th style="text-align:right">CPC</th><th style="text-align:right">Spend</th><th style="text-align:right">MoM CTR</th><th style="text-align:right">MoM Clicks</th></tr></thead>
+          <tbody id="campBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONVERSIONS -->
+    <div class="panel" id="panel-conv">
+      <div class="g2">
+        <div class="card"><div class="card-eye">DTC vs HCP QV Rate</div><div class="card-sub">Qualified visit rate by audience type</div><canvas id="cQV"></canvas></div>
+        <div class="card"><div class="card-eye">DTC Weighted KSA Value</div><div class="card-sub">Total conversion value by month</div><canvas id="cKSA"></canvas></div>
+      </div>
+      <div class="card" style="overflow-x:auto">
+        <div class="card-eye">Top Converting Ad Groups</div>
+        <div class="card-sub">Rows with HCP or DTC qualified visit activity</div>
+        <table class="tbl">
+          <thead><tr><th>Account</th><th>Month</th><th>Ad Group</th><th style="text-align:right">HCP QV Rate</th><th style="text-align:right">DTC QV Rate</th><th style="text-align:right">HCP QV Actions</th><th style="text-align:right">Rep Clicks</th><th style="text-align:right">KSA Value</th></tr></thead>
+          <tbody id="convBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- INSIGHTS -->
+    <div class="panel" id="panel-ins">
+      <div class="ins-section">
+        <div class="ins-section-title">Performance Overview</div>
+        <div class="ins-section-sub">Program-level signals and trends across all accounts</div>
+        <div class="ins-list" id="insOverview"></div>
+      </div>
+      <div class="ins-section">
+        <div class="ins-section-title">📈 Significant Movers — Month over Month</div>
+        <div class="ins-section-sub">Ad groups with 20%+ change in CTR, clicks, or spend vs. prior month</div>
+        <div class="movers-grid" id="moversGrid"></div>
+      </div>
+      <div class="ins-section">
+        <div class="ins-section-title">Conversion Signals</div>
+        <div class="ins-section-sub">QV rate trends and conversion action highlights</div>
+        <div class="ins-list" id="insConv"></div>
+      </div>
+    </div>
+
+    <!-- RECOMMENDATIONS -->
+    <div class="panel" id="panel-recs">
+      <div class="rec-section">
+        <div class="rec-section-title">CTR Improvement</div>
+        <div class="rec-section-sub">Tactical recommendations to improve click-through rates across campaigns</div>
+        <div class="rec-list" id="recsCTR"></div>
+      </div>
+      <div class="rec-section">
+        <div class="rec-section-title">Conversion Actions</div>
+        <div class="rec-section-sub">Opportunities to improve qualified visits, rep submits, and KSA value</div>
+        <div class="rec-list" id="recsConv"></div>
+      </div>
+      <div class="rec-section">
+        <div class="rec-section-title">Cost Efficiency</div>
+        <div class="rec-section-sub">Budget reallocation and CPC optimization opportunities</div>
+        <div class="rec-list" id="recsCost"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="ftr">
+    <div class="ftr-logo">
+      <div class="ftr-logo-mark">🍎</div>
+      <span>Good Apple Digital · Brekiya SEM Dashboard · <span id="fDate"></span></span>
+    </div>
+    <span>Reads live from Google Sheets · <a href="https://github.com/bianca597/brekiya-dashboard" target="_blank">github.com/bianca597/brekiya-dashboard</a></span>
+  </footer>
+</div>
+
+<script>
+// ── CONSTANTS ──────────────────────────────────────
+const SK='brekiya_ga_v2';
+const MO=['2026 M01','2026 M02','2026 M03','2026 M04','2026 M05','2026 M06','2026 M07','2026 M08','2026 M09','2026 M10','2026 M11','2026 M12'];
+const ML={'2026 M01':'Jan','2026 M02':'Feb','2026 M03':'Mar','2026 M04':'Apr','2026 M05':'May','2026 M06':'Jun','2026 M07':'Jul','2026 M08':'Aug','2026 M09':'Sep','2026 M10':'Oct','2026 M11':'Nov','2026 M12':'Dec'};
+const AM={
+  'Amneal - BREKIYA DTC':{s:'Amneal DTC',b:'bdg-a',c:'#EF4444'},
+  'Amneal - BREKIYA HCP':{s:'Amneal HCP',b:'bdg-ah',c:'#3B82F6'},
+  'Brekiya - DTC':{s:'Brekiya DTC',b:'bdg-d',c:'#3D7A4E'},
+  'Brekiya - HCP':{s:'Brekiya HCP',b:'bdg-h',c:'#C8973A'},
+};
+
+// ── STATE ──────────────────────────────────────────
+let rows=[],charts={},donut=null;
+let acctMo=null,campMo=null;
+let K='',ID='',TAB='';
+let activeFilter=null; // per-tab month filter
+let currentTab='mom';
+
+const now=new Date();
+document.getElementById('heroDate').textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+document.getElementById('fDate').textContent=now.toLocaleDateString('en-US',{month:'short',year:'numeric'});
+
+// ── CREDS ──────────────────────────────────────────
+function saveCreds(k,id,tab){localStorage.setItem(SK,JSON.stringify({k,id,tab}));}
+function loadCreds(){try{return JSON.parse(localStorage.getItem(SK)||'null');}catch{return null;}}
+function clearCreds(){localStorage.removeItem(SK);document.getElementById('btnClear').style.display='none';document.getElementById('fKey').value='';document.getElementById('fId').value='';alert('Saved credentials cleared.');}
+
+window.addEventListener('load',()=>{
+  const c=loadCreds();
+  if(c&&c.k&&c.id){
+    document.getElementById('fKey').value=c.k;
+    document.getElementById('fId').value=c.id;
+    document.getElementById('fTab').value=c.tab||'Sheet1';
+    document.getElementById('btnClear').style.display='inline-block';
+    K=c.k;ID=c.id;TAB=c.tab||'Sheet1';
+    document.getElementById('sTxt').textContent='Auto-connecting…';
+    fetchData().catch(e=>{showErr(e.message);showDbg(e);});
+  } else {
+    document.getElementById('sTxt').textContent='Not connected';
+  }
+});
+
+async function doConnect(){
+  hideErr();
+  K=document.getElementById('fKey').value.trim();
+  ID=document.getElementById('fId').value.trim();
+  TAB=document.getElementById('fTab').value.trim()||'Sheet1';
+  if(!K){showErr('Please enter your API key.');return;}
+  if(!ID){showErr('Please enter the Spreadsheet ID.');return;}
+  const btn=document.getElementById('btnConnect');
+  btn.disabled=true;btn.textContent='Connecting…';
+  try{await fetchData();saveCreds(K,ID,TAB);document.getElementById('btnClear').style.display='inline-block';}
+  catch(e){showErr(e.message||'Connection failed.');showDbg(e);btn.disabled=false;btn.textContent='Connect & Load';}
+}
+
+async function refresh(){
+  document.getElementById('sTxt').textContent='Refreshing…';
+  try{await fetchData();}catch(e){document.getElementById('sTxt').textContent='Refresh failed';showDbg(e);}
+}
+
+function goSettings(){
+  document.getElementById('dash').style.display='none';
+  document.getElementById('connectWrap').style.display='flex';
+  document.getElementById('btnRefresh').style.display='none';
+  document.getElementById('btnSettings').style.display='none';
+  document.getElementById('btnConnect').disabled=false;
+  document.getElementById('btnConnect').textContent='Connect & Load';
+}
+
+// ── FETCH ──────────────────────────────────────────
+async function fetchData(){
+  const url=`https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(ID)}/values/${encodeURIComponent(TAB)}?key=${encodeURIComponent(K)}&valueRenderOption=FORMATTED_VALUE`;
+  const res=await fetch(url);
+  if(!res.ok){const j=await res.json().catch(()=>({}));throw new Error(diagErr(res.status,j?.error?.message||`HTTP ${res.status}`));}
+  const j=await res.json();
+  const raw=j.values||[];
+  if(raw.length<2) throw new Error(`Sheet "${TAB}" returned ${raw.length} row(s). Check the tab name.`);
+  rows=parseRows(raw);
+  if(!rows.length) throw new Error('Data fetched but no valid campaign rows found. Check "Account name" and "Month" columns.');
+  showDash();
+}
+
+function parseRows(raw){
+  const hdrs=raw[0].map(h=>(h||'').toString().trim().replace(/\s+/g,' '));
+  const out=[];
+  for(let i=1;i<raw.length;i++){
+    const cells=raw[i]||[];
+    if(!cells.length) continue;
+    const obj={};
+    hdrs.forEach((h,j)=>{obj[h]=(cells[j]!==undefined?cells[j]:'').toString().trim();});
+    const acct=obj['Account name']||obj['Account Name']||'';
+    const mo=obj['Month']||obj['month']||'';
+    if(!acct||!mo||!mo.match(/20\d\d\s*M\d\d?/)) continue;
+    obj['Month']=mo.replace(/\s+/g,' ').trim();
+    obj['Account name']=acct.trim();
+    out.push(obj);
+  }
+  return out;
+}
+
+// ── GETTERS ────────────────────────────────────────
+function num(v,pct){
+  if(!v||v==='--'||v===''||v==='0') return 0;
+  const s=v.toString().replace(/[$,\s]/g,'');
+  if(!s) return 0;
+  if(s.endsWith('%')){const x=parseFloat(s);return isNaN(x)?0:x;}
+  const x=parseFloat(s);
+  if(isNaN(x)) return 0;
+  if(pct&&x>0&&x<1) return x*100;
+  return x;
+}
+const gc =r=>num(r['Clicks']);
+const gi =r=>num(r['Impr.'])||num(r['Impr'])||num(r['Impressions']);
+const gs =r=>num(r['Cost']);
+const gpc=r=>num(r['Avg. CPC'])||num(r['Avg CPC']);
+const gtr=r=>num(r['CTR'],true);
+const ghq=r=>num(r['Brekiya - HCP QV Rate'],true);
+const gdq=r=>num(r['Brekiya - DTC QV Rate'],true);
+const gksa=r=>num(r['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)'])||num(r['Brekiya - DTC Weighted KSAs 2025 (TOTAL)'])||num(r['Brekiya - DTC Weighted KSA (QV only)']);
+const ghqa=r=>num(r['Brekiya - HCP QV - 2P + Action']);
+const grc=r=>num(r['Brekiya - HCP - Request A Rep Click']);
+
+const fm=v=>'$'+Math.round(v||0).toLocaleString();
+const fk=v=>(v||0)>=1000?((v||0)/1000).toFixed(1)+'k':Math.round(v||0).toString();
+const fp=v=>(v||0).toFixed(2)+'%';
+const fd=v=>'$'+(v||0).toFixed(2);
+function dlta(a,b){if(!b) return '—';const d=((a-b)/b*100);return(d>=0?'+':'')+d.toFixed(1)+'%';}
+function dltaCls(a,b,inv){if(!b) return 'fl';const d=(a-b)/b;if(Math.abs(d)<0.01) return 'fl';const up=d>0;return inv?(up?'dn':'up'):(up?'up':'dn');}
+function pctChange(a,b){if(!b) return null;return((a-b)/b*100);}
+
+function getMo(){const f=new Set(rows.map(r=>r['Month']));return MO.filter(m=>f.has(m));}
+function getAccts(){return[...new Set(rows.map(r=>r['Account name'].trim()))].filter(a=>AM[a]);}
+
+function agg(m,acct){
+  const rs=rows.filter(r=>r['Month']===m&&(!acct||r['Account name'].trim()===acct));
+  const cpc=rs.filter(r=>gpc(r)>0),ctr=rs.filter(r=>gtr(r)>0);
+  return{s:rs.reduce((t,r)=>t+gs(r),0),cl:rs.reduce((t,r)=>t+gc(r),0),im:rs.reduce((t,r)=>t+gi(r),0),ctr:ctr.length?ctr.reduce((t,r)=>t+gtr(r),0)/ctr.length:0,cpc:cpc.length?cpc.reduce((t,r)=>t+gpc(r),0)/cpc.length:0};
+}
+
+// ── FILTER BAR ─────────────────────────────────────
+const FILTER_TABS=['camps','conv','ins']; // tabs that show the filter bar
+
+function buildFilterBar(){
+  const mos=getMo();
+  const chips=document.getElementById('filterChips');
+  chips.innerHTML=mos.map(m=>`<button class="fchip${activeFilter===m?' on':''}" onclick="setFilter('${m}',this)">${ML[m]||m}</button>`).join('');
+}
+
+function setFilter(m,btn){
+  activeFilter=m;
+  document.querySelectorAll('.fchip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  refreshCurrentTab();
+}
+
+function resetFilter(){
+  activeFilter=null;
+  document.querySelectorAll('.fchip').forEach(b=>b.classList.remove('on'));
+  refreshCurrentTab();
+}
+
+function refreshCurrentTab(){
+  if(currentTab==='camps') renderCamps();
+  if(currentTab==='conv')  buildConv();
+  if(currentTab==='ins')   buildIns();
+}
+
+// ── TAB SWITCH ─────────────────────────────────────
+function tab(name,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('panel-'+name).classList.add('on');
+  btn.classList.add('on');
+  currentTab=name;
+  // Show/hide filter bar
+  const fb=document.getElementById('filterBar');
+  if(FILTER_TABS.includes(name)){
+    fb.style.display='flex';
+    buildFilterBar();
+  } else {
+    fb.style.display='none';
+  }
+}
+
+// ── SHOW DASH ──────────────────────────────────────
+function showDash(){
+  document.getElementById('connectWrap').style.display='none';
+  document.getElementById('dash').style.display='block';
+  document.getElementById('btnRefresh').style.display='inline-block';
+  document.getElementById('btnSettings').style.display='inline-block';
+  document.getElementById('sDot').classList.add('live');
+  document.getElementById('sTxt').textContent=rows.length+' rows · live';
+  document.getElementById('lastUp').textContent='Updated '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  buildAll();
+}
+
+function buildAll(){
+  buildHero();buildStrip();buildMoM();buildAccts();buildCamps();buildConv();buildIns();buildRecs();
+}
+
+// ── HERO ───────────────────────────────────────────
+function buildHero(){
+  const mos=getMo();if(!mos.length) return;
+  const lat=mos[mos.length-1],prv=mos.length>1?mos[mos.length-2]:null;
+  const cur=agg(lat),prev=prv?agg(prv):null;
+  const lbl=ML[lat]||lat,plbl=prv?(ML[prv]||''):'';
+  const ytdSpend=mos.reduce((t,m)=>t+agg(m).s,0);
+  const ytdKSA=mos.reduce((t,m)=>t+rows.filter(r=>r['Month']===m).reduce((s,r)=>s+gksa(r),0),0);
+  const bestHCP=rows.filter(r=>r['Month']===lat&&ghq(r)>0).sort((a,b)=>ghq(b)-ghq(a))[0];
+  const stats=[
+    {label:'YTD Spend',val:fm(ytdSpend),sub:'All accounts · '+mos.length+' months',delta:''},
+    {label:lbl+' Clicks',val:fk(cur.cl),sub:'Total clicks',delta:prev?dlta(cur.cl,prev.cl):'',dClass:prev?(cur.cl>=prev.cl?'up':'dn'):'fl'},
+    {label:lbl+' Spend',val:fm(cur.s),sub:'Total spend',delta:prev?dlta(cur.s,prev.s):'',dClass:prev?(cur.s>=prev.s?'up':'dn'):'fl'},
+    {label:'YTD KSA Value',val:fm(ytdKSA),sub:'DTC weighted conversions',delta:''},
+    {label:'Top HCP QV Rate',val:bestHCP?ghq(bestHCP).toFixed(0)+'%':'—',sub:bestHCP?bestHCP['Ad group']:'This month',delta:''},
+  ];
+  document.getElementById('heroStats').innerHTML=stats.map(s=>`<div class="hstat"><div class="hstat-label">${s.label}</div><div class="hstat-val">${s.val}</div>${s.delta?`<div class="hstat-delta ${s.dClass||'fl'}">${s.delta} vs ${plbl}</div>`:`<div class="hstat-sub">${s.sub}</div>`}</div>`).join('');
+}
+
+// ── METRIC STRIP ───────────────────────────────────
+function buildStrip(){
+  const mos=getMo();if(!mos.length) return;
+  const cur=agg(mos[mos.length-1]),prv=mos.length>1?agg(mos[mos.length-2]):null;
+  const lbl=ML[mos[mos.length-1]]||mos[mos.length-1],plbl=prv?(ML[mos[mos.length-2]]||''):'';
+  const tiles=[
+    {l:'Total Spend',v:fm(cur.s),d:prv?dlta(cur.s,prv.s):'—',inv:false},
+    {l:'Total Clicks',v:fk(cur.cl),d:prv?dlta(cur.cl,prv.cl):'—',inv:false},
+    {l:'Impressions',v:fk(cur.im),d:prv?dlta(cur.im,prv.im):'—',inv:false},
+    {l:'Avg CTR',v:fp(cur.ctr),d:prv?dlta(cur.ctr,prv.ctr):'—',inv:false},
+    {l:'Avg CPC',v:fd(cur.cpc),d:prv?dlta(cur.cpc,prv.cpc):'—',inv:true},
+  ];
+  document.getElementById('mstrip').innerHTML=tiles.map(t=>{
+    const pos=t.d!=='—'&&t.d.startsWith('+');
+    const cls=t.d==='—'?'fl':(t.inv?(pos?'dn':'up'):(pos?'up':'dn'));
+    return `<div class="mtile"><div class="mt-label">${t.l} · ${lbl}</div><div class="mt-val">${t.v}</div><div class="mt-delta ${cls}">${t.d}${t.d!=='—'&&plbl?' vs '+plbl:''}</div></div>`;
+  }).join('');
+}
+
+// ── MOM CHARTS ─────────────────────────────────────
+function buildMoM(){
+  const mos=getMo();if(!mos.length) return;
+  const lbls=mos.map(m=>ML[m]||m),accts=getAccts();
+  dch('cSpend');
+  charts['cSpend']=new Chart(document.getElementById('cSpend'),{type:'bar',data:{labels:lbls,datasets:accts.map(a=>({label:AM[a]?.s||a,data:mos.map(m=>agg(m,a).s),backgroundColor:AM[a]?.c||'#888',stack:'s',borderRadius:3}))},options:copt({st:true,yf:v=>'$'+Math.round(v/1000)+'k'})});
+  dch('cClicks');
+  charts['cClicks']=new Chart(document.getElementById('cClicks'),{type:'line',data:{labels:lbls,datasets:[{label:'Clicks',data:mos.map(m=>agg(m).cl),borderColor:'#3D7A4E',backgroundColor:'rgba(61,122,78,0.08)',tension:.4,borderWidth:2,pointRadius:3,fill:true,yAxisID:'y'},{label:'Impr÷100',data:mos.map(m=>Math.round(agg(m).im/100)),borderColor:'rgba(61,122,78,0.35)',tension:.4,borderWidth:1,borderDash:[4,3],pointRadius:2,yAxisID:'y2'}]},options:{...copt({yf:fk}),scales:{x:xs(),y:ys(fk),y2:{position:'right',grid:{drawOnChartArea:false},ticks:{color:'rgba(26,26,46,0.25)',font:{family:"'DM Mono',monospace",size:9}}}}}});
+  dch('cCTR');
+  charts['cCTR']=new Chart(document.getElementById('cCTR'),{type:'line',data:{labels:lbls,datasets:accts.map(a=>({label:AM[a]?.s||a,data:mos.map(m=>{const r=agg(m,a);return r.ctr||null;}),borderColor:AM[a]?.c||'#888',tension:.4,borderWidth:2,pointRadius:3,spanGaps:true,backgroundColor:'transparent'}))},options:copt({yf:fp})});
+  dch('cCPC');
+  charts['cCPC']=new Chart(document.getElementById('cCPC'),{type:'line',data:{labels:lbls,datasets:accts.map(a=>({label:AM[a]?.s||a,data:mos.map(m=>{const r=agg(m,a);return r.cpc||null;}),borderColor:AM[a]?.c||'#888',tension:.4,borderWidth:2,pointRadius:3,spanGaps:true,backgroundColor:'transparent'}))},options:copt({yf:v=>'$'+v.toFixed(2)})});
+}
+
+// ── ACCOUNTS ───────────────────────────────────────
+function buildAccts(){
+  const mos=getMo();if(!mos.length) return;
+  acctMo=mos[mos.length-1];
+  document.getElementById('acctMrow').innerHTML=mos.map(m=>`<button class="mchip${m===acctMo?' on':''}" onclick="setAMo('${m}',this)">${ML[m]||m}</button>`).join('');
+  renderAccts();
+}
+function setAMo(m,btn){acctMo=m;document.querySelectorAll('#acctMrow .mchip').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderAccts();}
+function renderAccts(){
+  const accts=getAccts();
+  document.getElementById('acctGrid').innerHTML=accts.map(a=>{
+    const r=agg(acctMo,a);const info=AM[a]||{s:a,b:'bdg-h'};
+    return `<div class="acct-card" style="border-top-color:${AM[a]?.c||'#3D7A4E'}"><div class="acct-name">${info.s}</div><div class="acct-id">${a}</div><div class="arow"><span class="arow-k">Spend</span><span class="arow-v">${fm(r.s)}</span></div><div class="arow"><span class="arow-k">Clicks</span><span class="arow-v">${Math.round(r.cl).toLocaleString()}</span></div><div class="arow"><span class="arow-k">Impressions</span><span class="arow-v">${Math.round(r.im).toLocaleString()}</span></div><div class="arow"><span class="arow-k">CTR</span><span class="arow-v">${fp(r.ctr)}</span></div><div class="arow"><span class="arow-k">Avg CPC</span><span class="arow-v">${fd(r.cpc)}</span></div></div>`;
+  }).join('');
+  if(donut){donut.destroy();donut=null;}
+  donut=new Chart(document.getElementById('cDonut'),{type:'doughnut',data:{labels:accts.map(a=>AM[a]?.s||a),datasets:[{data:accts.map(a=>agg(acctMo,a).s),backgroundColor:accts.map(a=>AM[a]?.c||'#888'),borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'64%',plugins:{legend:{display:true,position:'right',labels:{color:'rgba(26,26,46,0.55)',font:{family:"'DM Sans',sans-serif",size:11},boxWidth:10,padding:12}},tooltip:{callbacks:{label:c=>' '+c.label+': '+fm(c.raw)}}}}});
+}
+
+// ── CAMPAIGNS ──────────────────────────────────────
+function buildCamps(){
+  const mos=getMo();if(!mos.length) return;
+  campMo=mos[mos.length-1];
+  document.getElementById('campMrow').innerHTML=mos.map(m=>`<button class="mchip${m===campMo?' on':''}" onclick="setCMo('${m}',this)">${ML[m]||m}</button>`).join('');
+  renderCamps();
+}
+function setCMo(m,btn){campMo=m;document.querySelectorAll('#campMrow .mchip').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderCamps();}
+function renderCamps(){
+  const mos=getMo();
+  const mo=activeFilter||campMo;
+  const prevMo=mos[mos.indexOf(mo)-1]||null;
+  document.getElementById('campFilterLabel').textContent=activeFilter?`Filtered: ${ML[activeFilter]||activeFilter}`:'';
+
+  const rs=rows.filter(r=>r['Month']===mo&&gc(r)>0).sort((a,b)=>gc(b)-gc(a)).slice(0,30);
+
+  // Build prev month lookup by ad group key
+  const prevRows={};
+  if(prevMo){
+    rows.filter(r=>r['Month']===prevMo).forEach(r=>{
+      const key=(r['Account name']||'').trim()+'||'+(r['Ad group']||'');
+      prevRows[key]=r;
+    });
+  }
+
+  document.getElementById('campBody').innerHTML=rs.map(r=>{
+    const a=(r['Account name']||'').trim();const info=AM[a]||{s:a,b:'bdg-h'};
+    const key=a+'||'+(r['Ad group']||'');
+    const prev=prevRows[key];
+    const ctrChg=prev?pctChange(gtr(r),gtr(prev)):null;
+    const clkChg=prev?pctChange(gc(r),gc(prev)):null;
+    const ctrTxt=ctrChg!==null?`<span class="${Math.abs(ctrChg)>=20?(ctrChg>0?'delta-up':'delta-dn'):'delta-fl'}">${ctrChg>=0?'+':''}${ctrChg.toFixed(1)}%</span>`:'<span class="delta-fl">—</span>';
+    const clkTxt=clkChg!==null?`<span class="${Math.abs(clkChg)>=20?(clkChg>0?'delta-up':'delta-dn'):'delta-fl'}">${clkChg>=0?'+':''}${clkChg.toFixed(1)}%</span>`:'<span class="delta-fl">—</span>';
+    return `<tr><td><span class="bdg ${info.b}">${info.s}</span></td><td style="color:var(--t3)">${r['Campaign']||''}</td><td>${r['Ad group']||''}</td><td style="text-align:right">${Math.round(gi(r)).toLocaleString()}</td><td style="text-align:right;font-weight:600;color:var(--t1)">${Math.round(gc(r)).toLocaleString()}</td><td style="text-align:right">${fp(gtr(r))}</td><td style="text-align:right">${fd(gpc(r))}</td><td style="text-align:right;color:var(--ga-green);font-weight:600">${fm(gs(r))}</td><td style="text-align:right">${ctrTxt}</td><td style="text-align:right">${clkTxt}</td></tr>`;
+  }).join('')||'<tr><td colspan="10" style="text-align:center;color:var(--t3);padding:28px">No data for this period</td></tr>';
+}
+
+// ── CONVERSIONS ────────────────────────────────────
+function buildConv(){
+  const mos=getMo();if(!mos.length) return;
+  const filtMos=activeFilter?[activeFilter]:mos;
+  const lbls=filtMos.map(m=>ML[m]||m);
+  const dtcQV=filtMos.map(m=>{const rs=rows.filter(r=>r['Month']===m&&gdq(r)>0);return rs.length?rs.reduce((t,r)=>t+gdq(r),0)/rs.length:null;});
+  const hcpQV=filtMos.map(m=>{const rs=rows.filter(r=>r['Month']===m&&ghq(r)>0);return rs.length?rs.reduce((t,r)=>t+ghq(r),0)/rs.length:null;});
+  dch('cQV');
+  charts['cQV']=new Chart(document.getElementById('cQV'),{type:'line',data:{labels:lbls,datasets:[{label:'DTC QV Rate',data:dtcQV,borderColor:'#C8973A',backgroundColor:'rgba(200,151,58,0.08)',tension:.4,borderWidth:2,pointRadius:3,fill:true,spanGaps:true},{label:'HCP QV Rate',data:hcpQV,borderColor:'#3D7A4E',backgroundColor:'rgba(61,122,78,0.08)',tension:.4,borderWidth:2,pointRadius:3,fill:true,spanGaps:true}]},options:copt({yf:v=>v.toFixed(1)+'%'})});
+  dch('cKSA');
+  charts['cKSA']=new Chart(document.getElementById('cKSA'),{type:'bar',data:{labels:lbls,datasets:[{label:'KSA Value',data:filtMos.map(m=>rows.filter(r=>r['Month']===m).reduce((t,r)=>t+gksa(r),0)),backgroundColor:'#3D7A4E',borderRadius:4}]},options:copt({yf:v=>'$'+Math.round(v/1000)+'k'})});
+  const filtRows=activeFilter?rows.filter(r=>r['Month']===activeFilter):rows;
+  const cvrs=filtRows.filter(r=>ghq(r)>0||gdq(r)>0).sort((a,b)=>ghqa(b)-ghqa(a)).slice(0,25);
+  document.getElementById('convBody').innerHTML=cvrs.map(r=>{
+    const a=(r['Account name']||'').trim();const info=AM[a]||{s:a,b:'bdg-h'};
+    return `<tr><td><span class="bdg ${info.b}">${info.s}</span></td><td style="color:var(--t3)">${ML[r['Month']]||r['Month']}</td><td>${r['Ad group']||''}</td><td style="text-align:right;color:var(--ga-green);font-weight:600">${fp(ghq(r))}</td><td style="text-align:right">${fp(gdq(r))}</td><td style="text-align:right">${Math.round(ghqa(r))||'—'}</td><td style="text-align:right">${Math.round(grc(r))||'—'}</td><td style="text-align:right;color:var(--ga-gold);font-weight:600">${fm(gksa(r))}</td></tr>`;
+  }).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--t3);padding:28px">No conversion data found</td></tr>';
+}
+
+// ── INSIGHTS ───────────────────────────────────────
+function buildIns(){
+  const mos=getMo();if(!mos.length) return;
+  const filtMos=activeFilter?[activeFilter]:mos;
+  const lat=filtMos[filtMos.length-1];
+  const lbl=ML[lat]||lat;
+  const prevMo=mos[mos.indexOf(lat)-1]||null;
+  const prevLbl=prevMo?(ML[prevMo]||prevMo):'prior month';
+
+  // Overview insights
+  const cur=agg(lat),prv=prevMo?agg(prevMo):null;
+  const topHCP=rows.filter(r=>r['Month']===lat&&ghq(r)>0).sort((a,b)=>ghq(b)-ghq(a))[0];
+  const ytdSpend=mos.reduce((t,m)=>t+agg(m).s,0);
+  const topKSA=mos.map(m=>({m,v:rows.filter(r=>r['Month']===m).reduce((t,r)=>t+gksa(r),0)})).sort((a,b)=>b.v-a.v)[0];
+
+  document.getElementById('insOverview').innerHTML=[
+    {t:'green',i:'📈',tag:`Program Snapshot · ${lbl}`,body:`Total spend of <strong>${fm(cur.s)}</strong> with <strong>${fk(cur.cl)} clicks</strong> at an average CTR of <strong>${fp(cur.ctr)}</strong> and CPC of <strong>${fd(cur.cpc)}</strong>.${prv?` Compared to ${prevLbl}: spend ${dlta(cur.s,prv.s)}, clicks ${dlta(cur.cl,prv.cl)}, CTR ${dlta(cur.ctr,prv.ctr)}.`:''} YTD total spend stands at <strong>${fm(ytdSpend)}</strong> across ${mos.length} months.`},
+    topHCP?{t:'green',i:'🎯',tag:`Top HCP QV Rate · ${lbl}`,body:`<strong>${topHCP['Ad group']}</strong> (${AM[(topHCP['Account name']||'').trim()]?.s||''}) achieved the highest HCP qualified visit rate at <strong>${ghq(topHCP).toFixed(1)}%</strong>. This group represents the most engaged HCP audience in the program and should be protected from budget cuts.`}:null,
+    {t:'gold',i:'📊',tag:'Best KSA Month',body:`The strongest DTC weighted KSA value month was <strong>${ML[topKSA?.m]||topKSA?.m}</strong> at <strong>${fm(topKSA?.v||0)}</strong>. Replicating the budget allocation and targeting mix from that month in upcoming months should be a priority for the DTC team.`},
+  ].filter(Boolean).map(x=>`<div class="ins ${x.t}"><div class="ins-icon">${x.i}</div><div><div class="ins-tag">${x.tag}</div><div class="ins-body">${x.body}</div></div></div>`).join('');
+
+  // ── MOM MOVERS (20%+ change) ────────────────────
+  if(prevMo){
+    const curRows=rows.filter(r=>r['Month']===lat&&gc(r)>5);
+    const prevRowMap={};
+    rows.filter(r=>r['Month']===prevMo).forEach(r=>{
+      const key=(r['Account name']||'').trim()+'||'+(r['Ad group']||'');
+      prevRowMap[key]=r;
+    });
+
+    const movers=[];
+    curRows.forEach(r=>{
+      const key=(r['Account name']||'').trim()+'||'+(r['Ad group']||'');
+      const p=prevRowMap[key];
+      if(!p) return;
+      const ctrChg=pctChange(gtr(r),gtr(p));
+      const clkChg=pctChange(gc(r),gc(p));
+      const spdChg=pctChange(gs(r),gs(p));
+      if(ctrChg!==null&&Math.abs(ctrChg)>=20) movers.push({row:r,prev:p,metric:'CTR',cur:gtr(r),prv:gtr(p),chg:ctrChg,fmt:fp});
+      if(clkChg!==null&&Math.abs(clkChg)>=20) movers.push({row:r,prev:p,metric:'Clicks',cur:gc(r),prv:gc(p),chg:clkChg,fmt:fk});
+      if(spdChg!==null&&Math.abs(spdChg)>=20&&gs(r)>50) movers.push({row:r,prev:p,metric:'Spend',cur:gs(r),prv:gs(p),chg:spdChg,fmt:fm});
+    });
+
+    const risers=movers.filter(m=>m.chg>0).sort((a,b)=>b.chg-a.chg).slice(0,5);
+    const fallers=movers.filter(m=>m.chg<0).sort((a,b)=>a.chg-b.chg).slice(0,5);
+
+    function moverRow(m){
+      const a=(m.row['Account name']||'').trim();
+      const info=AM[a]||{s:a,b:'bdg-h'};
+      return `<div class="mover-row">
+        <div class="mover-name">${m.row['Ad group']||''}<small>${info.s} · ${m.metric}</small></div>
+        <div class="mover-vals">
+          <div class="mover-delta ${m.chg>0?'up':'dn'}">${m.chg>0?'+':''}${m.chg.toFixed(1)}%</div>
+          <div class="mover-prev">${m.fmt(m.prv)} → ${m.fmt(m.cur)}</div>
+        </div>
+      </div>`;
+    }
+
+    document.getElementById('moversGrid').innerHTML=`
+      <div class="mover-card">
+        <div class="mover-header"><span style="font-size:16px">📈</span><div class="mover-title">Significant Increases</div><div class="mover-sub">${lbl} vs ${prevLbl}</div></div>
+        ${risers.length?risers.map(moverRow).join(''):'<div style="font-size:12px;color:var(--t3);padding:8px 0">No groups with 20%+ increase this month</div>'}
+      </div>
+      <div class="mover-card">
+        <div class="mover-header"><span style="font-size:16px">📉</span><div class="mover-title">Significant Decreases</div><div class="mover-sub">${lbl} vs ${prevLbl}</div></div>
+        ${fallers.length?fallers.map(moverRow).join(''):'<div style="font-size:12px;color:var(--t3);padding:8px 0">No groups with 20%+ decrease this month</div>'}
+      </div>`;
+  } else {
+    document.getElementById('moversGrid').innerHTML='<div class="mover-card" style="grid-column:1/-1"><div style="font-size:12px;color:var(--t3);padding:8px">Need at least 2 months of data to calculate movers.</div></div>';
+  }
+
+  // Conversion insights
+  const zeroComp=rows.filter(r=>r['Campaign']==='Competitor - BC'&&gs(r)===0&&(r['Account name']||'').includes('Brekiya -')).length;
+  document.getElementById('insConv').innerHTML=[
+    {t:'blue',i:'🔄',tag:'QV Rate Trend',body:`HCP QV rates across all accounts have consistently outperformed DTC QV rates throughout the program. The HCP audience is demonstrably more engaged post-click. Budget allocation should weight HCP campaigns that show both high volume and high QV rates — these represent the most efficient path to downstream prescription intent.`},
+    {t:'red',i:'⚠️',tag:'Rep Submit Conversion Gap',body:`Despite strong click volume in HCP Treatment and Competitor campaigns, Request A Rep Submit conversions remain near zero across all months. This is a significant funnel leak — users are clicking and visiting but not completing the rep contact form. This warrants an immediate landing page audit focused on form visibility, friction reduction, and CTA copy testing.`},
+    zeroComp>0?{t:'gold',i:'🎯',tag:'Competitor Campaign Opportunity',body:`<strong>${zeroComp} competitor-targeted ad groups</strong> in Brekiya-direct accounts have zero spend. Amneal accounts are bidding on these same terms and capturing that traffic. Activating Brekiya HCP/DTC competitor campaigns with dedicated landing pages would intercept high-intent searchers who are actively comparing treatment options.`}:null,
+  ].filter(Boolean).map(x=>`<div class="ins ${x.t}"><div class="ins-icon">${x.i}</div><div><div class="ins-tag">${x.tag}</div><div class="ins-body">${x.body}</div></div></div>`).join('');
+}
+
+// ── RECOMMENDATIONS ────────────────────────────────
+function buildRecs(){
+  const mos=getMo();
+  const lat=mos[mos.length-1]||'';
+  const lbl=ML[lat]||lat;
+  const bestCPC=rows.filter(r=>r['Month']===lat&&gpc(r)>0&&gc(r)>10).sort((a,b)=>gpc(a)-gpc(b))[0];
+  const worstCTR=rows.filter(r=>r['Month']===lat&&gtr(r)>0&&gi(r)>1000).sort((a,b)=>gtr(a)-gtr(b)).slice(0,3);
+  const topHCPQV=rows.filter(r=>r['Month']===lat&&ghq(r)>0).sort((a,b)=>ghq(b)-ghq(a))[0];
+
+  function recCard(priority,title,meta,summary,actions,impacts){
+    const id='rec-'+Math.random().toString(36).slice(2,8);
+    return `<div class="rec-card" id="${id}">
+      <div class="rec-header" onclick="toggleRec('${id}')">
+        <span class="rec-priority ${priority}">${priority.toUpperCase()}</span>
+        <span class="rec-title">${title}</span>
+        <span class="rec-meta">${meta}</span>
+        <span class="rec-chevron">▼</span>
+      </div>
+      <div class="rec-body">
+        <div class="rec-summary">${summary}</div>
+        <div class="rec-actions">${actions.map((a,i)=>`<div class="rec-action"><div class="rec-action-num">${i+1}</div><div>${a}</div></div>`).join('')}</div>
+        ${impacts.length?`<div class="rec-impact">${impacts.map(p=>`<span class="rec-impact-pill">${p}</span>`).join('')}</div>`:''}
+      </div>
+    </div>`;
+  }
+
+  // CTR Recommendations
+  document.getElementById('recsCTR').innerHTML=[
+    recCard('high',
+      'Expand RSA Variations for Low-CTR High-Impression Groups',
+      'CTR · '+lbl,
+      `${worstCTR.length?`<strong>${worstCTR.map(r=>r['Ad group']).join(', ')}</strong> are generating high impression volume but below-average CTR. `:''}Responsive Search Ads with more headline and description variations give Google more combinations to test, typically improving CTR by 5–15% over 4–6 weeks without increasing spend.`,
+      [
+        'Identify the 3–5 ad groups with the most impressions and lowest CTR in the Campaigns tab.',
+        'Write 10–15 headline variations per ad group — mix branded, symptom-based, and action-oriented copy (e.g. "Proven Migraine Relief", "Talk to Your Doctor About Brekiya", "Cluster Headache Treatment Option").',
+        'Add 4+ description lines emphasizing different product benefits — mechanism of action, dosing convenience, patient type.',
+        'Pin key headlines only where legally required. Allow Google to test remaining combinations freely.',
+        'Review Ad Strength scores weekly — aim for "Excellent" on all RSAs within 30 days.',
+      ],
+      ['Expected CTR lift: +5–15%','Timeline: 4–6 weeks','Effort: Medium']
+    ),
+    recCard('high',
+      'Test Symptom-First Ad Copy for DTC Condition Campaigns',
+      'CTR · DTC Audience',
+      `DTC Condition and Symptom campaigns reach patients at the awareness stage — they're searching about their condition, not yet for a treatment. Ad copy that leads with symptom empathy before introducing Brekiya typically outperforms treatment-first messaging for this audience segment.`,
+      [
+        'Create a new RSA variant for Migraine Symptoms and Cluster Headache Symptoms ad groups with headlines that mirror the search query empathetically (e.g. "Struggling With Cluster Headaches?", "Migraine Pain Disrupting Your Life?").',
+        'Follow with a benefit bridge in description lines: "There may be a treatment option worth asking your doctor about."',
+        'Use IF functions in headlines to dynamically match device — mobile users often respond better to call-to-action copy ("Learn More Today").',
+        'A/B test symptom-first vs treatment-first copy using ad rotation set to "Do Not Optimize" for a 30-day clean test.',
+        'Evaluate performance at 1,000+ impressions per variant before declaring a winner.',
+      ],
+      ['Expected CTR lift: +8–20%','Audience: DTC Early Funnel','Effort: Low–Medium']
+    ),
+    recCard('med',
+      'Add Sitelink Extensions to All Active Ad Groups',
+      'CTR · All Accounts',
+      `Sitelink extensions expand ad real estate on the SERP, increasing click surface and CTR — typically by 10–20% when relevant. Review of current campaigns suggests sitelinks are underutilized, particularly in HCP campaigns where multiple landing page options (prescribing info, request a rep, patient support) could be surfaced directly.`,
+      [
+        'Audit current sitelink coverage across all 4 accounts — identify ad groups with fewer than 4 active sitelinks.',
+        'For HCP campaigns, add sitelinks for: Prescribing Information, Request a Rep, Patient Assistance Program, Clinical Data.',
+        'For DTC campaigns, add sitelinks for: How It Works, Patient Stories, Find a Specialist, Insurance Coverage.',
+        'Ensure sitelink landing pages are mobile-optimized and load in under 3 seconds.',
+        'Review sitelink performance monthly — pause sitelinks with CTR below 0.5% and test replacements.',
+      ],
+      ['Expected CTR lift: +10–20%','Applies to: All accounts','Effort: Low']
+    ),
+    recCard('med',
+      'Implement Ad Schedule Bid Adjustments',
+      'CTR · Efficiency',
+      `Paid search performance varies significantly by day of week and hour. HCP searchers tend to be most active on weekdays during business hours. DTC patient searches peak in evenings and weekends. Bid adjustments aligned to performance windows improve CTR and reduce wasted spend during low-intent periods.`,
+      [
+        'Pull a day-of-week and hour-of-day performance report for the last 90 days from the Google Ads interface.',
+        'Identify the 3 highest-CTR and 3 lowest-CTR time windows for each account type (HCP vs DTC).',
+        'Apply +15–25% bid adjustments to peak windows and -20–30% during consistently low-performing windows.',
+        'For HCP accounts, consider reducing bids significantly on weekends if data confirms low HCP search intent.',
+        'Revisit and adjust every 60 days as seasonal patterns shift.',
+      ],
+      ['Expected efficiency gain: 10–15%','Data needed: 90-day ad schedule report','Effort: Low']
+    ),
+  ].join('');
+
+  // Conversion Recommendations
+  document.getElementById('recsConv').innerHTML=[
+    recCard('high',
+      'Audit & Redesign HCP Rep Submit Landing Page',
+      'Conversion · Rep Submit',
+      `The single biggest conversion gap in the program is the near-zero HCP Request A Rep Submit rate despite strong click volume. This is almost certainly a landing page issue, not a targeting issue — HCPs are arriving but not completing the form. A dedicated audit and redesign should be the top priority for conversion improvement.`,
+      [
+        'Run a heatmap and session recording analysis (Hotjar or Microsoft Clarity) on the HCP rep request landing page to identify where users drop off.',
+        'Simplify the form — reduce fields to the minimum required (name, specialty, NPI, preferred contact). Every additional field reduces completion rate by ~10%.',
+        'Move the form above the fold on both desktop and mobile — HCPs should not need to scroll to find it.',
+        'Add a trust signal adjacent to the form: "Your rep will contact you within 1 business day" or similar commitment.',
+        'A/B test a "Click to Call" option alongside the form for HCPs who prefer phone contact.',
+        'Implement form abandonment tracking to measure drop-off rate at each field.',
+      ],
+      ['Expected conversion lift: +30–60%','Priority: Immediate','Effort: High']
+    ),
+    recCard('high',
+      'Activate Brekiya Competitor Campaigns with Conversion-Optimized Landing Pages',
+      'Conversion · HCP & DTC',
+      `Competitor-targeted ad groups in Brekiya-direct accounts (HCP and DTC) have zero spend while Amneal accounts are actively capturing this traffic. These searchers are in comparison mode — the highest-intent moment in the funnel. A dedicated competitor landing page that directly addresses differentiation from Imitrex, Nurtec, and Ubrelvy would drive strong QV rates.`,
+      [
+        'Brief creative on dedicated competitor comparison landing pages — one for HCP (clinical differentiation, mechanism of action, dosing) and one for DTC (patient experience, convenience, support programs).',
+        'Launch Brekiya HCP Competitor campaign with $500–1,000/month test budget targeting Imitrex, Nurtec, Ubrelvy, Emgality, and Maxalt terms.',
+        'Use headline copy that acknowledges the comparison context: "Considering Alternatives? Learn About Brekiya."',
+        'Set QV tracking as the primary conversion goal for these campaigns and evaluate CPQV against HCP Generic benchmarks.',
+        'Expand budget to full deployment within 60 days if CPQV is within 20% of the Generic campaign benchmark.',
+      ],
+      ['Expected new QV volume: significant','Timeline: 30 days to launch','Effort: High']
+    ),
+    recCard('med',
+      'Implement RLSA for High-QV Audiences',
+      'Conversion · Retargeting',
+      `Remarketing Lists for Search Ads (RLSA) allow bid increases for users who have previously visited the site and shown engagement signals. HCPs who visited the prescribing information page or downloaded the PDF but did not submit a rep request are a high-value retargeting pool.`,
+      [
+        'Verify Google Ads remarketing tags are firing correctly on all HCP landing pages.',
+        'Create audience segments: HCP site visitors (all), HCP PDF downloaders, HCP rep page visitors who did not submit.',
+        'Apply +30–50% bid adjustments for these audiences in HCP Generic and HCP Branded campaigns.',
+        'Create tailored ad copy for returning visitors that advances the conversation: "Ready to Discuss Brekiya with Your Rep?"',
+        'Review RLSA audience sizes monthly — minimum 1,000 users needed for search targeting.',
+      ],
+      ['Expected CPQV reduction: 15–25%','Data needed: Audience size verification','Effort: Medium']
+    ),
+  ].join('');
+
+  // Cost Efficiency Recommendations
+  document.getElementById('recsCost').innerHTML=[
+    recCard('high',
+      'Reallocate Budget from Amneal HCP Treatment to Brekiya HCP Generic',
+      'Cost Efficiency · HCP',
+      `${bestCPC?`Brekiya HCP Generic campaigns are delivering CPCs around <strong>${fd(gpc(bestCPC))}</strong> with QV rates of 45–76% — `:'Brekiya HCP Generic campaigns are delivering CPCs of $2.74–$3.81 with QV rates of 45–76% — '}significantly more cost-efficient than Amneal HCP Treatment campaigns at $5–7 CPCs. Shifting 20–30% of Amneal HCP Treatment budget to Brekiya HCP Generic would reduce program-wide CPQV.`,
+      [
+        'Pull a CPQV comparison across all HCP ad groups for the last 3 months — rank by CPQV ascending.',
+        'Identify the 3 Amneal HCP Treatment groups with the highest CPQV and lowest QV rates.',
+        'Reduce monthly budget on those groups by 20% and shift the savings to Brekiya HCP Generic — Indication, Injection, and Generic groups specifically.',
+        'Monitor CPQV weekly for 4 weeks. If Brekiya HCP Generic CPQV holds below the Amneal Treatment benchmark, continue shifting budget in 10% increments.',
+        'Set a target program-wide CPQV and review allocation monthly against that target.',
+      ],
+      ['Expected CPQV reduction: 20–35%','Timeline: 30–60 days','Effort: Low']
+    ),
+    recCard('high',
+      'Pause or Reduce Zero-Performing Branded Terms',
+      'Cost Efficiency · DTC & HCP',
+      `Multiple branded ad groups across both DTC and HCP accounts show spend with minimal conversion contribution. While some branded coverage is necessary for SOV protection, zero-click branded impressions in competitive placements represent budget that could be redirected to high-QV generic and symptom campaigns.`,
+      [
+        'Audit all branded ad groups for the last 90 days — identify those with spend but zero or near-zero QV actions.',
+        'For branded groups with <0.5% QV conversion rate, reduce bids to minimum effective position (3–4) rather than top position.',
+        'Shift saved budget to Symptoms and Condition campaigns in Amneal DTC which drive the highest impression volume at lower CPCs.',
+        'Maintain top-position bids only for branded ad groups that directly drive rep requests or PDF downloads.',
+        'Re-evaluate every 30 days — if organic listings are holding top positions for branded terms, reduce branded paid spend further.',
+      ],
+      ['Expected budget recovered: 8–15%','Timeline: Immediate','Effort: Low']
+    ),
+    recCard('med',
+      'Implement Target CPA Bidding on Mature Ad Groups',
+      'Cost Efficiency · Smart Bidding',
+      `Ad groups with 50+ conversions in the last 30 days have sufficient data for Google's Target CPA smart bidding to outperform manual CPC. Transitioning mature, high-volume groups to Target CPA gives Google's auction algorithm more flexibility to find conversion opportunities below your CPA target, reducing CPQV over time.`,
+      [
+        'Identify ad groups with 50+ QV conversions in the last 30 days — these are ready for Target CPA.',
+        'Set initial Target CPA at 20% above current average CPQV to avoid delivery disruption during the 2-week learning period.',
+        'Monitor impression share and conversion volume daily during the first 14 days — if volume drops >20%, increase the Target CPA.',
+        'After the learning period (14–21 days), evaluate CPQV vs the manual CPC baseline and gradually tighten the Target CPA by 10% every 2 weeks.',
+        'Do not apply Target CPA to ad groups with fewer than 30 conversions/month — these will underperform without sufficient signal.',
+      ],
+      ['Expected CPQV reduction: 10–20% long-term','Timeline: 60 days to stabilize','Effort: Medium']
+    ),
+    recCard('low',
+      'Review Search Term Reports for Negative Keyword Opportunities',
+      'Cost Efficiency · All Accounts',
+      `Broad and phrase match keywords in DTC campaigns inevitably capture irrelevant search terms — especially in a pharma context where symptom terms can attract non-patient queries (medical students, caregivers searching for others, etc.). A monthly negative keyword review typically recovers 5–10% of budget from non-converting traffic.`,
+      [
+        'Pull a Search Terms report for the last 60 days filtered to zero-conversion terms with >$10 spend.',
+        'Add clearly irrelevant terms as exact match negatives at the campaign level (e.g. "free", "home remedy", "natural treatment", job-related terms).',
+        'Create a Negative Keyword List shared across all DTC accounts for common irrelevant terms to prevent ongoing waste.',
+        'Review Competitor campaign search terms separately — ensure you are only appearing for competitor brand and product terms, not adjacent irrelevant queries.',
+        'Schedule a monthly 30-minute search term review as a standing agenda item for the paid search team.',
+      ],
+      ['Expected budget recovered: 5–10%','Timeline: Ongoing monthly','Effort: Low']
+    ),
+  ].join('');
+}
+
+function toggleRec(id){
+  const card=document.getElementById(id);
+  card.classList.toggle('open');
+}
+
+// ── CHART HELPERS ──────────────────────────────────
+function dch(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+function xs(){return{ticks:{color:'rgba(26,26,46,0.35)',font:{family:"'DM Mono',monospace",size:9}},grid:{display:false}};}
+function ys(fmt){return{ticks:{color:'rgba(26,26,46,0.35)',font:{family:"'DM Mono',monospace",size:9},callback:fmt},grid:{color:'rgba(26,26,46,0.05)'}};}
+function copt({st=false,yf=v=>v}={}){return{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{color:'rgba(26,26,46,0.5)',font:{family:"'DM Sans',sans-serif",size:11},boxWidth:10,padding:12}}},scales:{x:{stacked:st,...xs()},y:{stacked:st,...ys(yf)}}};}
+
+// ── ERRORS ─────────────────────────────────────────
+function showErr(msg){const el=document.getElementById('errBox');el.textContent=msg;el.style.display='block';}
+function hideErr(){document.getElementById('errBox').style.display='none';document.getElementById('dbgBox').style.display='none';}
+function showDbg(e){const b=document.getElementById('dbgBox');b.style.display='block';b.textContent=`Debug: ${e.message||e}`;}
+function diagErr(st,msg){if(st===400)return`Bad request — check your Spreadsheet ID. (${msg})`;if(st===403)return`Access denied — make sure the sheet is "Anyone with the link can view" and Sheets API is enabled. (${msg})`;if(st===404)return`Not found — check Spreadsheet ID and tab name. (${msg})`;return`API error ${st}: ${msg}`;}
+
+// ── DEMO ───────────────────────────────────────────
+function loadDemo(){
+  rows=[
+    {['Account name']:'Amneal - BREKIYA DTC',Campaign:'Branded',['Ad group']:'Brekiya General',Month:'2026 M01',['Impr.']:'1946',Clicks:'81',Cost:'188.30',['Avg. CPC']:'2.32',CTR:'4.16%',['Brekiya - HCP QV Rate']:'0%',['Brekiya - DTC QV Rate']:'102.47%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'1395',['Brekiya - HCP QV - 2P + Action']:'6',['Brekiya - HCP - Request A Rep Click']:'0'},
+    {['Account name']:'Amneal - BREKIYA HCP',Campaign:'Treatment',['Ad group']:'Prescription',Month:'2026 M01',['Impr.']:'2737',Clicks:'270',Cost:'1652',['Avg. CPC']:'6.12',CTR:'9.86%',['Brekiya - HCP QV Rate']:'77.78%',['Brekiya - DTC QV Rate']:'0%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'345',['Brekiya - HCP QV - 2P + Action']:'210',['Brekiya - HCP - Request A Rep Click']:'0'},
+    {['Account name']:'Brekiya - HCP',Campaign:'Generic',['Ad group']:'Indication',Month:'2026 M01',['Impr.']:'1890',Clicks:'52',Cost:'164',['Avg. CPC']:'3.15',CTR:'2.75%',['Brekiya - HCP QV Rate']:'65%',['Brekiya - DTC QV Rate']:'10%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'80',['Brekiya - HCP QV - 2P + Action']:'26',['Brekiya - HCP - Request A Rep Click']:'1'},
+    {['Account name']:'Brekiya - DTC',Campaign:'Branded',['Ad group']:'Brekiya General',Month:'2026 M01',['Impr.']:'220',Clicks:'11',Cost:'11.07',['Avg. CPC']:'1.01',CTR:'5%',['Brekiya - HCP QV Rate']:'0%',['Brekiya - DTC QV Rate']:'45.45%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'85',['Brekiya - HCP QV - 2P + Action']:'0',['Brekiya - HCP - Request A Rep Click']:'0'},
+    {['Account name']:'Amneal - BREKIYA DTC',Campaign:'Branded',['Ad group']:'Brekiya General',Month:'2026 M02',['Impr.']:'2200',Clicks:'105',Cost:'252',['Avg. CPC']:'2.40',CTR:'4.77%',['Brekiya - HCP QV Rate']:'0%',['Brekiya - DTC QV Rate']:'110%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'1580',['Brekiya - HCP QV - 2P + Action']:'7',['Brekiya - HCP - Request A Rep Click']:'0'},
+    {['Account name']:'Amneal - BREKIYA HCP',Campaign:'Treatment',['Ad group']:'Prescription',Month:'2026 M02',['Impr.']:'3100',Clicks:'198',Cost:'1212',['Avg. CPC']:'6.12',CTR:'6.39%',['Brekiya - HCP QV Rate']:'71%',['Brekiya - DTC QV Rate']:'0%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'290',['Brekiya - HCP QV - 2P + Action']:'141',['Brekiya - HCP - Request A Rep Click']:'0'},
+    {['Account name']:'Brekiya - HCP',Campaign:'Generic',['Ad group']:'Injection',Month:'2026 M02',['Impr.']:'2100',Clicks:'88',Cost:'241',['Avg. CPC']:'2.74',CTR:'4.19%',['Brekiya - HCP QV Rate']:'62.5%',['Brekiya - DTC QV Rate']:'6.82%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'30',['Brekiya - HCP QV - 2P + Action']:'55',['Brekiya - HCP - Request A Rep Click']:'0'},
+    {['Account name']:'Amneal - BREKIYA DTC',Campaign:'Symptoms',['Ad group']:'Migraine Symptoms',Month:'2026 M03',['Impr.']:'53255',Clicks:'1631',Cost:'5139',['Avg. CPC']:'3.15',CTR:'3.06%',['Brekiya - HCP QV Rate']:'0%',['Brekiya - DTC QV Rate']:'70.32%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'5795',['Brekiya - HCP QV - 2P + Action']:'0',['Brekiya - HCP - Request A Rep Click']:'0'},
+    {['Account name']:'Amneal - BREKIYA HCP',Campaign:'Competitor - BC',['Ad group']:'Imitrex',Month:'2026 M03',['Impr.']:'4100',Clicks:'387',Cost:'1984',['Avg. CPC']:'5.13',CTR:'9.44%',['Brekiya - HCP QV Rate']:'74%',['Brekiya - DTC QV Rate']:'0%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'720',['Brekiya - HCP QV - 2P + Action']:'286',['Brekiya - HCP - Request A Rep Click']:'0'},
+    {['Account name']:'Brekiya - HCP',Campaign:'Generic',['Ad group']:'Indication',Month:'2026 M03',['Impr.']:'4511',Clicks:'179',Cost:'518',['Avg. CPC']:'2.90',CTR:'3.97%',['Brekiya - HCP QV Rate']:'45.81%',['Brekiya - DTC QV Rate']:'4.47%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'40',['Brekiya - HCP QV - 2P + Action']:'82',['Brekiya - HCP - Request A Rep Click']:'1'},
+    {['Account name']:'Brekiya - HCP',Campaign:'Branded',['Ad group']:'Prescribing',Month:'2026 M04',['Impr.']:'93',Clicks:'8',Cost:'38.16',['Avg. CPC']:'4.77',CTR:'9.09%',['Brekiya - HCP QV Rate']:'250%',['Brekiya - DTC QV Rate']:'200%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'210',['Brekiya - HCP QV - 2P + Action']:'20',['Brekiya - HCP - Request A Rep Click']:'4'},
+    {['Account name']:'Amneal - BREKIYA HCP',Campaign:'Competitor - BC',['Ad group']:'Imitrex',Month:'2026 M04',['Impr.']:'6236',Clicks:'572',Cost:'2926',['Avg. CPC']:'5.12',CTR:'9.17%',['Brekiya - HCP QV Rate']:'79.9%',['Brekiya - DTC QV Rate']:'33.39%',['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)']:'975',['Brekiya - HCP QV - 2P + Action']:'457',['Brekiya - HCP - Request A Rep Click']:'1'},
+  ];
+  document.getElementById('sDot').classList.add('live');
+  document.getElementById('sTxt').textContent='Demo · '+rows.length+' rows';
+  document.getElementById('lastUp').textContent='Demo data';
+  document.getElementById('btnRefresh').style.display='inline-block';
+  document.getElementById('btnSettings').style.display='inline-block';
+  document.getElementById('connectWrap').style.display='none';
+  document.getElementById('dash').style.display='block';
+  buildAll();
+}
+</script>
+</body>
+</html>
