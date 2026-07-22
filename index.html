@@ -394,7 +394,7 @@ canvas{max-height:210px;}
       </div>
       <div class="ins-section">
         <div class="ins-section-title">📈 Significant Movers — Campaign & Ad Group Level</div>
-        <div class="ins-section-sub">Ad groups with 20%+ change in CTR, clicks, or spend vs. prior month</div>
+        <div class="ins-section-sub">Ad groups with 5%+ change (Notable) or 10%+ change (Significant) in CTR, clicks, or spend vs. prior month</div>
         <div class="movers-grid" id="moversGrid"></div>
       </div>
       <div class="ins-section">
@@ -976,9 +976,9 @@ function buildIns(){
       const ctrChg=pctChg(gtr(r),gtr(p));
       const clkChg=pctChg(gc(r),gc(p));
       const spdChg=pctChg(gs(r),gs(p));
-      if(ctrChg!==null&&Math.abs(ctrChg)>=20) movers.push({row:r,prev:p,metric:'CTR',cur:gtr(r),prv:gtr(p),chg:ctrChg,fmt:fp,plat:getPlatform(r),aud:getAudience(r)});
-      if(clkChg!==null&&Math.abs(clkChg)>=20) movers.push({row:r,prev:p,metric:'Clicks',cur:gc(r),prv:gc(p),chg:clkChg,fmt:fk,plat:getPlatform(r),aud:getAudience(r)});
-      if(spdChg!==null&&Math.abs(spdChg)>=20&&gs(r)>50) movers.push({row:r,prev:p,metric:'Spend',cur:gs(r),prv:gs(p),chg:spdChg,fmt:fm,plat:getPlatform(r),aud:getAudience(r)});
+      if(ctrChg!==null&&Math.abs(ctrChg)>=5) movers.push({row:r,prev:p,metric:'CTR',cur:gtr(r),prv:gtr(p),chg:ctrChg,fmt:fp,plat:getPlatform(r),aud:getAudience(r),tier:Math.abs(ctrChg)>=10?'significant':'notable'});
+      if(clkChg!==null&&Math.abs(clkChg)>=5) movers.push({row:r,prev:p,metric:'Clicks',cur:gc(r),prv:gc(p),chg:clkChg,fmt:fk,plat:getPlatform(r),aud:getAudience(r),tier:Math.abs(clkChg)>=10?'significant':'notable'});
+      if(spdChg!==null&&Math.abs(spdChg)>=5&&gs(r)>50) movers.push({row:r,prev:p,metric:'Spend',cur:gs(r),prv:gs(p),chg:spdChg,fmt:fm,plat:getPlatform(r),aud:getAudience(r),tier:Math.abs(spdChg)>=10?'significant':'notable'});
     });
 
     const risers=movers.filter(m=>m.chg>0).sort((a,b)=>b.chg-a.chg).slice(0,6);
@@ -1023,8 +1023,12 @@ function buildIns(){
 
     function moverRow(m){
       const cause=diagnoseCause(m);
+      const tierBadge=m.tier==='significant'
+        ?`<span style="padding:1px 7px;border-radius:10px;font-size:9px;font-weight:600;background:#FEF2F2;color:#B91C1C;border:1px solid #FCA5A5;letter-spacing:0.04em;flex-shrink:0">SIGNIFICANT</span>`
+        :`<span style="padding:1px 7px;border-radius:10px;font-size:9px;font-weight:600;background:#FEF9EC;color:#92400E;border:1px solid #FCD34D;letter-spacing:0.04em;flex-shrink:0">NOTABLE</span>`;
       return`<div class="mover-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:10px 0">
         <div style="display:flex;align-items:center;gap:8px;width:100%">
+          ${tierBadge}
           <div class="mover-name" style="flex:1">${m.row['Ad group']||''}<small>${m.plat} · ${m.aud} · ${m.metric} · ${m.row['Campaign']||''}</small></div>
           <div class="mover-vals">
             <div class="mover-delta ${m.chg>0?'up':'dn'}">${m.chg>0?'+':''}${m.chg.toFixed(1)}%</div>
@@ -1038,11 +1042,11 @@ function buildIns(){
     document.getElementById('moversGrid').innerHTML=`
       <div class="mover-card">
         <div class="mover-header"><span style="font-size:16px">📈</span><div class="mover-title">Significant Increases</div><div class="mover-sub">${lbl} vs ${prevLbl}</div></div>
-        ${risers.length?risers.map(moverRow).join(''):`<div style="font-size:12px;color:var(--t3);padding:8px 0">No ${segLabel} groups with 20%+ increase this period</div>`}
+        ${risers.length?risers.map(moverRow).join(''):`<div style="font-size:12px;color:var(--t3);padding:8px 0">No ${segLabel} groups with 5%+ increase this period</div>`}
       </div>
       <div class="mover-card">
-        <div class="mover-header"><span style="font-size:16px">📉</span><div class="mover-title">Significant Decreases</div><div class="mover-sub">${lbl} vs ${prevLbl}</div></div>
-        ${fallers.length?fallers.map(moverRow).join(''):`<div style="font-size:12px;color:var(--t3);padding:8px 0">No ${segLabel} groups with 20%+ decrease this period</div>`}
+        <div class="mover-header"><span style="font-size:16px">📉</span><div class="mover-title">Decreases</div><div class="mover-sub">${lbl} vs ${prevLbl}</div></div>
+        ${fallers.length?fallers.map(moverRow).join(''):`<div style="font-size:12px;color:var(--t3);padding:8px 0">No ${segLabel} groups with 5%+ decrease this period</div>`}
       </div>`;
   } else {
     document.getElementById('moversGrid').innerHTML='<div class="mover-card" style="grid-column:1/-1"><div style="font-size:12px;color:var(--t3);padding:8px">Need at least 2 months of data to calculate movers.</div></div>';
