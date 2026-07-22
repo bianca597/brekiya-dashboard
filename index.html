@@ -924,36 +924,41 @@ function buildIns(){
   const prevMo=mos[mos.indexOf(lat)-1]||null;
   const prevLbl=prevMo?(ML[prevMo]||prevMo):'prior month';
 
+  // Strictly filtered rows — audience filter is HARD (no cross-contamination)
   const filtCur=filterRows(rows.filter(r=>r['Month']===lat));
   const filtPrv=prevMo?filterRows(rows.filter(r=>r['Month']===prevMo)):[];
   const cur=agg(filtCur),prv=filtPrv.length?agg(filtPrv):null;
 
-  // Platform breakdown
-  const gCur=agg(filtCur.filter(r=>getPlatform(r)==='Google'));
-  const mCur=agg(filtCur.filter(r=>getPlatform(r)==='Microsoft'));
-  const gPrv=filtPrv.length?agg(filtPrv.filter(r=>getPlatform(r)==='Google')):null;
-  const mPrv=filtPrv.length?agg(filtPrv.filter(r=>getPlatform(r)==='Microsoft')):null;
+  // Active audience label for display
+  const audLabel=fAudience||'All';
+  const platLabel=fPlatform||'All Platforms';
+  const segLabel=[fPlatform,fAudience].filter(Boolean).join(' · ')||'All Segments';
 
-  // Audience breakdown
-  const dtcCur=agg(filtCur.filter(r=>getAudience(r)==='DTC'));
-  const hcpCur=agg(filtCur.filter(r=>getAudience(r)==='HCP'));
-  const dtcPrv=filtPrv.length?agg(filtPrv.filter(r=>getAudience(r)==='DTC')):null;
-  const hcpPrv=filtPrv.length?agg(filtPrv.filter(r=>getAudience(r)==='HCP')):null;
+  // ── OVERVIEW ──────────────────────────────────
+  const overviewItems=[];
 
-  // Overview
-  const overviewItems=[
-    {t:'green',i:'📊',tag:`MoM Overview · ${lbl}${prv?' vs '+prevLbl:''}`,body:`Total program: spend <strong>${fm(cur.s)}</strong> ${prv?`(${dlta(cur.s,prv.s)} vs ${prevLbl})`:''}; clicks <strong>${fk(cur.cl)}</strong> ${prv?`(${dlta(cur.cl,prv.cl)})`:''}; CTR <strong>${fp(cur.ctr)}</strong> ${prv?`(${dlta(cur.ctr,prv.ctr)})`:''}; avg CPC <strong>${fd(cur.cpc)}</strong> ${prv?`(${dlta(cur.cpc,prv.cpc)})`:'.'}`},
-  ];
+  // Program-level MoM summary — only for the filtered segment
+  overviewItems.push({t:'green',i:'📊',
+    tag:`MoM Overview · ${segLabel} · ${lbl}${prv?' vs '+prevLbl:''}`,
+    body:`<strong>${segLabel}</strong> spend: <strong>${fm(cur.s)}</strong>${prv?` (${dlta(cur.s,prv.s)} vs ${prevLbl})`:''}. Clicks: <strong>${fk(cur.cl)}</strong>${prv?` (${dlta(cur.cl,prv.cl)})`:''}. CTR: <strong>${fp(cur.ctr)}</strong>${prv?` (${dlta(cur.ctr,prv.ctr)})`:''}. Avg CPC: <strong>${fd(cur.cpc)}</strong>${prv?` (${dlta(cur.cpc,prv.cpc)})`:''}.`
+  });
 
-  if(gCur.s>0||mCur.s>0){
-    overviewItems.push({t:'blue',i:'🖥️',tag:'Google vs Microsoft · '+lbl,body:`<strong>Google:</strong> ${fm(gCur.s)} spend, ${fk(gCur.cl)} clicks, ${fp(gCur.ctr)} CTR, ${fd(gCur.cpc)} CPC${gPrv?` (spend ${dlta(gCur.s,gPrv.s)}, clicks ${dlta(gCur.cl,gPrv.cl)} vs ${prevLbl})`:''}.${mCur.s>0?` <strong>Microsoft:</strong> ${fm(mCur.s)} spend, ${fk(mCur.cl)} clicks, ${fp(mCur.ctr)} CTR, ${fd(mCur.cpc)} CPC${mPrv?` (spend ${dlta(mCur.s,mPrv.s)}, clicks ${dlta(mCur.cl,mPrv.cl)} vs ${prevLbl})`:''}.`:''}`});
+  // Platform breakdown — only if no platform filter active (i.e. showing both)
+  if(!fPlatform){
+    const gCur=agg(filtCur.filter(r=>getPlatform(r)==='Google'));
+    const mCur=agg(filtCur.filter(r=>getPlatform(r)==='Microsoft'));
+    const gPrv=filtPrv.length?agg(filtPrv.filter(r=>getPlatform(r)==='Google')):null;
+    const mPrv=filtPrv.length?agg(filtPrv.filter(r=>getPlatform(r)==='Microsoft')):null;
+    if(gCur.s>0||mCur.s>0){
+      overviewItems.push({t:'blue',i:'🖥️',
+        tag:`Google vs Microsoft · ${audLabel} · ${lbl}`,
+        body:`<strong>Google ${audLabel}:</strong> ${fm(gCur.s)} spend, ${fk(gCur.cl)} clicks, ${fp(gCur.ctr)} CTR${gPrv?` — spend ${dlta(gCur.s,gPrv.s)}, clicks ${dlta(gCur.cl,gPrv.cl)} vs ${prevLbl}`:''}.`+
+             (mCur.s>0?` <strong>Microsoft ${audLabel}:</strong> ${fm(mCur.s)} spend, ${fk(mCur.cl)} clicks, ${fp(mCur.ctr)} CTR${mPrv?` — spend ${dlta(mCur.s,mPrv.s)}, clicks ${dlta(mCur.cl,mPrv.cl)} vs ${prevLbl}`:''}.`:'')
+      });
+    }
   }
 
-  if(dtcCur.s>0||hcpCur.s>0){
-    overviewItems.push({t:'gold',i:'👥',tag:'DTC vs HCP · '+lbl,body:`<strong>DTC:</strong> ${fm(dtcCur.s)} spend, ${fk(dtcCur.cl)} clicks, ${fp(dtcCur.ctr)} CTR${dtcPrv?` (clicks ${dlta(dtcCur.cl,dtcPrv.cl)} vs ${prevLbl})`:''}. <strong>HCP:</strong> ${fm(hcpCur.s)} spend, ${fk(hcpCur.cl)} clicks, ${fp(hcpCur.ctr)} CTR${hcpPrv?` (clicks ${dlta(hcpCur.cl,hcpPrv.cl)} vs ${prevLbl})`:''}.`});
-  }
-
-  document.getElementById('insOverviewSub').textContent=`${lbl}${prv?' vs '+prevLbl:''} · segmented by platform and audience`;
+  document.getElementById('insOverviewSub').textContent=`${lbl}${prv?' vs '+prevLbl:''} · ${segLabel}`;
   document.getElementById('insOverview').innerHTML=overviewItems.map(x=>`<div class="ins ${x.t}"><div class="ins-icon">${x.i}</div><div><div class="ins-tag">${x.tag}</div><div class="ins-body">${x.body}</div></div></div>`).join('');
 
   // ── MOVERS ─────────────────────────────────────
@@ -979,38 +984,182 @@ function buildIns(){
     const risers=movers.filter(m=>m.chg>0).sort((a,b)=>b.chg-a.chg).slice(0,6);
     const fallers=movers.filter(m=>m.chg<0).sort((a,b)=>a.chg-b.chg).slice(0,6);
 
+    // ── CAUSE DIAGNOSIS ──────────────────────────
+    // For each significant mover, generate a likely cause based on what changed
+    function diagnoseCause(m){
+      const aud=m.aud, plat=m.plat, metric=m.metric, chg=m.chg, adGroup=m.row['Ad group']||'', campaign=m.row['Campaign']||'';
+      const spdChg=pctChg(gs(m.row),gs(m.prev));
+      const ctrChg=pctChg(gtr(m.row),gtr(m.prev));
+      const imprChg=pctChg(gi(m.row),gi(m.prev));
+      const cpcChg=pctChg(gpc(m.row),gpc(m.prev));
+
+      if(metric==='CTR'){
+        if(chg>0){
+          if(imprChg!==null&&imprChg<-10) return `Impressions dropped (${dlta(gi(m.row),gi(m.prev))}) while clicks held — likely more targeted matching or negative keyword pruning improved relevance.`;
+          if(cpcChg!==null&&cpcChg>15) return `Higher CPC (${dlta(gpc(m.row),gpc(m.prev))}) suggests stronger bidding captured premium placements with higher click intent.`;
+          return `Likely caused by improved ad copy relevance, better keyword-query alignment, or a shift toward higher-intent search terms in the auction.`;
+        } else {
+          if(imprChg!==null&&imprChg>20) return `Impressions surged (${dlta(gi(m.row),gi(m.prev))}) without proportional click growth — broader match types or expanded reach may have diluted audience relevance.`;
+          return `CTR decline may indicate ad fatigue, increased competition in the auction, or a shift in query mix toward informational rather than action-oriented searches.`;
+        }
+      }
+      if(metric==='Clicks'){
+        if(chg>0){
+          if(spdChg!==null&&spdChg>15) return `Spend increased (${dlta(gs(m.row),gs(m.prev))}) driving more auction entries — budget expansion or bid increase is the likely primary driver.`;
+          if(imprChg!==null&&imprChg>15) return `Impressions grew (${dlta(gi(m.row),gi(m.prev))}) and CTR held, suggesting expanded reach — possible query volume increase or broader keyword activation.`;
+          return `Click growth without proportional spend increase suggests improved Quality Score or bid efficiency gains in the ${plat} auction.`;
+        } else {
+          if(spdChg!==null&&spdChg<-15) return `Spend decreased (${dlta(gs(m.row),gs(m.prev))}) reducing auction participation — budget constraint or bid reduction is the most likely cause.`;
+          if(imprChg!==null&&imprChg<-15) return `Impression volume declined (${dlta(gi(m.row),gi(m.prev))}) suggesting reduced budget, lower bids, or increased competition pushing the ad down the page.`;
+          return `Click decline may reflect increased competition, seasonality, or a change in bid strategy reducing auction win rate.`;
+        }
+      }
+      if(metric==='Spend'){
+        if(chg>0) return `Spend increase of ${dlta(gs(m.row),gs(m.prev))} — check whether this was intentional (budget increase) and whether it corresponded with proportional click and conversion growth.`;
+        return `Spend decrease of ${dlta(gs(m.row),gs(m.prev))} — may reflect budget cap being hit earlier, reduced bids, or lower auction activity for this campaign type.`;
+      }
+      return '';
+    }
+
     function moverRow(m){
-      return`<div class="mover-row">
-        <div class="mover-name">${m.row['Ad group']||''}<small>${m.plat} · ${m.aud} · ${m.metric} · ${m.row['Campaign']||''}</small></div>
-        <div class="mover-vals">
-          <div class="mover-delta ${m.chg>0?'up':'dn'}">${m.chg>0?'+':''}${m.chg.toFixed(1)}%</div>
-          <div class="mover-prev">${m.fmt(m.prv)} → ${m.fmt(m.cur)}</div>
+      const cause=diagnoseCause(m);
+      return`<div class="mover-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:10px 0">
+        <div style="display:flex;align-items:center;gap:8px;width:100%">
+          <div class="mover-name" style="flex:1">${m.row['Ad group']||''}<small>${m.plat} · ${m.aud} · ${m.metric} · ${m.row['Campaign']||''}</small></div>
+          <div class="mover-vals">
+            <div class="mover-delta ${m.chg>0?'up':'dn'}">${m.chg>0?'+':''}${m.chg.toFixed(1)}%</div>
+            <div class="mover-prev">${m.fmt(m.prv)} → ${m.fmt(m.cur)}</div>
+          </div>
         </div>
+        ${cause?`<div style="font-size:11px;color:var(--t2);line-height:1.55;padding:6px 10px;background:var(--mist);border-radius:6px;width:100%">💡 ${cause}</div>`:''}
       </div>`;
     }
 
     document.getElementById('moversGrid').innerHTML=`
       <div class="mover-card">
         <div class="mover-header"><span style="font-size:16px">📈</span><div class="mover-title">Significant Increases</div><div class="mover-sub">${lbl} vs ${prevLbl}</div></div>
-        ${risers.length?risers.map(moverRow).join(''):'<div style="font-size:12px;color:var(--t3);padding:8px 0">No groups with 20%+ increase this period</div>'}
+        ${risers.length?risers.map(moverRow).join(''):`<div style="font-size:12px;color:var(--t3);padding:8px 0">No ${segLabel} groups with 20%+ increase this period</div>`}
       </div>
       <div class="mover-card">
         <div class="mover-header"><span style="font-size:16px">📉</span><div class="mover-title">Significant Decreases</div><div class="mover-sub">${lbl} vs ${prevLbl}</div></div>
-        ${fallers.length?fallers.map(moverRow).join(''):'<div style="font-size:12px;color:var(--t3);padding:8px 0">No groups with 20%+ decrease this period</div>'}
+        ${fallers.length?fallers.map(moverRow).join(''):`<div style="font-size:12px;color:var(--t3);padding:8px 0">No ${segLabel} groups with 20%+ decrease this period</div>`}
       </div>`;
   } else {
     document.getElementById('moversGrid').innerHTML='<div class="mover-card" style="grid-column:1/-1"><div style="font-size:12px;color:var(--t3);padding:8px">Need at least 2 months of data to calculate movers.</div></div>';
   }
 
-  // Conversion insights
-  const topHCP=filtCur.filter(r=>getAudience(r)==='HCP'&&ghq(r)>0).sort((a,b)=>ghq(b)-ghq(a))[0];
-  const zeroComp=rows.filter(r=>r['Campaign']==='Competitor - BC'&&gs(r)===0&&getAudience(r)==='HCP').length;
+  // ── CONVERSION & QV SIGNALS ────────────────────
+  // Strictly audience-filtered — no cross-audience data shown
+  const convItems=[];
 
-  document.getElementById('insConv').innerHTML=[
-    topHCP?{t:'green',i:'🎯',tag:`Top HCP QV · ${lbl}`,body:`<strong>${topHCP['Ad group']}</strong> (${getPlatform(topHCP)} HCP) achieved the highest HCP qualified visit rate at <strong>${ghq(topHCP).toFixed(1)}%</strong>. This group represents the most efficient HCP conversion path in the program this month.`}:null,
-    {t:'blue',i:'🔄',tag:'DTC vs HCP QV Efficiency',body:`HCP QV rates consistently exceed DTC QV rates across both Google and Microsoft. The highest-efficiency conversion path remains HCP Generic campaigns on Google — prioritize these when optimizing for CPQV. For DTC, Symptoms and Condition campaigns drive the most volume at the lowest CPC.`},
-    zeroComp>0?{t:'red',i:'⚠️',tag:'HCP Competitor Campaigns — Zero Spend',body:`<strong>${zeroComp} HCP competitor ad groups</strong> show zero spend while Amneal accounts are actively capturing this traffic. These searchers are in active comparison mode. Launching dedicated Brekiya HCP competitor campaigns on Google with a clinical differentiation landing page would significantly increase qualified HCP reach.`}:null,
-  ].filter(Boolean).map(x=>`<div class="ins ${x.t}"><div class="ins-icon">${x.i}</div><div><div class="ins-tag">${x.tag}</div><div class="ins-body">${x.body}</div></div></div>`).join('');
+  if(!fAudience||fAudience==='HCP'){
+    // HCP-specific insights (only shown when HCP or All selected)
+    const topHCP=filtCur.filter(r=>getAudience(r)==='HCP'&&ghq(r)>0).sort((a,b)=>ghq(b)-ghq(a))[0];
+    if(topHCP){
+      const topHCPPrev=filtPrv.find(r=>getAudience(r)==='HCP'&&(r['Ad group']||'')===(topHCP['Ad group']||'')&&getPlatform(r)===getPlatform(topHCP));
+      const qvChg=topHCPPrev?pctChg(ghq(topHCP),ghq(topHCPPrev)):null;
+      convItems.push({t:'green',i:'🎯',
+        tag:`Top HCP QV Rate · ${getPlatform(topHCP)} · ${lbl}`,
+        body:`<strong>${topHCP['Ad group']}</strong> (${topHCP['Campaign']||''}) achieved the highest HCP qualified visit rate at <strong>${ghq(topHCP).toFixed(1)}%</strong>${qvChg!==null?` — ${qvChg>=0?'up':'down'} <strong>${Math.abs(qvChg).toFixed(1)}%</strong> vs ${prevLbl}`:''}. This is the most efficient HCP conversion path in the program this month.`
+      });
+    }
+
+    // Spend up + conversions up for HCP
+    if(prevMo){
+      const hcpConvWins=filtCur.filter(r=>getAudience(r)==='HCP'&&gs(r)>50&&ghqa(r)>0).filter(r=>{
+        const prev=filtPrv.find(p=>getAudience(p)==='HCP'&&(p['Ad group']||'')===(r['Ad group']||'')&&getPlatform(p)===getPlatform(r));
+        if(!prev) return false;
+        return gs(r)>gs(prev)&&ghqa(r)>ghqa(prev);
+      });
+      if(hcpConvWins.length){
+        const top=hcpConvWins.sort((a,b)=>ghqa(b)-ghqa(a))[0];
+        const prev=filtPrv.find(p=>getAudience(p)==='HCP'&&(p['Ad group']||'')===(top['Ad group']||'')&&getPlatform(p)===getPlatform(top));
+        convItems.push({t:'green',i:'💰',
+          tag:`Spend Up + HCP QV Actions Up · ${getPlatform(top)} · ${lbl}`,
+          body:`<strong>${top['Ad group']}</strong> (${top['Campaign']||''}) spent more this month (<strong>${fm(gs(top))}</strong> vs ${fm(gs(prev))} in ${prevLbl}) and drove more HCP QV actions (<strong>${Math.round(ghqa(top))}</strong> vs ${Math.round(ghqa(prev))}). This is an efficient spend increase — additional budget here is generating proportional conversion lift.`
+        });
+      }
+
+      // Spend up + conversions flat/down for HCP (inefficiency flag)
+      const hcpIneff=filtCur.filter(r=>getAudience(r)==='HCP'&&gs(r)>100).filter(r=>{
+        const prev=filtPrv.find(p=>getAudience(p)==='HCP'&&(p['Ad group']||'')===(r['Ad group']||'')&&getPlatform(p)===getPlatform(r));
+        if(!prev||gs(prev)<50) return false;
+        const spdChg=pctChg(gs(r),gs(prev));
+        const convChg=pctChg(ghqa(r)||0,ghqa(prev)||0);
+        return spdChg>20&&(convChg===null||convChg<5);
+      });
+      if(hcpIneff.length){
+        const top=hcpIneff.sort((a,b)=>gs(b)-gs(a))[0];
+        const prev=filtPrv.find(p=>getAudience(p)==='HCP'&&(p['Ad group']||'')===(top['Ad group']||'')&&getPlatform(p)===getPlatform(top));
+        convItems.push({t:'red',i:'⚠️',
+          tag:`Spend Up, HCP Conversions Flat · ${getPlatform(top)} · ${lbl}`,
+          body:`<strong>${top['Ad group']}</strong> (${top['Campaign']||''}) spend increased to <strong>${fm(gs(top))}</strong> (from ${fm(gs(prev))} in ${prevLbl}) but HCP QV actions did not increase proportionally. Review whether bid increases are winning lower-quality placements or whether landing page performance has changed.`
+        });
+      }
+
+      const zeroComp=filtCur.filter(r=>getAudience(r)==='HCP'&&r['Campaign']==='Competitor - BC'&&gs(r)===0).length;
+      if(zeroComp>0){
+        convItems.push({t:'gold',i:'⚠️',
+          tag:`HCP Competitor Campaigns — Zero Spend · ${lbl}`,
+          body:`<strong>${zeroComp} HCP competitor ad group${zeroComp>1?'s':''}</strong> recorded zero spend this month. Competitor search queries represent the highest-intent HCP audience. Activating these with dedicated clinical differentiation landing pages would capture searchers currently seeing only competitor ads.`
+        });
+      }
+    }
+  }
+
+  if(!fAudience||fAudience==='DTC'){
+    // DTC-specific insights (only shown when DTC or All selected)
+    if(prevMo){
+      // DTC: spend up + KSA value up
+      const dtcConvWins=filtCur.filter(r=>getAudience(r)==='DTC'&&gs(r)>50&&gksa(r)>0).filter(r=>{
+        const prev=filtPrv.find(p=>getAudience(p)==='DTC'&&(p['Ad group']||'')===(r['Ad group']||'')&&getPlatform(p)===getPlatform(r));
+        if(!prev) return false;
+        return gs(r)>gs(prev)&&gksa(r)>gksa(prev);
+      });
+      if(dtcConvWins.length){
+        const top=dtcConvWins.sort((a,b)=>gksa(b)-gksa(a))[0];
+        const prev=filtPrv.find(p=>getAudience(p)==='DTC'&&(p['Ad group']||'')===(top['Ad group']||'')&&getPlatform(p)===getPlatform(top));
+        convItems.push({t:'green',i:'💰',
+          tag:`Spend Up + DTC KSA Value Up · ${getPlatform(top)} · ${lbl}`,
+          body:`<strong>${top['Ad group']}</strong> (${top['Campaign']||''}) spent more (<strong>${fm(gs(top))}</strong> vs ${fm(gs(prev))} in ${prevLbl}) and generated higher DTC KSA value (<strong>${fm(gksa(top))}</strong> vs ${fm(gksa(prev))}). This is an efficient DTC investment — budget here is driving measurable conversion value.`
+        });
+      }
+
+      // DTC: spend up + KSA flat (flag)
+      const dtcIneff=filtCur.filter(r=>getAudience(r)==='DTC'&&gs(r)>100).filter(r=>{
+        const prev=filtPrv.find(p=>getAudience(p)==='DTC'&&(p['Ad group']||'')===(r['Ad group']||'')&&getPlatform(p)===getPlatform(r));
+        if(!prev||gs(prev)<50) return false;
+        const spdChg=pctChg(gs(r),gs(prev));
+        const ksaChg=pctChg(gksa(r)||0,gksa(prev)||0);
+        return spdChg>20&&(ksaChg===null||ksaChg<5);
+      });
+      if(dtcIneff.length){
+        const top=dtcIneff.sort((a,b)=>gs(b)-gs(a))[0];
+        const prev=filtPrv.find(p=>getAudience(p)==='DTC'&&(p['Ad group']||'')===(top['Ad group']||'')&&getPlatform(p)===getPlatform(top));
+        convItems.push({t:'red',i:'⚠️',
+          tag:`DTC Spend Up, KSA Value Flat · ${getPlatform(top)} · ${lbl}`,
+          body:`<strong>${top['Ad group']}</strong> (${top['Campaign']||''}) spend rose to <strong>${fm(gs(top))}</strong> (from ${fm(gs(prev))} in ${prevLbl}) but DTC KSA value did not grow proportionally. Check whether broader match types are capturing lower-intent traffic, or whether the landing page experience has changed.`
+        });
+      }
+
+      // Top DTC QV rate
+      const topDTC=filtCur.filter(r=>getAudience(r)==='DTC'&&gdq(r)>0).sort((a,b)=>gdq(b)-gdq(a))[0];
+      if(topDTC){
+        const topDTCPrev=filtPrv.find(r=>getAudience(r)==='DTC'&&(r['Ad group']||'')===(topDTC['Ad group']||'')&&getPlatform(r)===getPlatform(topDTC));
+        const qvChg=topDTCPrev?pctChg(gdq(topDTC),gdq(topDTCPrev)):null;
+        convItems.push({t:'green',i:'🎯',
+          tag:`Top DTC QV Rate · ${getPlatform(topDTC)} · ${lbl}`,
+          body:`<strong>${topDTC['Ad group']}</strong> (${topDTC['Campaign']||''}) led DTC qualified visit rate at <strong>${gdq(topDTC).toFixed(1)}%</strong>${qvChg!==null?` — ${qvChg>=0?'up':'down'} <strong>${Math.abs(qvChg).toFixed(1)}%</strong> vs ${prevLbl}`:''}. This is the highest-converting DTC audience group this month.`
+        });
+      }
+    }
+  }
+
+  if(!convItems.length){
+    convItems.push({t:'blue',i:'ℹ️',tag:'No Conversion Data',body:`No conversion signals found for the selected filters (${segLabel} · ${lbl}). Try selecting a different month or removing audience filters to see broader conversion trends.`});
+  }
+
+  document.getElementById('insConv').innerHTML=convItems.map(x=>`<div class="ins ${x.t}"><div class="ins-icon">${x.i}</div><div><div class="ins-tag">${x.tag}</div><div class="ins-body">${x.body}</div></div></div>`).join('');
 }
 
 // ── RECOMMENDATIONS ────────────────────────────────
