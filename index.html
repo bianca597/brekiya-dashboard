@@ -8,19 +8,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:       #f5f0e8;
-  --bg2:      #faf7f2;
-  --bg3:      #f0ebe0;
-  --border:   #ddd8cc;
-  --border2:  #ccc7bb;
+  --bg:       #0f1a0c;
+  --bg2:      #162010;
+  --bg3:      #1c2914;
+  --border:   #2a3d20;
+  --border2:  #344d26;
   --green:    #2e5523;
   --leaf:     #95af4b;
   --olive:    #7d9442;
   --dew:      #8dcfc4;
-  --text:     #1a1a1a;
-  --text2:    #4a4a4a;
-  --text3:    #888880;
-  --white:    #1a1a1a;
+  --text:     #e8ead4;
+  --text2:    #a8b090;
+  --text3:    #607050;
+  --white:    #ffffff;
   --red:      #e05252;
   --r:        6px;
   --r2:       10px;
@@ -54,7 +54,7 @@ body {
 .tb-logo {
   font-weight: 500;
   font-size: 14px;
-  color: var(--green);
+  color: var(--leaf);
   letter-spacing: -0.02em;
 }
 .tb-logo span { color: var(--text3); font-weight: 200; }
@@ -112,7 +112,7 @@ body {
   margin-bottom: 8px;
   letter-spacing: -0.02em;
 }
-.cc-hl .g { color: var(--green); }
+.cc-hl .g { color: var(--leaf); }
 .cc-hl .l { color: var(--leaf); }
 .cc-sub { font-size: 12px; color: var(--text3); font-weight: 200; margin-bottom: 28px; line-height: 1.6; }
 .cc-field { margin-bottom: 14px; }
@@ -120,8 +120,8 @@ body {
 input[type=text], input[type=password] {
   width: 100%;
   padding: 9px 14px;
-  background: rgba(46,85,35,.06);
-  border: 1px solid rgba(46,85,35,.2);
+  background: rgba(46,85,35,.2);
+  border: 1px solid rgba(46,85,35,.35);
   border-radius: var(--r);
   font-family: 'Outfit', sans-serif;
   font-size: 12px;
@@ -183,7 +183,7 @@ input::placeholder { color: var(--text3); }
   background: radial-gradient(ellipse at 100% 0%, rgba(46,85,35,.08) 0%, transparent 60%);
   pointer-events: none;
 }
-.hero-date { font-size: 10px; color: rgba(255,255,255,.6); font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+.hero-date { font-size: 10px; color: rgba(232,234,212,.6); font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
 .hero-hl {
   font-size: 48px;
   font-weight: 300;
@@ -312,17 +312,17 @@ canvas { max-height: 200px; }
   padding: 20px;
 }
 .sc-section { font-size: 9px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 400; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-.sc-row { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; border-bottom: 1px solid rgba(42,42,42,.5); }
+.sc-row { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; border-bottom: 1px solid rgba(42,61,32,.6); }
 .sc-row:last-child { border-bottom: none; }
 .sc-k { font-size: 10px; color: var(--text3); font-weight: 200; }
-.sc-v { font-size: 13px; font-weight: 300; color: var(--white); }
+.sc-v { font-size: 13px; font-weight: 300; color: var(--text); }
 .sc-v2 { font-size: 10px; font-weight: 300; color: var(--text2); }
 
 /* ── BADGE ── */
 .bdg { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 400; letter-spacing: 0.04em; }
-.bdg-g { background: rgba(149,175,75,.15); color: #4a6b1e; border: 1px solid rgba(149,175,75,.35); }
-.bdg-m { background: rgba(141,207,196,.15); color: #2a7a72; border: 1px solid rgba(141,207,196,.35); }
-.bdg-h { background: rgba(125,148,66,.15); color: #4a6010; border: 1px solid rgba(125,148,66,.35); }
+.bdg-g { background: rgba(149,175,75,.12); color: var(--leaf); border: 1px solid rgba(149,175,75,.25); }
+.bdg-m { background: rgba(141,207,196,.1); color: var(--dew); border: 1px solid rgba(141,207,196,.2); }
+.bdg-h { background: rgba(125,148,66,.1); color: var(--olive); border: 1px solid rgba(125,148,66,.2); }
 .bdg-d { background: rgba(46,85,35,.1); color: var(--leaf); border: 1px solid rgba(46,85,35,.2); }
 
 /* ── TABLE ── */
@@ -340,7 +340,7 @@ canvas { max-height: 200px; }
 }
 .tbl td {
   padding: 9px 12px;
-  border-bottom: 1px solid rgba(42,42,42,.5);
+  border-bottom: 1px solid rgba(42,61,32,.8);
   color: var(--text2);
   font-weight: 200;
   vertical-align: middle;
@@ -360,8 +360,8 @@ canvas { max-height: 200px; }
   letter-spacing: -0.02em;
   margin-bottom: 4px;
 }
-.sec-hl .g { color: var(--green); }
-.sec-hl .l { color: var(--leaf); }
+.sec-hl .g { color: var(--leaf); }
+.sec-hl .l { color: #c8e08a; }
 .sec-sub { font-size: 11px; color: var(--text3); font-weight: 200; }
 
 /* ── INSIGHT CARDS ── */
@@ -372,6 +372,8 @@ canvas { max-height: 200px; }
   border-radius: 0 var(--r2) var(--r2) 0;
   padding: 20px 22px;
   margin-bottom: 10px;
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--green);
 }
 .ins-card.leaf { border-left-color: var(--leaf); }
 .ins-card.dew { border-left-color: var(--dew); }
@@ -470,7 +472,7 @@ canvas { max-height: 200px; }
   cursor: pointer;
   transition: background .15s;
 }
-.rec-hdr:hover { background: rgba(46,85,35,.04); }
+.rec-hdr:hover { background: rgba(149,175,75,.04); }
 .rec-pri {
   padding: 2px 9px;
   border-radius: 20px;
@@ -480,9 +482,9 @@ canvas { max-height: 200px; }
   text-transform: uppercase;
   flex-shrink: 0;
 }
-.rec-pri.high { background: rgba(224,82,82,.08); color: #c0392b; border: 1px solid rgba(224,82,82,.25); }
-.rec-pri.med  { background: rgba(141,207,196,.12); color: #2a7a72; border: 1px solid rgba(141,207,196,.3); }
-.rec-pri.low  { background: rgba(149,175,75,.12); color: #4a6b1e; border: 1px solid rgba(149,175,75,.3); }
+.rec-pri.high { background: rgba(224,82,82,.1); color: var(--red); border: 1px solid rgba(224,82,82,.2); }
+.rec-pri.med  { background: rgba(141,207,196,.08); color: var(--dew); border: 1px solid rgba(141,207,196,.2); }
+.rec-pri.low  { background: rgba(149,175,75,.08); color: var(--leaf); border: 1px solid rgba(149,175,75,.2); }
 .rec-tags { display: flex; gap: 4px; flex-shrink: 0; }
 .rec-title { font-size: 12px; font-weight: 300; color: var(--text); flex: 1; }
 .rec-chev { font-size: 10px; color: var(--text3); transition: transform .2s; flex-shrink: 0; }
@@ -493,8 +495,8 @@ canvas { max-height: 200px; }
 .rec-ns {
   margin-top: 10px;
   padding: 12px 14px;
-  background: rgba(46,85,35,.06);
-  border: 1px solid rgba(46,85,35,.15);
+  background: rgba(46,85,35,.2);
+  border: 1px solid rgba(46,85,35,.35);
   border-radius: var(--r);
 }
 .rec-ns-lbl {
@@ -513,9 +515,9 @@ canvas { max-height: 200px; }
   border-radius: 20px;
   font-size: 9px;
   font-weight: 300;
-  background: rgba(149,175,75,.12);
-  color: #4a6b1e;
-  border: 1px solid rgba(149,175,75,.25);
+  background: rgba(149,175,75,.08);
+  color: var(--leaf);
+  border: 1px solid rgba(149,175,75,.2);
 }
 
 /* ── DISCREPANCY ── */
@@ -635,6 +637,19 @@ canvas { max-height: 200px; }
     <button class="nt" onclick="sw('recs',this)">recommendations</button>
     <button class="nt" onclick="sw('disc',this)">discrepancy</button>
   </nav>
+
+  <!-- MONTH SELECTOR -->
+  <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 40px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <span style="font-size:9px;color:var(--text3);font-weight:400;letter-spacing:.1em;text-transform:uppercase">reporting period</span>
+    <select id="monthSel" onchange="onMonthChange()" style="padding:5px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:11px;font-weight:300;color:var(--text);cursor:pointer;outline:none;">
+      <option value="">loading...</option>
+    </select>
+    <span style="font-size:9px;color:var(--text3);font-weight:400;letter-spacing:.1em;text-transform:uppercase;margin-left:8px">ytd source</span>
+    <select id="ytdMonthSel" onchange="onYTDMonthChange()" style="padding:5px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:11px;font-weight:300;color:var(--text);cursor:pointer;outline:none;display:none">
+      <option value="">all months</option>
+    </select>
+    <span id="dataSourceTag" style="font-size:9px;padding:2px 8px;border-radius:10px;background:rgba(149,175,75,.1);color:var(--leaf);border:1px solid rgba(149,175,75,.2);font-weight:400">looker</span>
+  </div>
 
   <!-- SEG BAR -->
   <div class="segbar" id="segbar">
@@ -843,10 +858,11 @@ function parseLooker(raw){
   lookerData={};
   var hdrs=raw[0].map(function(h){return(h||'').toString().trim().toLowerCase();});
   var runDate='',dateIdx=hdrs.indexOf('run date'),metIdx=hdrs.indexOf('metric'),secIdx=hdrs.indexOf('section'),v1Idx=hdrs.indexOf('value'),v2Idx=hdrs.indexOf('value2'),v3Idx=hdrs.indexOf('value3');
+  var allDates=[];
   for(var i=1;i<raw.length;i++){
     var r=raw[i]||[];
     if(!r.length)continue;
-    var date=r[dateIdx]||'';
+    var date=(r[dateIdx]||'').trim();
     var metric=(r[metIdx]||'').trim();
     var section=(r[secIdx]||'').trim();
     var v1=(r[v1Idx]||'').trim();
@@ -854,22 +870,81 @@ function parseLooker(raw){
     var v3=(r[v3Idx]||'').trim();
     if(!metric||!section)continue;
     if(date>runDate)runDate=date;
-    var key=section+'|'+metric;
+    if(date&&allDates.indexOf(date)===-1)allDates.push(date);
+    var key=section+'|'+metric+'|'+date;
     if(!lookerData[key])lookerData[key]=[];
     lookerData[key].push({v1:v1,v2:v2,v3:v3,date:date});
+    // Also store under date-agnostic key for backward compat
+    var gkey=section+'|'+metric;
+    if(!lookerData[gkey])lookerData[gkey]=[];
+    lookerData[gkey].push({v1:v1,v2:v2,v3:v3,date:date});
   }
   lookerData._runDate=runDate;
+  lookerData._allDates=allDates.sort().reverse(); // newest first
 }
 
+// Get all unique months from the data as YYYY-MM strings
+function getAvailableMonths(){
+  return lookerData._allDates||[];
+}
+
+// selectedMonth: YYYY-MM-DD string or '' for latest
+var selectedMonth='';
+
 function getLooker(section,metric){
+  if(selectedMonth){
+    var key=section+'|'+metric+'|'+selectedMonth;
+    var rows=lookerData[key]||[];
+    if(rows.length)return rows[rows.length-1];
+  }
+  // Fall back to latest
   var key=section+'|'+metric;
   var rows=lookerData[key]||[];
   if(!rows.length)return null;
+  // Filter to selected month if set
+  if(selectedMonth){
+    var filtered=rows.filter(function(r){return r.date===selectedMonth;});
+    if(filtered.length)return filtered[filtered.length-1];
+  }
   return rows[rows.length-1];
 }
+
 function getLookerAll(section,metric){
   var key=section+'|'+metric;
-  return lookerData[key]||[];
+  var rows=lookerData[key]||[];
+  if(!rows.length)return[];
+  if(selectedMonth){
+    var filtered=rows.filter(function(r){return r.date===selectedMonth;});
+    return filtered.length?filtered:rows;
+  }
+  return rows;
+}
+
+function populateMonthDropdown(){
+  var sel=document.getElementById('monthSel');
+  if(!sel)return;
+  var months=getAvailableMonths();
+  if(!months.length){sel.innerHTML='<option value="">no data</option>';return;}
+  sel.innerHTML=months.map(function(d,i){
+    var label=formatMonthLabel(d);
+    return'<option value="'+d+'"'+(i===0?' selected':'')+'>'+label+'</option>';
+  }).join('');
+  selectedMonth=months[0]||'';
+}
+
+function formatMonthLabel(dateStr){
+  if(!dateStr)return dateStr;
+  // dateStr is YYYY-MM-DD — format as "November 2026"
+  try{
+    var d=new Date(dateStr+'T12:00:00');
+    return d.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  }catch(e){return dateStr;}
+}
+
+function onMonthChange(){
+  var sel=document.getElementById('monthSel');
+  selectedMonth=sel?sel.value:'';
+  bAll();
 }
 
 // Parse number from Looker value (strips $, %, commas)
@@ -889,8 +964,9 @@ function shDash(){
   document.getElementById('bR').style.display='inline-block';
   document.getElementById('bS').style.display='inline-block';
   document.getElementById('sd').classList.add('live');
-  document.getElementById('st2').textContent='live — '+( lookerData._runDate||'today');
+  document.getElementById('st2').textContent='live — '+(lookerData._runDate||'today');
   document.getElementById('lu').textContent='updated '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  populateMonthDropdown();
   bAll();
 }
 function bAll(){bHero();bOverview();bHCP();bDTC();bIns();bRecs();}
@@ -1041,6 +1117,7 @@ function bDTC(){
 
 // ── INSIGHTS ───────────────────────────────────────────
 function bIns(){
+  // Pull all metrics for selected month
   var spend=getLooker('Combined','Media Spend');
   var clicks=getLooker('Combined','Clicks');
   var qvr=getLooker('Combined','QVR');
@@ -1056,85 +1133,217 @@ function bIns(){
   var dPubs=getLookerAll('DTC','Publisher');
   var hKWs=getLookerAll('HCP','Keyword');
   var dKWs=getLookerAll('DTC','Keyword');
-  var runDate=lookerData._runDate||'this period';
+  var runDate=selectedMonth||lookerData._runDate||'this period';
+  var monthLabel=formatMonthLabel(runDate)||runDate;
 
-  // Find Google vs Microsoft splits
+  // Publisher splits
   var hGoogle=hPubs.find(function(r){return r.v1.toLowerCase().includes('google');});
   var hMsft=hPubs.find(function(r){return r.v1.toLowerCase().includes('msn')||r.v1.toLowerCase().includes('microsoft');});
   var dGoogle=dPubs.find(function(r){return r.v1.toLowerCase().includes('google');});
   var dMsft=dPubs.find(function(r){return r.v1.toLowerCase().includes('msn')||r.v1.toLowerCase().includes('microsoft');});
 
-  // Top HCP keyword by clicks
-  var topHKW=hKWs.length?hKWs.reduce(function(a,b){return pn(b.v2)>pn(a.v2)?b:a;},hKWs[0]):null;
-  var topDKW=dKWs.length?dKWs.reduce(function(a,b){return pn(b.v2)>pn(a.v2)?b:a;},dKWs[0]):null;
+  // Top keywords by clicks
+  var topHKWs=hKWs.slice().sort(function(a,b){return pn(b.v2)-pn(a.v2);}).slice(0,3);
+  var topDKWs=dKWs.slice().sort(function(a,b){return pn(b.v2)-pn(a.v2);}).slice(0,3);
 
-  var blocks=[];
-
-  // ── FRAME 1: What was the most important thing? ──
-  var f1Lines=[];
-  if(spend)f1Lines.push('paid search investment reached <strong>'+spend.v1+'</strong> in total program spend across hcp and dtc channels as of '+runDate);
-  if(hSpend&&dSpend)f1Lines.push('<strong>hcp paid search:</strong> '+hSpend.v1+' spend — <strong>dtc paid search:</strong> '+dSpend.v1+' spend');
-  if(clicks)f1Lines.push('program drove <strong>'+clicks.v1+' total clicks</strong> at <strong>'+clicks.v2+' ctr</strong> across both audience segments');
-  if(hGoogle&&hMsft)f1Lines.push('<em>hcp publisher split —</em> google: '+hGoogle.v2+' clicks ('+hGoogle.v3+' ctr') // already added google
-  if(hGoogle)f1Lines.push('<em>hcp publisher split —</em> google: <strong>'+hGoogle.v2+' clicks</strong> at <strong>'+hGoogle.v3+' ctr</strong>'+( hMsft?' · microsoft: '+hMsft.v2+' clicks at '+hMsft.v3+' ctr':''));
-  blocks.push({color:'',eye:'performance overview · '+runDate,frame:'what was the most important thing?',lines:f1Lines,ns:'continue monitoring spend pacing and qv rate quality as investment scales; evaluate bid strategy adjustments as monthly budgets progress toward target.'});
-
-  // ── FRAME 2: HCP paid search ──
-  var f2Lines=[];
-  if(hQV)f2Lines.push('hcp paid search drove <strong>'+hQV.v1+' qualified visits</strong> at a <strong>'+hQV.v2+' cpqv</strong>'+( hQVR?' with a <strong>'+hQVR.v1+' qvr</strong>':''));
-  if(topHKW)f2Lines.push('top hcp keyword: <strong>"'+topHKW.v1.toLowerCase()+'"</strong> driving '+topHKW.v2+' clicks at '+topHKW.v3+' ctr — indicating strong intent alignment among hcp searchers');
-  if(hQVR){var qvrNum=pp(hQVR.v1);f2Lines.push('hcp qvr of <strong>'+hQVR.v1+'</strong> is '+(qvrNum>=80?'above benchmark, sustaining quality engagement at scale':'near benchmark — monitor as investment scales and keyword mix broadens'));}
-  if(hGoogle)f2Lines.push('google accounted for the majority of hcp paid search volume at '+hGoogle.v2+' clicks'+( hMsft?' — microsoft contributed '+hMsft.v2+' clicks at a lower ctr ('+hMsft.v3+'), typical of microsoft auction dynamics':''));
-  blocks.push({color:'leaf',eye:'hcp paid search signals · '+runDate,frame:'something worth noting — hcp audience performance',lines:f2Lines,ns:'monitor qvr quality in top-performing keywords as investment scales; audit request a rep landing page experience to reduce post-click friction and improve rep submit conversion rate.'});
-
-  // ── FRAME 3: DTC paid search ──
-  var f3Lines=[];
-  if(dQV)f3Lines.push('dtc paid search drove <strong>'+dQV.v1+' qualified visits</strong> at a <strong>'+dQV.v2+' cpqv</strong>'+( dQVR?' with a <strong>'+dQVR.v1+' qvr</strong>':''));
-  if(topDKW)f3Lines.push('top dtc keyword: <strong>"'+topDKW.v1.toLowerCase()+'"</strong> driving '+topDKW.v2+' clicks at '+topDKW.v3+' ctr — serving as an upper-funnel entry point engaging patients earlier in the search journey');
-  if(dQVR){var dqvrNum=pp(dQVR.v1);f3Lines.push('dtc qvr of <strong>'+dQVR.v1+'</strong> is '+(dqvrNum>=60?'above the 60% benchmark — qualified visit quality holding as unbranded campaigns scale':'below the 60% benchmark — refine keyword and negative keyword targeting to improve engagement quality'));}
-  if(dGoogle&&dMsft)f3Lines.push('google drove '+dGoogle.v2+' clicks at '+dGoogle.v3+' ctr · microsoft contributed '+dMsft.v2+' clicks at '+dMsft.v3+' ctr — microsoft cpcs typically 30-40% lower than google equivalents');
-  blocks.push({color:'dew',eye:'dtc paid search signals · '+runDate,frame:'what does the client want to know? timely and relevant',lines:f3Lines,ns:'optimize bid strategies toward high-value site actions; continue scaling symptoms and competitor campaigns — lowest-cpc unbranded drivers with strong patient intent signals.'});
-
-  // ── FRAME 4: Actions & Next Steps ──
-  var f4Lines=[];
-  f4Lines.push('monitoring qv rate quality across hcp and dtc segments as investment scales — bid strategies being optimized toward highest-value site actions');
-  if(hQVR){var hq=pp(hQVR.v1);if(hq<80)f4Lines.push('hcp qvr of '+hQVR.v1+' below 80% target — implementing bid strategy refinement toward stronger intent signals within treatment and branded campaigns');}
-  if(dQVR){var dq=pp(dQVR.v1);if(dq<60)f4Lines.push('dtc qvr of '+dQVR.v1+' below 60% benchmark — refining keyword and negative keyword targeting within unbranded campaigns to improve engagement quality');}
-  f4Lines.push('looking ahead: evaluating thematic rsa copy test across low-ctr, high-impression ad groups to drive ctr lift without bid changes; monitoring impact of full promo campaign launch on qualified visit volume');
-  blocks.push({color:'olive',eye:'actions & next steps',frame:'what are we doing as a result? what do we want to test?',lines:f4Lines,ns:null});
-
-  // Render
-  document.getElementById('insCards').innerHTML=blocks.map(function(b){
-    var linesHtml=b.lines.map(function(l,i){
-      var isFt=i===0;
-      return'<li style="'+(isFt?'font-weight:400;color:var(--text);border-left-color:var(--leaf)':'')+'">' +l+'</li>';
+  // ── RENDER HELPER: PDF-style bullet block ────────────────
+  function insCard(color, eyeLabel, bullets, nextSteps){
+    // bullets[0] is the opening lead bullet (bold, larger)
+    // bullets[1+] are sub-bullets indented
+    var bHtml=bullets.map(function(b,i){
+      if(i===0){
+        return'<li style="font-weight:500;color:var(--text);font-size:13px;line-height:1.6;margin-bottom:10px;list-style:disc;padding-left:4px">'+b+'</li>';
+      }
+      return'<li style="color:var(--text2);font-size:12px;line-height:1.65;margin-bottom:6px;list-style:circle;margin-left:16px;padding-left:4px">'+b+'</li>';
     }).join('');
-    var nsHtml=b.ns?'<div class="ins-ns"><div class="ins-ns-lbl">good apple next steps</div><div class="ins-ns-body">'+b.ns+'</div></div>':'';
-    return'<div class="ins-card '+(b.color||'')+'"><div class="ins-eye">'+b.eye+'</div><div class="ins-frame">'+b.frame+'</div><ul class="ins-list">'+linesHtml+'</ul>'+nsHtml+'</div>';
-  }).join('');
 
-  // Store plain text for copy
+    var nsHtml='';
+    if(nextSteps){
+      nsHtml='<div style="margin-top:16px;padding:12px 16px;background:rgba(46,85,35,.2);border:1px solid rgba(46,85,35,.4);border-radius:var(--r)">'
+        +'<span style="font-size:9px;font-weight:600;color:var(--leaf);letter-spacing:.1em;text-transform:uppercase">Next Steps: </span>'
+        +'<span style="font-size:12px;color:var(--text2);font-weight:300;line-height:1.65">'+nextSteps+'</span>'
+        +'</div>';
+    }
+
+    return'<div class="ins-card '+color+'" style="margin-bottom:16px">'
+      +'<div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);font-weight:400;margin-bottom:14px">'+eyeLabel+'</div>'
+      +'<ul style="padding-left:18px;margin:0">'+bHtml+'</ul>'
+      +nsHtml
+      +'</div>';
+  }
+
+  var cards=[];
+
+  // ── HCP PAID SEARCH ─────────────────────────────────────
+  if(hSpend||hQV){
+    var hcpBullets=[];
+
+    // Lead bullet — matches PDF opening: "In [month], SEM HCP campaigns drove X QVs at X QVR"
+    var leadHCP='';
+    if(hQV&&hQVR){
+      leadHCP='In '+monthLabel+', SEM HCP campaigns drove <strong>'+hQV.v1+' qualified visits</strong> at a <strong>'+hQVR.v1+' QVR</strong>';
+      if(hQV.v2)leadHCP+=', at a <strong>'+hQV.v2+' CPQV</strong>';
+      leadHCP+='.';
+    } else if(hSpend){
+      leadHCP='HCP paid search investment reached <strong>'+hSpend.v1+'</strong> in '+monthLabel+'.';
+    }
+    if(leadHCP)hcpBullets.push(leadHCP);
+
+    // Publisher split — "Google drove X% of HCP paid search QVs / clicks"
+    if(hGoogle&&hMsft){
+      var gClk=pn(hGoogle.v2),mClk=pn(hMsft.v2),tot=gClk+mClk;
+      if(tot>0){
+        var gPct=Math.round(gClk/tot*100);
+        hcpBullets.push('Google accounted for <strong>'+gPct+'% of HCP paid search volume</strong> ('+hGoogle.v2+' clicks at '+hGoogle.v3+' CTR); Microsoft contributed '+hMsft.v2+' clicks at '+hMsft.v3+' CTR');
+      }
+    } else if(hGoogle){
+      hcpBullets.push('Google HCP: <strong>'+hGoogle.v2+' clicks</strong> at <strong>'+hGoogle.v3+' CTR</strong>');
+    }
+
+    // Top keywords
+    if(topHKWs.length){
+      var kwStr=topHKWs.map(function(k){return'"'+k.v1.toLowerCase()+'" ('+k.v2+' clicks, '+k.v3+' CTR)';}).join('; ');
+      hcpBullets.push('Top QV-driving keywords: <strong>'+kwStr+'</strong>');
+    }
+
+    // QVR quality note
+    if(hQVR){
+      var hqn=pp(hQVR.v1);
+      if(hqn>=80){
+        hcpBullets.push('QVR held at <strong>'+hQVR.v1+'</strong>, sustaining above-benchmark engagement quality as investment scaled — <em>2X industry benchmark of 40%</em>');
+      } else if(hqn>=60){
+        hcpBullets.push('QVR of <strong>'+hQVR.v1+'</strong> remains above benchmark — monitoring as investment scales and keyword mix broadens');
+      } else {
+        hcpBullets.push('QVR softened to <strong>'+hQVR.v1+'</strong> — reviewing keyword and negative keyword targeting to improve engagement quality');
+      }
+    }
+
+    // HCP spend context
+    if(hSpend&&dSpend){
+      var hS=pn(hSpend.v1),dS=pn(dSpend.v1),tot=hS+dS;
+      if(tot>0){
+        var hPct=Math.round(hS/tot*100);
+        hcpBullets.push('HCP represented <strong>'+hPct+'% of total SEM investment</strong> ('+hSpend.v1+' of '+(spend?spend.v1:'total')+')');
+      }
+    }
+
+    var hcpNS='Monitoring QVR quality as investment scales; ';
+    hcpNS+='optimizing bid strategies toward high-value HCP site actions; ';
+    hcpNS+='reviewing rep submit landing page experience to reduce post-click friction.';
+
+    if(hcpBullets.length){
+      cards.push(insCard('','HCP Paid Search SEM — '+monthLabel, hcpBullets, hcpNS));
+    }
+  }
+
+  // ── DTC PAID SEARCH ─────────────────────────────────────
+  if(dSpend||dQV){
+    var dtcBullets=[];
+
+    // Lead bullet — "In [month], SEM patient campaigns drove X QVs at X QVR"
+    var leadDTC='';
+    if(dQV&&dQVR){
+      leadDTC='In '+monthLabel+', SEM patient campaigns drove <strong>'+dQV.v1+' qualified visits</strong> at a <strong>'+dQVR.v1+' QVR</strong>';
+      if(dQV.v2)leadDTC+=', at a <strong>'+dQV.v2+' CPQV</strong>';
+      leadDTC+='.';
+    } else if(dSpend){
+      leadDTC='DTC paid search investment reached <strong>'+dSpend.v1+'</strong> in '+monthLabel+'.';
+    }
+    if(leadDTC)dtcBullets.push(leadDTC);
+
+    // Publisher split
+    if(dGoogle&&dMsft){
+      var gClk2=pn(dGoogle.v2),mClk2=pn(dMsft.v2),tot2=gClk2+mClk2;
+      if(tot2>0){
+        var gPct2=Math.round(gClk2/tot2*100);
+        dtcBullets.push('Google accounted for <strong>'+gPct2+'% of DTC paid search volume</strong> ('+dGoogle.v2+' clicks at '+dGoogle.v3+' CTR); Microsoft contributed '+dMsft.v2+' clicks at '+dMsft.v3+' CTR');
+      }
+    }
+
+    // QVR note — mirrors PDF "QVR decreased slightly (-7% MoM) as investment was increased within unbranded campaigns"
+    if(dQVR){
+      var dqn=pp(dQVR.v1);
+      if(dqn>=70){
+        dtcBullets.push('QVR of <strong>'+dQVR.v1+'</strong> remained above the 60% benchmark, sustaining strong qualified visit quality as investment scaled into unbranded campaigns');
+      } else if(dqn>=60){
+        dtcBullets.push('QVR of <strong>'+dQVR.v1+'</strong> above benchmark — softening slightly as investment increased within unbranded campaigns to expand reach; will refine keyword and negative keyword targeting to improve engagement quality');
+      } else {
+        dtcBullets.push('QVR of <strong>'+dQVR.v1+'</strong> below 60% benchmark — QVR decrease reflects investment shift toward unbranded campaigns to expand reach; refining keyword targeting to improve engagement quality');
+      }
+    }
+
+    // Top keywords
+    if(topDKWs.length){
+      var dkwStr=topDKWs.map(function(k){return'"'+k.v1.toLowerCase()+'" ('+k.v2+' clicks, '+k.v3+' CTR)';}).join('; ');
+      dtcBullets.push('Top QV-driving keywords: <strong>'+dkwStr+'</strong>');
+    }
+
+    // Campaign type insight if keyword data suggests it
+    var hasHeadacheMed=dKWs.some(function(k){return k.v1.toLowerCase().includes('headache medication');});
+    var hasSymptomsKW=dKWs.some(function(k){return k.v1.toLowerCase().includes('symptom');});
+    if(hasHeadacheMed){
+      dtcBullets.push('"Headache medication for migraines" continues to drive the highest DTC click volume — indicating strong unbranded Symptoms campaign performance; <em>lowest-CPC unbranded driver</em>');
+    } else if(hasSymptomsKW){
+      dtcBullets.push('Symptoms campaign keywords driving meaningful DTC volume — serving as an upper-funnel entry point engaging patients earlier in the search journey');
+    }
+
+    var dtcNS='Continuing to refine keyword and negative keyword targeting within Symptoms campaigns to improve engagement quality as upper-funnel reach expands; ';
+    dtcNS+='optimizing bid strategies toward high-value DTC site actions; ';
+    dtcNS+='monitoring QVR as investment scales into unbranded campaigns.';
+
+    if(dtcBullets.length){
+      cards.push(insCard('leaf','DTC Paid Search SEM — '+monthLabel, dtcBullets, dtcNS));
+    }
+  }
+
+  // ── COMBINED PROGRAM NOTE ───────────────────────────────
+  if(spend&&clicks){
+    var combBullets=[];
+    combBullets.push('Combined SEM program delivered <strong>'+spend.v1+' in total investment</strong> in '+monthLabel+', driving <strong>'+(clicks?clicks.v1:'—')+' clicks</strong> at <strong>'+(clicks?clicks.v2:'—')+' CTR</strong>');
+    if(qvr)combBullets.push('Program QVR: <strong>'+qvr.v1+'</strong> — '+(pp(qvr.v1)>=65?'above benchmark, sustaining strong qualified visit quality across both HCP and DTC segments':'monitoring as investment scales across both audience segments'));
+    if(hSpend&&dSpend){
+      combBullets.push('<em>Industry benchmarks:</em> CPC $2.62 &nbsp;·&nbsp; CPQV $4.37 &nbsp;·&nbsp; Use Discrepancy tab to compare Looker vs Google Sheets data');
+    }
+    cards.push(insCard('dew','Combined Program Overview — '+monthLabel, combBullets, null));
+  }
+
+  if(!cards.length){
+    cards.push(insCard('','No data for selected period',['Run the Apps Script pipeline or select a month with data from the dropdown above.'],null));
+  }
+
+  document.getElementById('insCards').innerHTML=cards.join('');
+  document.getElementById('insSub').textContent='sem insights — '+monthLabel+' — select month above to change period';
+
+  // Build plain text for copy (PDF style)
   var NL=String.fromCharCode(10);
-  var txt='BREKIYA SEM INSIGHTS — '+runDate.toUpperCase()+NL+NL;
-  blocks.forEach(function(b){
-    txt+=b.eye.toUpperCase()+NL;
-    b.lines.forEach(function(l,i){
-      txt+=(i===0?'* ':'   - ')+l.replace(/<[^>]+>/g,'')+NL;
-    });
-    if(b.ns)txt+='   GOOD APPLE NEXT STEPS: '+b.ns+NL;
-    txt+=NL;
-  });
+  var txt='BREKIYA SEM INSIGHTS — '+monthLabel.toUpperCase()+NL+NL;
+
+  // HCP block
+  if(hQV||hSpend){
+    txt+='HCP PAID SEARCH'+NL;
+    txt+='*Industry Benchmarks: CPC $2.62, CPQV $4.37'+NL+NL;
+    var hLead='In '+monthLabel+', SEM HCP campaigns drove '+(hQV?hQV.v1:'—')+' QVs'+(hQVR?' at a '+hQVR.v1+' QVR':'')+(hQV&&hQV.v2?' at a '+hQV.v2+' CPQV':'');
+    txt+='* '+hLead+NL;
+    if(topHKWs.length)txt+='   - Top QV-driving keywords: '+topHKWs.map(function(k){return '"'+k.v1.toLowerCase()+'" ('+k.v2+' clicks, '+k.v3+' CTR)';}).join('; ')+NL;
+    if(hGoogle)txt+='   - Google HCP: '+hGoogle.v2+' clicks at '+hGoogle.v3+' CTR'+(hMsft?' | Microsoft: '+hMsft.v2+' clicks at '+hMsft.v3+' CTR':'')+NL;
+    txt+='   Next Steps: Monitoring QVR quality as investment scales; optimizing bid strategies toward high-value HCP site actions; reviewing rep submit landing page to reduce post-click friction'+NL+NL;
+  }
+
+  // DTC block
+  if(dQV||dSpend){
+    txt+='DTC PAID SEARCH'+NL;
+    txt+='*Industry Benchmarks: CPC $2.62, CPQV $4.37'+NL+NL;
+    var dLead='In '+monthLabel+', SEM patient campaigns drove '+(dQV?dQV.v1:'—')+' QVs'+(dQVR?' at a '+dQVR.v1+' QVR':'')+(dQV&&dQV.v2?' at a '+dQV.v2+' CPQV':'');
+    txt+='* '+dLead+NL;
+    if(topDKWs.length)txt+='   - Top QV-driving keywords: '+topDKWs.map(function(k){return '"'+k.v1.toLowerCase()+'" ('+k.v2+' clicks, '+k.v3+' CTR)';}).join('; ')+NL;
+    if(dGoogle)txt+='   - Google DTC: '+dGoogle.v2+' clicks at '+dGoogle.v3+' CTR'+(dMsft?' | Microsoft: '+dMsft.v2+' clicks at '+dMsft.v3+' CTR':'')+NL;
+    txt+='   Next Steps: Continuing to refine keyword and negative keyword targeting within Symptoms campaigns; optimizing bid strategies toward high-value DTC site actions'+NL+NL;
+  }
+
   window._insightsCopy=txt;
 }
 
-function copyIns(){
-  if(!window._insightsCopy)return;
-  navigator.clipboard.writeText(window._insightsCopy).then(function(){
-    var btn=document.getElementById('copyBtn');if(btn){btn.textContent='copied ✓';btn.style.background='var(--leaf)';setTimeout(function(){btn.textContent='copy insights';btn.style.background='var(--green)';},2500);}
-  }).catch(function(){var ta=document.createElement('textarea');ta.value=window._insightsCopy;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);var btn=document.getElementById('copyBtn');if(btn){btn.textContent='copied ✓';btn.style.background='var(--leaf)';setTimeout(function(){btn.textContent='copy insights';btn.style.background='var(--green)';},2500);}});
-}
 
-// ── RECOMMENDATIONS ────────────────────────────────────
 function bRecs(){
   function rc(pri,title,sumStr,actions,impacts){
     var id='r'+Math.random().toString(36).slice(2,8);
@@ -1269,7 +1478,7 @@ function co(o){
   return{responsive:true,maintainAspectRatio:false,
     plugins:{legend:{display:false}},
     scales:{
-      x:{ticks:{color:'rgba(80,80,70,.6)',font:{family:'Outfit',size:9,weight:'300'}},grid:{color:'rgba(200,195,185,.8)'}},
+      x:{ticks:{color:'rgba(168,176,144,.5)',font:{family:'Outfit',size:9,weight:'300'}},grid:{color:'rgba(42,61,32,.8)'}},
       y:{ticks:{color:'rgba(160,160,160,.4)',font:{family:'Outfit',size:9,weight:'300'},callback:yf},grid:{color:'rgba(42,42,42,.5)'}}
     }
   };
@@ -1315,6 +1524,24 @@ function loadDemo(){
     ['2026-11-16','Publisher','HCP','DART Search : MSN','6,387','2.99%'],
     ['2026-11-16','Publisher','DTC','DART Search : Google','86,568','3.69%'],
     ['2026-11-16','Publisher','DTC','DART Search : MSN','8,139','3.14%'],
+    // October data for month selector demo
+    ['2026-10-31','Media Spend','Combined','$2,180,500.00','',''],
+    ['2026-10-31','Clicks','Combined','780,210','0.58%',''],
+    ['2026-10-31','Qualified Visits','Combined','571,000','$5.21',''],
+    ['2026-10-31','QVR','Combined','62.10%','',''],
+    ['2026-10-31','Media Spend','HCP','$1,100,000.00','',''],
+    ['2026-10-31','Clicks','HCP','175,000','0.78%',''],
+    ['2026-10-31','Qualified Visits','HCP','195,000','$9.10',''],
+    ['2026-10-31','QVR','HCP','70.50%','',''],
+    ['2026-10-31','Media Spend','DTC','$1,080,500.00','',''],
+    ['2026-10-31','Clicks','DTC','605,210','0.55%',''],
+    ['2026-10-31','Qualified Visits','DTC','376,000','$3.42',''],
+    ['2026-10-31','QVR','DTC','60.80%','',''],
+    ['2026-10-31','Keyword','HCP','CLUSTER HEADACHE','5,344','6.71%'],
+    ['2026-10-31','Keyword','HCP','TREAT MIGRAINES','2,980','5.90%'],
+    ['2026-10-31','Keyword','DTC','HEADACHE MEDICATION FOR MIGRAINES','27,100','19.80%'],
+    ['2026-10-31','Publisher','HCP','DART Search : Google','60,100','5.41%'],
+    ['2026-10-31','Publisher','DTC','DART Search : Google','80,100','3.52%'],
   ];
   parseLooker(demoRaw);
   document.getElementById('sd').classList.add('live');
