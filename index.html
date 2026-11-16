@@ -3,779 +3,1323 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brekiya SEM Dashboard - Good Apple</title>
+<title>brekiya — sem dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--g:#3D7A4E;--gdk:#2A5C38;--glt:#EEF5F0;--ap:#5BA670;--gold:#C8973A;--ms:#F7F8F9;--w:#fff;--bd:#E2E8F0;--te:#2D8A6E;--re:#C0392B;--t1:#1A1A2E;--t2:#4A5568;--t3:#94A3B8;--r:8px;--r2:14px;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:var(--ms);color:var(--t1);min-height:100vh;}
-.tb{background:var(--gdk);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;box-shadow:0 2px 8px rgba(26,26,46,.15);}
-.lw{display:flex;align-items:center;gap:12px;}
-.lm{width:32px;height:32px;background:var(--ap);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.ln{font-weight:600;font-size:14px;color:#fff;}
-.ls{font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;}
-.tr{display:flex;align-items:center;gap:10px;}
-.sp{display:flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;font-size:10px;color:rgba(255,255,255,.7);font-family:'DM Mono',monospace;}
-.sd{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3);flex-shrink:0;}
-.sd.live{background:#6EE7A0;animation:p2 2s ease infinite;}
-@keyframes p2{0%,100%{opacity:1}50%{opacity:.45}}
-.hb{padding:6px 14px;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.2);}
-.hb:hover{background:rgba(255,255,255,.25);}
-/* CONNECT */
-.cw{min-height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;padding:40px 20px;background:linear-gradient(135deg,var(--glt),var(--ms));}
-.cc{width:100%;max-width:520px;background:var(--w);border-radius:20px;padding:44px;box-shadow:0 4px 16px rgba(26,26,46,.08);border:1px solid var(--bd);}
-.cl{display:flex;align-items:center;gap:10px;margin-bottom:24px;}
-.clm{width:40px;height:40px;background:var(--g);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
-.ct{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;margin-bottom:6px;}
-.cd{font-size:13px;color:var(--t2);line-height:1.65;margin-bottom:28px;}
-.fi{margin-bottom:16px;}
-.fl{font-size:11px;font-weight:500;color:var(--t2);margin-bottom:6px;display:block;}
-input[type=text],input[type=password]{width:100%;padding:10px 14px;background:var(--ms);border:1.5px solid var(--bd);border-radius:var(--r);font-family:'DM Mono',monospace;font-size:12px;color:var(--t1);outline:none;transition:border-color .18s;}
-input:focus{border-color:var(--g);}
-input::placeholder{color:var(--t3);}
-.hn{font-size:11px;color:var(--t3);margin-top:5px;line-height:1.5;}
-.hn a{color:var(--g);text-decoration:none;}
-.eb{font-size:12px;color:var(--re);padding:10px 14px;background:#FEF2F2;border:1px solid #FCA5A5;border-radius:var(--r);margin-top:12px;display:none;}
-.db{font-size:11px;color:var(--t3);padding:10px 14px;background:var(--ms);border-radius:var(--r);margin-top:8px;display:none;font-family:'DM Mono',monospace;}
-.ca{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;}
-.cb{padding:10px 22px;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
-.cbp{background:var(--g);color:#fff;}.cbp:hover{background:var(--gdk);}.cbp:disabled{opacity:.5;cursor:not-allowed;}
-.cbg{background:transparent;color:var(--t2);border:1.5px solid var(--bd);}.cbg:hover{border-color:var(--g);color:var(--g);}
-.cdv{border:none;border-top:1px solid var(--bd);margin:24px 0;}
-.cs{display:flex;flex-direction:column;gap:10px;}
-.csi{display:flex;gap:12px;align-items:flex-start;font-size:12px;color:var(--t2);line-height:1.6;}
-.csn{width:20px;height:20px;border-radius:50%;background:var(--glt);color:var(--g);font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
-/* HERO */
-.hero{background:linear-gradient(135deg,var(--gdk) 0%,var(--g) 60%,var(--ap) 100%);padding:36px 40px 32px;position:relative;overflow:hidden;}
-.hero:before{content:'🍏';position:absolute;right:40px;top:50%;transform:translateY(-50%);font-size:80px;opacity:.12;pointer-events:none;}
-.hd{font-size:11px;color:rgba(255,255,255,.55);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;font-family:'DM Mono',monospace;}
-.hn2{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:#fff;line-height:1.1;margin-bottom:6px;position:relative;z-index:1;}
-.hn2 em{color:#A8E6B8;font-style:normal;}
-.hs{font-size:13px;color:rgba(255,255,255,.65);position:relative;z-index:1;}
-.hst{display:flex;gap:12px;flex-wrap:wrap;position:relative;z-index:1;margin-top:28px;}
-.ht{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:14px 20px;min-width:130px;}
-.hl{font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;font-family:'DM Mono',monospace;}
-.hv{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;line-height:1;margin-bottom:3px;}
-.hsu{font-size:10px;color:rgba(255,255,255,.5);}
-.hdl{font-size:10px;font-family:'DM Mono',monospace;}
-.hdl.up{color:#6EE7A0;}.hdl.dn{color:#FCA5A5;}.hdl.fl{color:rgba(255,255,255,.35);}
-/* STRIP */
-.st{display:grid;grid-template-columns:repeat(5,1fr);background:var(--w);border-bottom:1px solid var(--bd);box-shadow:0 1px 3px rgba(26,26,46,.08);}
-.sti{padding:16px 22px;border-right:1px solid var(--bd);}
-.sti:last-child{border-right:none;}
-.stl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-family:'DM Mono',monospace;}
-.stv{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--t1);line-height:1;margin-bottom:4px;}
-.std{font-size:10px;font-family:'DM Mono',monospace;}
-.up{color:var(--te);}.dn{color:var(--re);}.fl{color:var(--t3);}
-/* NAV */
-.nav{display:flex;background:var(--w);border-bottom:1px solid var(--bd);padding:0 40px;position:sticky;top:56px;z-index:200;box-shadow:0 1px 3px rgba(26,26,46,.08);}
-.nt{padding:13px 18px 12px;font-size:12px;font-weight:500;color:var(--t3);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s;}
-.nt:hover{color:var(--t2);}
-.nt.on{color:var(--g);border-bottom-color:var(--g);font-weight:600;}
-/* SEG BAR */
-.sb{background:var(--w);border-bottom:1px solid var(--bd);padding:10px 40px;display:none;flex-direction:column;gap:8px;}
-.sr{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.sl{font-size:10px;font-weight:600;color:var(--t2);min-width:90px;text-transform:uppercase;letter-spacing:.06em;}
-.sc{display:flex;gap:6px;flex-wrap:wrap;}
-.sch{padding:4px 14px;font-size:11px;font-weight:500;border:1.5px solid var(--bd);border-radius:20px;background:none;color:var(--t2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .14s;}
-.sch:hover{border-color:var(--g);color:var(--g);}
-.sch.on{background:var(--g);color:#fff;border-color:var(--g);}
-.sch.all{border-style:dashed;}
-.sdv{width:1px;height:20px;background:var(--bd);flex-shrink:0;}
-.sr2{padding:4px 10px;font-size:11px;color:var(--t3);cursor:pointer;border:none;background:none;text-decoration:underline;}
-.fs{background:var(--glt);border-bottom:1px solid rgba(61,122,78,.15);padding:6px 40px;font-size:11px;color:var(--g);font-weight:500;display:none;align-items:center;gap:8px;}
-/* PANELS */
-.pn{padding:28px 40px;max-width:1440px;margin:0 auto;}
-.pan{display:none;}
-.pan.on{display:block;animation:fu .25s ease both;}
-@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
-.card{background:var(--w);border:1px solid var(--bd);border-radius:var(--r2);padding:22px 24px;box-shadow:0 1px 3px rgba(26,26,46,.08);}
-.ce{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--g);font-weight:600;margin-bottom:2px;font-family:'DM Mono',monospace;}
-.csu{font-size:12px;color:var(--t3);margin-bottom:16px;}
-canvas{max-height:210px;}
-.mr{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
-.mc{padding:4px 14px;font-size:11px;font-weight:500;border:1.5px solid var(--bd);border-radius:20px;background:none;color:var(--t2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .14s;}
-.mc:hover{border-color:var(--g);color:var(--g);}
-.mc.on{background:var(--g);color:#fff;border-color:var(--g);}
-/* TABLE */
-.tb2{width:100%;border-collapse:collapse;font-size:12px;}
-.tb2 th{text-align:left;padding:8px 12px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);border-bottom:1.5px solid var(--bd);white-space:nowrap;font-family:'DM Mono',monospace;}
-.tb2 td{padding:10px 12px;border-bottom:1px solid #F1F5F9;color:var(--t2);vertical-align:middle;}
-.tb2 tr:last-child td{border-bottom:none;}
-.tb2 tr:hover td{background:var(--ms);}
-.tb2 td:first-child{color:var(--t1);font-weight:500;}
-/* BADGES */
-.b{display:inline-flex;align-items:center;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:600;}
-.bg{background:#E8F0FE;color:#1A73E8;border:1px solid #BFDBFE;}
-.bm{background:#E8F5FF;color:#00617A;border:1px solid #BAE6FD;}
-.bd2{background:#F0FDF4;color:#15803D;border:1px solid #86EFAC;}
-.bh{background:#FEF9EC;color:#92400E;border:1px solid #FCD34D;}
-.du{color:var(--te);font-weight:600;font-family:'DM Mono',monospace;font-size:11px;}
-.dd{color:var(--re);font-weight:600;font-family:'DM Mono',monospace;font-size:11px;}
-.df{color:var(--t3);font-family:'DM Mono',monospace;font-size:11px;}
-/* ACCT */
-.ag{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:16px;}
-.ac{background:var(--w);border:1px solid var(--bd);border-radius:var(--r2);padding:20px;box-shadow:0 1px 3px rgba(26,26,46,.08);border-top:3px solid var(--g);}
-.an{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;margin-bottom:6px;}
-.ab{display:flex;gap:5px;margin-bottom:12px;}
-.ar{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F1F5F9;}
-.ar:last-child{border-bottom:none;}
-.ak{font-size:11px;color:var(--t3);}
-.av{font-size:12px;color:var(--t1);font-weight:600;font-family:'DM Mono',monospace;}
-/* INSIGHTS */
-.is{margin-bottom:28px;}
-.it{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:4px;}
-.isu{font-size:12px;color:var(--t3);margin-bottom:14px;}
-.il{display:flex;flex-direction:column;gap:10px;}
-.ins{display:flex;gap:16px;padding:18px 20px;border-radius:var(--r2);border-left:4px solid;background:var(--w);border-top:1px solid var(--bd);border-right:1px solid var(--bd);border-bottom:1px solid var(--bd);box-shadow:0 1px 3px rgba(26,26,46,.08);}
-.ins.gr{border-left-color:var(--g);}
-.ins.go{border-left-color:var(--gold);}
-.ins.re{border-left-color:var(--re);}
-.ins.bl{border-left-color:#3B82F6;}
-.ii{font-size:18px;flex-shrink:0;margin-top:1px;}
-.ib{font-size:13px;line-height:1.65;color:var(--t2);}
-.ib strong{color:var(--t1);font-weight:600;}
-/* MOVERS */
-.mg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
-.mca{background:var(--w);border:1px solid var(--bd);border-radius:var(--r2);padding:20px;box-shadow:0 1px 3px rgba(26,26,46,.08);}
-.mh{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
-.mti{font-size:13px;font-weight:600;}
-.msu{font-size:11px;color:var(--t3);margin-left:auto;}
-/* RECS */
-.rs{margin-bottom:28px;}
-.rtt{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:4px;}
-.rsu{font-size:12px;color:var(--t3);margin-bottom:14px;}
-.rl{display:flex;flex-direction:column;gap:12px;}
-.rc{background:var(--w);border:1px solid var(--bd);border-radius:var(--r2);box-shadow:0 1px 3px rgba(26,26,46,.08);overflow:hidden;}
-.rh{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;user-select:none;transition:background .15s;}
-.rh:hover{background:var(--ms);}
-.rp{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;}
-.rp.high{background:#FEF2F2;color:#B91C1C;border:1px solid #FCA5A5;}
-.rp.med{background:#FEF9EC;color:#92400E;border:1px solid #FCD34D;}
-.rp.low{background:#F0FDF4;color:#15803D;border:1px solid #86EFAC;}
-.rtg{display:flex;gap:4px;flex-shrink:0;}
-.rti{font-size:13px;font-weight:600;flex:1;}
-.rch{font-size:12px;color:var(--t3);transition:transform .2s;flex-shrink:0;}
-.rc.open .rch{transform:rotate(180deg);}
-.rb{display:none;padding:0 20px 20px;border-top:1px solid var(--bd);}
-.rc.open .rb{display:block;}
-.rsm{font-size:13px;color:var(--t2);line-height:1.65;padding:14px 0 10px;}
-.rsm strong{color:var(--t1);}
-/* FOOTER */
-.ft{margin-top:48px;padding:20px 40px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--t3);background:var(--w);}
-.ft a{color:var(--g);text-decoration:none;}
-@media(max-width:960px){.tb,.nav,.pn,.ft,.sb,.fs{padding-left:20px;padding-right:20px;}.hero{padding:28px 20px 24px;}.g2,.mg{grid-template-columns:1fr;}.st{grid-template-columns:1fr 1fr;}}
-@media(max-width:560px){.st{grid-template-columns:1fr;}.hn2{font-size:24px;}.hero:before{display:none;}}
+:root {
+  --bg:       #f5f0e8;
+  --bg2:      #faf7f2;
+  --bg3:      #f0ebe0;
+  --border:   #ddd8cc;
+  --border2:  #ccc7bb;
+  --green:    #2e5523;
+  --leaf:     #95af4b;
+  --olive:    #7d9442;
+  --dew:      #8dcfc4;
+  --text:     #1a1a1a;
+  --text2:    #4a4a4a;
+  --text3:    #888880;
+  --white:    #1a1a1a;
+  --red:      #e05252;
+  --r:        6px;
+  --r2:       10px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 200;
+  font-size: 12px;
+  line-height: 1.15;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.tb {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  height: 52px;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 300;
+}
+.tb-left { display: flex; align-items: center; gap: 16px; }
+.tb-logo {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--green);
+  letter-spacing: -0.02em;
+}
+.tb-logo span { color: var(--text3); font-weight: 200; }
+.tb-divider { width: 1px; height: 18px; background: var(--border2); }
+.tb-client { font-size: 11px; color: var(--text3); font-weight: 300; letter-spacing: 0.06em; text-transform: uppercase; }
+.tb-right { display: flex; align-items: center; gap: 10px; }
+.tb-status {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 12px;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 300;
+  letter-spacing: 0.04em;
+}
+.tb-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text3); flex-shrink: 0; }
+.tb-dot.live { background: var(--leaf); animation: pulse 2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.tb-btn {
+  padding: 5px 14px;
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  background: transparent;
+  color: var(--text2);
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 300;
+  cursor: pointer;
+  transition: all .15s;
+}
+.tb-btn:hover { border-color: var(--leaf); color: var(--leaf); }
+#lu { font-size: 10px; color: var(--text3); font-weight: 200; }
+
+/* ── CONNECT ── */
+.cw {
+  min-height: calc(100vh - 52px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+.cc {
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 40px;
+}
+.cc-hl {
+  font-size: 36px;
+  font-weight: 300;
+  line-height: 1.1;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+.cc-hl .g { color: var(--green); }
+.cc-hl .l { color: var(--leaf); }
+.cc-sub { font-size: 12px; color: var(--text3); font-weight: 200; margin-bottom: 28px; line-height: 1.6; }
+.cc-field { margin-bottom: 14px; }
+.cc-lbl { font-size: 10px; color: var(--text3); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; display: block; }
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 9px 14px;
+  background: rgba(46,85,35,.06);
+  border: 1px solid rgba(46,85,35,.2);
+  border-radius: var(--r);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s;
+}
+input:focus { border-color: var(--leaf); }
+input::placeholder { color: var(--text3); }
+.cc-hint { font-size: 10px; color: var(--text3); margin-top: 4px; line-height: 1.5; }
+.cc-hint a { color: var(--leaf); text-decoration: none; }
+.cc-err { font-size: 11px; color: var(--red); padding: 8px 12px; background: rgba(224,82,82,.08); border: 1px solid rgba(224,82,82,.2); border-radius: var(--r); margin-top: 10px; display: none; line-height: 1.5; }
+.cc-dbg { font-size: 10px; color: var(--text3); padding: 8px 12px; background: var(--bg3); border-radius: var(--r); margin-top: 6px; display: none; line-height: 1.6; }
+.cc-actions { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+.btn-primary {
+  padding: 9px 20px;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: var(--r);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background .15s;
+}
+.btn-primary:hover { background: var(--leaf); }
+.btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+.btn-ghost {
+  padding: 9px 20px;
+  background: transparent;
+  color: var(--text2);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-ghost:hover { border-color: var(--leaf); color: var(--leaf); }
+.cc-div { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+.cc-steps { display: flex; flex-direction: column; gap: 8px; }
+.cc-step { display: flex; gap: 10px; align-items: flex-start; font-size: 11px; color: var(--text3); line-height: 1.6; }
+.cc-sn { width: 18px; height: 18px; border-radius: 50%; background: var(--green); color: #fff; font-size: 9px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+
+/* ── HERO ── */
+.hero {
+  padding: 40px 40px 36px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 100% 0%, rgba(46,85,35,.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-date { font-size: 10px; color: rgba(255,255,255,.6); font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+.hero-hl {
+  font-size: 48px;
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  margin-bottom: 8px;
+}
+.hero-hl .g { color: #ffffff; }
+.hero-hl .l { color: #c8e08a; }
+.hero-hl .d { color: var(--dew); }
+.hero-sub { font-size: 11px; color: rgba(255,255,255,.65); font-weight: 200; margin-bottom: 32px; letter-spacing: 0.04em; }
+.hero-stats { display: flex; gap: 2px; flex-wrap: wrap; }
+.hstat {
+  flex: 1;
+  min-width: 120px;
+  padding: 16px 20px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--green);
+}
+.hstat:first-child { border-radius: var(--r) 0 0 var(--r); }
+.hstat:last-child { border-radius: 0 var(--r) var(--r) 0; }
+.hstat-lbl { font-size: 9px; color: rgba(255,255,255,.55); font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.hstat-val { font-size: 24px; font-weight: 300; color: #ffffff; line-height: 1; margin-bottom: 4px; letter-spacing: -0.02em; }
+.hstat-d { font-size: 10px; font-weight: 300; color: rgba(255,255,255,.5); }
+.hstat-d.up { color: var(--leaf); }
+.hstat-d.dn { color: var(--red); }
+.hstat-d.fl { color: var(--text3); }
+
+/* ── NAV ── */
+.nav {
+  display: flex;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  position: sticky;
+  top: 52px;
+  z-index: 200;
+  overflow-x: auto;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nt {
+  padding: 12px 18px 11px;
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--text3);
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: 'Outfit', sans-serif;
+  border-bottom: 1px solid transparent;
+  margin-bottom: -1px;
+  transition: color .15s;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+.nt:hover { color: var(--text2); }
+.nt.on { color: var(--leaf); border-bottom-color: var(--leaf); font-weight: 400; }
+
+/* ── SEG BAR ── */
+.segbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 40px;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.seg-lbl { font-size: 9px; color: var(--text3); font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; min-width: 60px; }
+.seg-chips { display: flex; gap: 4px; }
+.sch {
+  padding: 3px 12px;
+  font-size: 10px;
+  font-weight: 300;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  background: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  transition: all .14s;
+}
+.sch:hover { border-color: var(--leaf); color: var(--leaf); }
+.sch.on { background: var(--green); color: var(--white); border-color: var(--green); }
+.seg-div { width: 1px; height: 16px; background: var(--border2); flex-shrink: 0; }
+.seg-rst { padding: 3px 10px; font-size: 10px; color: var(--text3); cursor: pointer; border: none; background: none; font-family: 'Outfit', sans-serif; text-decoration: underline; }
+.seg-rst:hover { color: var(--leaf); }
+.fsum { background: rgba(46,85,35,.08); border-bottom: 1px solid rgba(46,85,35,.3); padding: 5px 40px; font-size: 10px; color: var(--leaf); font-weight: 300; display: none; align-items: center; gap: 6px; letter-spacing: 0.04em; }
+
+/* ── PANELS ── */
+.panels { padding: 32px 40px; max-width: 1440px; margin: 0 auto; }
+.pan { display: none; }
+.pan.on { display: block; animation: fu .2s ease both; }
+@keyframes fu { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── GRID ── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-bottom: 1px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; margin-bottom: 1px; }
+.g5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 1px; margin-bottom: 1px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 20px 22px;
+}
+.card-eye {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--leaf);
+  font-weight: 400;
+  margin-bottom: 2px;
+}
+.card-sub { font-size: 10px; color: var(--text3); font-weight: 200; margin-bottom: 14px; }
+canvas { max-height: 200px; }
+
+/* ── STAT CARDS ── */
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--green);
+  border-radius: var(--r2);
+  padding: 20px;
+}
+.sc-section { font-size: 9px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 400; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.sc-row { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; border-bottom: 1px solid rgba(42,42,42,.5); }
+.sc-row:last-child { border-bottom: none; }
+.sc-k { font-size: 10px; color: var(--text3); font-weight: 200; }
+.sc-v { font-size: 13px; font-weight: 300; color: var(--white); }
+.sc-v2 { font-size: 10px; font-weight: 300; color: var(--text2); }
+
+/* ── BADGE ── */
+.bdg { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 400; letter-spacing: 0.04em; }
+.bdg-g { background: rgba(149,175,75,.15); color: #4a6b1e; border: 1px solid rgba(149,175,75,.35); }
+.bdg-m { background: rgba(141,207,196,.15); color: #2a7a72; border: 1px solid rgba(141,207,196,.35); }
+.bdg-h { background: rgba(125,148,66,.15); color: #4a6010; border: 1px solid rgba(125,148,66,.35); }
+.bdg-d { background: rgba(46,85,35,.1); color: var(--leaf); border: 1px solid rgba(46,85,35,.2); }
+
+/* ── TABLE ── */
+.tbl { width: 100%; border-collapse: collapse; font-size: 11px; }
+.tbl th {
+  text-align: left;
+  padding: 7px 12px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border2);
+  font-weight: 400;
+  white-space: nowrap;
+}
+.tbl td {
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(42,42,42,.5);
+  color: var(--text2);
+  font-weight: 200;
+  vertical-align: middle;
+}
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td { background: rgba(0,0,0,.02); }
+.tbl td:first-child { color: var(--text); font-weight: 300; }
+.tbl-num { text-align: right; font-variant-numeric: tabular-nums; }
+.up { color: var(--leaf); } .dn { color: var(--red); } .fl { color: var(--text3); }
+
+/* ── SECTION HEADER ── */
+.sec-hdr { margin-bottom: 20px; }
+.sec-hl {
+  font-size: 36px;
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.sec-hl .g { color: var(--green); }
+.sec-hl .l { color: var(--leaf); }
+.sec-sub { font-size: 11px; color: var(--text3); font-weight: 200; }
+
+/* ── INSIGHT CARDS ── */
+.ins-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--green);
+  border-radius: 0 var(--r2) var(--r2) 0;
+  padding: 20px 22px;
+  margin-bottom: 10px;
+}
+.ins-card.leaf { border-left-color: var(--leaf); }
+.ins-card.dew { border-left-color: var(--dew); }
+.ins-card.olive { border-left-color: var(--olive); }
+.ins-eye {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  font-weight: 400;
+  margin-bottom: 10px;
+}
+.ins-frame {
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 200;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+.ins-list { padding: 0; margin: 0; list-style: none; }
+.ins-list li {
+  padding: 5px 0 5px 14px;
+  border-left: 1px solid var(--border2);
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 200;
+  color: var(--text2);
+  line-height: 1.6;
+}
+.ins-list li:first-child {
+  font-weight: 400;
+  color: var(--text);
+  border-left-color: var(--leaf);
+  padding-left: 14px;
+}
+.ins-list li em { font-style: normal; color: var(--dew); font-weight: 400; }
+.ins-list li strong { font-weight: 500; color: var(--white); }
+.ins-ns {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: rgba(46,85,35,.15);
+  border: 1px solid rgba(46,85,35,.3);
+  border-radius: var(--r);
+}
+.ins-ns-lbl {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--leaf);
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+.ins-ns-body { font-size: 11px; color: var(--text2); font-weight: 200; line-height: 1.6; }
+
+/* ── COPY BLOCK ── */
+.copy-block {
+  margin-top: 20px;
+  padding: 14px 18px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.copy-lbl { font-size: 11px; color: var(--text3); font-weight: 200; }
+.copy-btn {
+  padding: 7px 16px;
+  background: var(--green);
+  color: var(--white);
+  border: none;
+  border-radius: var(--r);
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background .15s;
+}
+.copy-btn:hover { background: var(--leaf); }
+
+/* ── REC CARDS ── */
+.rec-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.rec-hdr {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.rec-hdr:hover { background: rgba(46,85,35,.04); }
+.rec-pri {
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.rec-pri.high { background: rgba(224,82,82,.08); color: #c0392b; border: 1px solid rgba(224,82,82,.25); }
+.rec-pri.med  { background: rgba(141,207,196,.12); color: #2a7a72; border: 1px solid rgba(141,207,196,.3); }
+.rec-pri.low  { background: rgba(149,175,75,.12); color: #4a6b1e; border: 1px solid rgba(149,175,75,.3); }
+.rec-tags { display: flex; gap: 4px; flex-shrink: 0; }
+.rec-title { font-size: 12px; font-weight: 300; color: var(--text); flex: 1; }
+.rec-chev { font-size: 10px; color: var(--text3); transition: transform .2s; flex-shrink: 0; }
+.rec-card.open .rec-chev { transform: rotate(180deg); }
+.rec-body { display: none; padding: 0 18px 18px; border-top: 1px solid var(--border); }
+.rec-card.open .rec-body { display: block; }
+.rec-sum { font-size: 12px; color: var(--text2); font-weight: 200; line-height: 1.6; padding: 12px 0 10px; }
+.rec-ns {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: rgba(46,85,35,.06);
+  border: 1px solid rgba(46,85,35,.15);
+  border-radius: var(--r);
+}
+.rec-ns-lbl {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--leaf);
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+.rec-ns ul { padding-left: 14px; }
+.rec-ns ul li { font-size: 11px; color: var(--text2); font-weight: 200; line-height: 1.65; margin-bottom: 3px; }
+.rec-impact { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.rec-pill {
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 300;
+  background: rgba(149,175,75,.12);
+  color: #4a6b1e;
+  border: 1px solid rgba(149,175,75,.25);
+}
+
+/* ── DISCREPANCY ── */
+.disc-row-ok td { }
+.disc-row-warn td:nth-child(5) { color: var(--dew); }
+.disc-row-alert td:nth-child(5) { color: var(--red); font-weight: 400; }
+
+/* ── MONTH CHIPS ── */
+.mrow { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; }
+.mchip {
+  padding: 3px 12px;
+  font-size: 10px;
+  font-weight: 300;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  background: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  transition: all .14s;
+}
+.mchip:hover { border-color: var(--leaf); color: var(--leaf); }
+.mchip.on { background: var(--green); color: var(--white); border-color: var(--green); }
+
+/* ── FOOTER ── */
+.ftr {
+  margin-top: 60px;
+  padding: 20px 40px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 200;
+  background: var(--bg2);
+}
+.ftr a { color: var(--leaf); text-decoration: none; }
+
+@media(max-width:960px){
+  .tb,.nav,.panels,.ftr,.segbar,.fsum,.hero{padding-left:20px;padding-right:20px;}
+  .g2,.g3,.g5{grid-template-columns:1fr;}
+  .hero-hl{font-size:36px;}
+  .sec-hl{font-size:36px;}
+}
 </style>
 </head>
 <body>
+
+<!-- TOPBAR -->
 <header class="tb">
-  <div class="lw"><div class="lm">🍏</div><div><div class="ln">Good Apple</div><div class="ls">Digital Media</div></div></div>
-  <div class="tr">
-    <span id="lu" style="font-size:10px;color:rgba(255,255,255,.4);font-family:'DM Mono',monospace"></span>
-    <div class="sp"><span class="sd" id="sd"></span><span id="st2">Not connected</span></div>
-    <button class="hb" id="bR" onclick="doRef()" style="display:none">↺ Refresh</button>
-    <button class="hb" id="bS" onclick="goSet()" style="display:none">⚙ Settings</button>
+  <div class="tb-left">
+    <div class="tb-logo">good <span>apple</span></div>
+    <div class="tb-divider"></div>
+    <div class="tb-client">brekiya &times; sem</div>
+  </div>
+  <div class="tb-right">
+    <span id="lu"></span>
+    <div class="tb-status"><span class="tb-dot" id="sd"></span><span id="st2">not connected</span></div>
+    <button class="tb-btn" id="bR" onclick="doRef()" style="display:none">refresh</button>
+    <button class="tb-btn" id="bS" onclick="goSet()" style="display:none">settings</button>
   </div>
 </header>
 
+<!-- CONNECT -->
 <div class="cw" id="cW">
   <div class="cc">
-    <div class="cl"><div class="clm">🍏</div><div><div style="font-weight:600;font-size:16px">Good Apple Digital</div><div style="font-size:11px;color:var(--t3)">Brekiya SEM Dashboard</div></div></div>
-    <div class="ct">Connect your data</div>
-    <div class="cd">Enter your Google Sheets API key once — it saves locally and auto-connects every time.</div>
-    <div class="fi"><label class="fl">Google Sheets API Key</label><input type="password" id="fK" placeholder="AIza..."/><div class="hn">From <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a>. Sheets API must be enabled.</div></div>
-    <div class="fi"><label class="fl">Spreadsheet ID</label><input type="text" id="fI" placeholder="The ID between /d/ and /edit in your Sheet URL"/></div>
-    <div class="fi"><label class="fl">Tab Name</label><input type="text" id="fT" value="Sheet1"/><div class="hn">Exact tab name shown at the bottom of your Google Sheet.</div></div>
-    <div class="eb" id="eB"></div>
-    <div class="db" id="dB"></div>
-    <div class="ca">
-      <button class="cb cbp" id="bC" onclick="doConn()">Connect &amp; Load</button>
-      <button class="cb cbg" onclick="loadDemo()">Load Demo</button>
-      <button class="cb cbg" id="bCl" onclick="clrC()" style="display:none">Clear Saved</button>
+    <div class="cc-hl"><span class="g">connect</span> <span class="l">your data</span></div>
+    <div class="cc-sub">enter your google sheets api key once — it saves locally and auto-connects on every visit.</div>
+    <div class="cc-field">
+      <label class="cc-lbl">api key</label>
+      <input type="password" id="fK" placeholder="AIza..."/>
+      <div class="cc-hint">from <a href="https://console.cloud.google.com/apis/credentials" target="_blank">google cloud console</a> — sheets api must be enabled.</div>
     </div>
-    <hr class="cdv">
-    <div class="cs">
-      <div class="csi"><div class="csn">1</div><div>Sheet must be <strong>"Anyone with the link can view"</strong></div></div>
-      <div class="csi"><div class="csn">2</div><div><strong>Google Sheets API</strong> must be enabled in Cloud project</div></div>
-      <div class="csi"><div class="csn">3</div><div>Paste only the <strong>Spreadsheet ID</strong> — not the full URL</div></div>
+    <div class="cc-field">
+      <label class="cc-lbl">spreadsheet id</label>
+      <input type="text" id="fI" placeholder="the id between /d/ and /edit in your sheet url"/>
+    </div>
+    <div class="cc-field">
+      <label class="cc-lbl">tab name</label>
+      <input type="text" id="fT" value="Looker_SEM_Summary"/>
+      <div class="cc-hint">default: Looker_SEM_Summary — the tab written by the daily apps script pipeline.</div>
+    </div>
+    <div class="cc-err" id="eB"></div>
+    <div class="cc-dbg" id="dB"></div>
+    <div class="cc-actions">
+      <button class="btn-primary" id="bC" onclick="doConn()">connect &amp; load</button>
+      <button class="btn-ghost" onclick="loadDemo()">load demo</button>
+      <button class="btn-ghost" id="bCl" onclick="clrC()" style="display:none">clear saved</button>
+    </div>
+    <hr class="cc-div">
+    <div class="cc-steps">
+      <div class="cc-step"><div class="cc-sn">1</div><div>sheet must be <strong style="font-weight:400;color:var(--text)">"anyone with the link can view"</strong></div></div>
+      <div class="cc-step"><div class="cc-sn">2</div><div>google sheets api must be enabled in your cloud project</div></div>
+      <div class="cc-step"><div class="cc-sn">3</div><div>run the apps script pipeline at least once to populate the looker_sem_summary tab</div></div>
     </div>
   </div>
 </div>
 
+<!-- DASHBOARD -->
 <div id="dash" style="display:none">
+
+  <!-- HERO -->
   <div class="hero">
-    <div class="hd" id="hDt"></div>
-    <div class="hn2">Welcome back, <em>Jill!</em></div>
-    <div class="hs">Brekiya SEM performance snapshot - Good Apple Digital</div>
-    <div class="hst" id="hSt"></div>
+    <div class="hero-date" id="hDt"></div>
+    <div class="hero-hl"><span class="g">brekiya</span> <span class="l">sem</span> <span class="d">dashboard</span></div>
+    <div class="hero-sub">good apple digital &mdash; paid search reporting</div>
+    <div class="hero-stats" id="hSt"></div>
   </div>
-  <div class="st" id="stp"></div>
+
+  <!-- NAV -->
   <nav class="nav">
-    <button class="nt on" onclick="sw('mom',this)">Month-over-Month</button>
-    <button class="nt" onclick="sw('camps',this)">Campaigns</button>
-    <button class="nt" onclick="sw('conv',this)">Conversions</button>
-    <button class="nt" onclick="sw('ins',this)">Insights</button>
-    <button class="nt" onclick="sw('recs',this)">Recommendations</button>
+    <button class="nt on" onclick="sw('overview',this)">overview</button>
+    <button class="nt" onclick="sw('hcp',this)">hcp paid search</button>
+    <button class="nt" onclick="sw('dtc',this)">dtc paid search</button>
+    <button class="nt" onclick="sw('insights',this)">insights</button>
+    <button class="nt" onclick="sw('recs',this)">recommendations</button>
+    <button class="nt" onclick="sw('disc',this)">discrepancy</button>
   </nav>
-  <div class="sb" id="segb">
-    <div class="sr">
-      <span class="sl">Platform</span><div class="sc" id="pC"></div>
-      <div class="sdv"></div>
-      <span class="sl">Audience</span><div class="sc" id="aC"></div>
-      <div class="sdv"></div>
-      <span class="sl">Month</span><div class="sc" id="mC"></div>
-      <button class="sr2" onclick="rst()">Reset all</button>
-    </div>
+
+  <!-- SEG BAR -->
+  <div class="segbar" id="segbar">
+    <span class="seg-lbl">platform</span>
+    <div class="seg-chips" id="pC"></div>
+    <div class="seg-div"></div>
+    <span class="seg-lbl">audience</span>
+    <div class="seg-chips" id="aC"></div>
+    <button class="seg-rst" onclick="rst()">reset</button>
   </div>
-  <div class="fs" id="fS"><span>Filtered:</span><span id="fT2"></span></div>
-  <div class="pn">
-    <div class="pan on" id="pan-mom">
+  <div class="fsum" id="fS"><span>filtered:</span><span id="fT2"></span></div>
+
+  <div class="panels">
+
+    <!-- OVERVIEW -->
+    <div class="pan on" id="pan-overview">
+      <div class="sec-hdr">
+        <div class="sec-hl"><span class="g">program</span> <span class="l">overview</span></div>
+        <div class="sec-sub" id="ovSub">combined hcp + dtc paid search performance</div>
+      </div>
+      <div class="g3" style="margin-bottom:16px" id="ovCards"></div>
       <div class="g2">
-        <div class="card"><div class="ce">Spend by Platform &amp; Audience</div><div class="csu">Monthly stacked</div><canvas id="cSp"></canvas></div>
-        <div class="card"><div class="ce">Clicks &amp; Impressions</div><div class="csu">Total across all segments</div><canvas id="cCl"></canvas></div>
+        <div class="card"><div class="card-eye">spend by channel</div><div class="card-sub">all channels</div><canvas id="cSpCh"></canvas></div>
+        <div class="card"><div class="card-eye">visits by channel</div><div class="card-sub">site visits breakdown</div><canvas id="cViCh"></canvas></div>
       </div>
       <div class="g2">
-        <div class="card"><div class="ce">CTR by Segment</div><div class="csu">Google vs Microsoft</div><canvas id="cCT"></canvas></div>
-        <div class="card"><div class="ce">Avg CPC by Segment</div><div class="csu">Month over month</div><canvas id="cCP"></canvas></div>
+        <div class="card"><div class="card-eye">hcp vs dtc — spend</div><div class="card-sub">paid search only</div><canvas id="cHDSpend"></canvas></div>
+        <div class="card"><div class="card-eye">hcp vs dtc — qualified visits</div><div class="card-sub">paid search only</div><canvas id="cHDQV"></canvas></div>
       </div>
     </div>
 
-    <div class="pan" id="pan-camps">
-      <div class="mr" id="cMr"></div>
-      <div class="card" style="overflow-x:auto">
-        <div class="ce">Campaign &amp; Ad Group Performance</div><div class="csu" id="cSL">Top 30 by clicks</div>
-        <table class="tb2"><thead><tr><th>Platform</th><th>Audience</th><th>Campaign</th><th>Ad Group</th><th style="text-align:right">Impr.</th><th style="text-align:right">Clicks</th><th style="text-align:right">CTR</th><th style="text-align:right">CPC</th><th style="text-align:right">Spend</th><th style="text-align:right">MoM CTR</th><th style="text-align:right">MoM Clicks</th><th style="text-align:right">MoM Spend</th></tr></thead><tbody id="cBd"></tbody></table>
+    <!-- HCP -->
+    <div class="pan" id="pan-hcp">
+      <div class="sec-hdr">
+        <div class="sec-hl"><span class="g">hcp</span> <span class="l">paid search</span></div>
+        <div class="sec-sub">healthcare provider sem performance</div>
       </div>
-    </div>
-    <div class="pan" id="pan-conv">
+      <div class="g3" style="margin-bottom:16px" id="hcpCards"></div>
       <div class="g2">
-        <div class="card"><div class="ce">DTC vs HCP QV Rate</div><div class="csu">Qualified visit rate by audience</div><canvas id="cQV"></canvas></div>
-        <div class="card"><div class="ce">DTC Weighted KSA Value</div><div class="csu">Total conversion value by month</div><canvas id="cKS"></canvas></div>
+        <div class="card"><div class="card-eye">hcp keyword performance</div><div class="card-sub">top keywords by qualified visits</div><canvas id="cHCPKW"></canvas></div>
+        <div class="card"><div class="card-eye">hcp publisher performance</div><div class="card-sub">google vs microsoft</div><canvas id="cHCPPub"></canvas></div>
       </div>
-      <div class="card" style="overflow-x:auto">
-        <div class="ce">Top Converting Ad Groups</div><div class="csu">Rows with HCP or DTC qualified visit activity</div>
-        <table class="tb2"><thead><tr><th>Platform</th><th>Audience</th><th>Month</th><th>Ad Group</th><th style="text-align:right">HCP QV Rate</th><th style="text-align:right">DTC QV Rate</th><th style="text-align:right">HCP QV Actions</th><th style="text-align:right">Rep Clicks</th><th style="text-align:right">KSA Value</th></tr></thead><tbody id="cvBd"></tbody></table>
+      <div class="card" style="margin-top:16px;overflow-x:auto">
+        <div class="card-eye">hcp search keyword detail</div>
+        <div class="card-sub">impressions, clicks, ctr, site visits, qvr, spend</div>
+        <table class="tbl"><thead><tr><th>keyword</th><th class="tbl-num">impr.</th><th class="tbl-num">clicks</th><th class="tbl-num">ctr</th><th class="tbl-num">site visits</th><th class="tbl-num">qvr</th><th class="tbl-num">spend</th></tr></thead><tbody id="hcpKWTbl"></tbody></table>
       </div>
     </div>
-    <div class="pan" id="pan-ins">
-      <div class="is"><div class="it">Month-over-Month Overview</div><div class="isu" id="iOS"></div><div class="il" id="iOv"></div></div>
-      <div class="is"><div class="it">Conversion &amp; QV Signals</div><div class="isu">Qualified visit trends by segment</div><div class="il" id="iCv"></div></div>
+
+    <!-- DTC -->
+    <div class="pan" id="pan-dtc">
+      <div class="sec-hdr">
+        <div class="sec-hl"><span class="g">dtc</span> <span class="l">paid search</span></div>
+        <div class="sec-sub">direct-to-consumer sem performance</div>
+      </div>
+      <div class="g3" style="margin-bottom:16px" id="dtcCards"></div>
+      <div class="g2">
+        <div class="card"><div class="card-eye">dtc keyword performance</div><div class="card-sub">top keywords by qualified visits</div><canvas id="cDTCKW"></canvas></div>
+        <div class="card"><div class="card-eye">dtc publisher performance</div><div class="card-sub">google vs microsoft</div><canvas id="cDTCPub"></canvas></div>
+      </div>
+      <div class="card" style="margin-top:16px;overflow-x:auto">
+        <div class="card-eye">dtc search keyword detail</div>
+        <div class="card-sub">impressions, clicks, ctr, site visits, qvr, spend</div>
+        <table class="tbl"><thead><tr><th>keyword</th><th class="tbl-num">impr.</th><th class="tbl-num">clicks</th><th class="tbl-num">ctr</th><th class="tbl-num">site visits</th><th class="tbl-num">qvr</th><th class="tbl-num">spend</th></tr></thead><tbody id="dtcKWTbl"></tbody></table>
+      </div>
     </div>
+
+    <!-- INSIGHTS -->
+    <div class="pan" id="pan-insights">
+      <div class="sec-hdr">
+        <div class="sec-hl"><span class="g">search</span> <span class="l">insights</span></div>
+        <div class="sec-sub" id="insSub">fact-checked insights ready to copy into your report</div>
+      </div>
+      <div id="insCards"></div>
+      <div class="copy-block">
+        <div class="copy-lbl">copy all insights as plain text — ready to paste into your report</div>
+        <button class="copy-btn" id="copyBtn" onclick="copyIns()">copy insights</button>
+      </div>
+    </div>
+
+    <!-- RECOMMENDATIONS -->
     <div class="pan" id="pan-recs">
-      <div class="rs"><div class="rtt">CTR Improvement</div><div class="rsu">Tactical recommendations to improve click-through rates</div><div class="rl" id="rCT"></div></div>
-      <div class="rs"><div class="rtt">Conversion Actions</div><div class="rsu">Opportunities to improve qualified visits and KSA value</div><div class="rl" id="rCv"></div></div>
-      <div class="rs"><div class="rtt">Cost Efficiency</div><div class="rsu">Budget reallocation and CPC optimization</div><div class="rl" id="rCo"></div></div>
+      <div class="sec-hdr">
+        <div class="sec-hl"><span class="g">recommendations</span></div>
+        <div class="sec-sub">prioritized actions based on current performance</div>
+      </div>
+      <div style="margin-bottom:20px">
+        <div style="font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;font-weight:400">ctr improvement</div>
+        <div id="rCTR"></div>
+      </div>
+      <div style="margin-bottom:20px">
+        <div style="font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;font-weight:400">conversion actions</div>
+        <div id="rConv"></div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;font-weight:400">cost efficiency</div>
+        <div id="rCost"></div>
+      </div>
     </div>
+
+    <!-- DISCREPANCY -->
+    <div class="pan" id="pan-disc">
+      <div class="sec-hdr">
+        <div class="sec-hl"><span class="g">data</span> <span class="l">discrepancy</span></div>
+        <div class="sec-sub">looker csv vs google sheets ytd data — cost, impressions, clicks</div>
+      </div>
+      <div style="margin-bottom:16px;padding:14px 18px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r2)">
+        <div style="font-size:11px;color:var(--text2);font-weight:200;line-height:1.6;margin-bottom:12px">
+          to run a discrepancy check, enter your <strong style="font-weight:400;color:var(--text)">YTD sheet tab name</strong> below.
+          the dashboard will compare the most recent looker data against the matching rows in your ytd google sheet.
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <input type="text" id="ytdTab" placeholder="Brekiya_YTD Data" style="width:220px;font-size:11px;padding:7px 12px"/>
+          <button onclick="runDisc()" class="btn-primary" style="font-size:11px;padding:7px 16px">run comparison</button>
+        </div>
+        <div id="discErr" style="font-size:11px;color:var(--red);margin-top:8px;display:none"></div>
+      </div>
+      <div id="discResults" style="display:none">
+        <div class="card" style="overflow-x:auto;margin-bottom:16px">
+          <div class="card-eye">discrepancy summary</div>
+          <div class="card-sub">differences &gt;5% flagged in amber — differences &gt;15% flagged in red</div>
+          <table class="tbl" id="discTbl">
+            <thead><tr>
+              <th>metric</th><th>segment</th>
+              <th class="tbl-num">looker</th>
+              <th class="tbl-num">google sheets</th>
+              <th class="tbl-num">difference</th>
+              <th class="tbl-num">% diff</th>
+              <th>status</th>
+            </tr></thead>
+            <tbody id="discBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div>
-  <footer class="ft">
-    <span>Good Apple Digital - Brekiya SEM Dashboard - <span id="fDt"></span></span>
-    <span>Live from Google Sheets - <a href="https://github.com/bianca597/brekiya-dashboard" target="_blank">github.com/bianca597/brekiya-dashboard</a></span>
+
+  <footer class="ftr">
+    <span>good apple digital &mdash; brekiya sem dashboard &mdash; <span id="fDt"></span></span>
+    <span>auto-updated daily via looker pipeline &mdash; <a href="https://github.com/bianca597/brekiya-dashboard" target="_blank">github</a></span>
   </footer>
 </div>
 
 <script>
-var SK='brk_v6',MO=['2026 M01','2026 M02','2026 M03','2026 M04','2026 M05','2026 M06','2026 M07','2026 M08','2026 M09','2026 M10','2026 M11','2026 M12'];
-var ML={'2026 M01':'Jan','2026 M02':'Feb','2026 M03':'Mar','2026 M04':'Apr','2026 M05':'May','2026 M06':'Jun','2026 M07':'Jul','2026 M08':'Aug','2026 M09':'Sep','2026 M10':'Oct','2026 M11':'Nov','2026 M12':'Dec'};
-var SC={'Google|DTC':'#3D7A4E','Google|HCP':'#1A73E8','Microsoft|DTC':'#5BA670','Microsoft|HCP':'#00617A'};
-var STABS=['camps','conv','ins','recs'];
-var rows=[],charts={},cMo=null,K='',ID='',TAB='',fP=null,fA=null,fM=null,curT='mom';
+var SK='brk_v7';
+var K='',ID='',TAB='Looker_SEM_Summary';
+var lookerData={},ytdRows=[],charts={};
+var fP=null,fA=null,curT='overview';
+var STABS=['hcp','dtc','insights','recs'];
 
 document.getElementById('hDt').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
 document.getElementById('fDt').textContent=new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'});
 
+// ── CREDS ──────────────────────────────────────────────
 function svc(k,id,t){localStorage.setItem(SK,JSON.stringify({k:k,id:id,t:t}));}
 function ldc(){try{return JSON.parse(localStorage.getItem(SK)||'null');}catch(e){return null;}}
-function clrC(){localStorage.removeItem(SK);document.getElementById('bCl').style.display='none';document.getElementById('fK').value='';document.getElementById('fI').value='';alert('Cleared.');}
+function clrC(){localStorage.removeItem(SK);document.getElementById('bCl').style.display='none';document.getElementById('fK').value='';document.getElementById('fI').value='';alert('cleared.');}
 
 window.addEventListener('load',function(){
   var c=ldc();
   if(c&&c.k&&c.id){
     document.getElementById('fK').value=c.k;
     document.getElementById('fI').value=c.id;
-    document.getElementById('fT').value=c.t||'Sheet1';
+    document.getElementById('fT').value=c.t||TAB;
     document.getElementById('bCl').style.display='inline-block';
-    K=c.k;ID=c.id;TAB=c.t||'Sheet1';
-    document.getElementById('st2').textContent='Auto-connecting...';
+    K=c.k;ID=c.id;TAB=c.t||TAB;
+    document.getElementById('st2').textContent='auto-connecting...';
     fetchD().catch(function(e){shE(e.message);shD(e);});
-  }else{document.getElementById('st2').textContent='Not connected';}
+  }
 });
 
 function doConn(){
   hdE();
   K=document.getElementById('fK').value.trim();
   ID=document.getElementById('fI').value.trim();
-  TAB=document.getElementById('fT').value.trim()||'Sheet1';
-  if(!K){shE('Please enter your API key.');return;}
-  if(!ID){shE('Please enter the Spreadsheet ID.');return;}
+  TAB=document.getElementById('fT').value.trim()||'Looker_SEM_Summary';
+  if(!K){shE('please enter your api key.');return;}
+  if(!ID){shE('please enter the spreadsheet id.');return;}
   var m=ID.match(/\/d\/([a-zA-Z0-9_-]+)/);
   if(m){ID=m[1];document.getElementById('fI').value=ID;}
   var btn=document.getElementById('bC');
-  btn.disabled=true;btn.textContent='Connecting...';
-  fetchD().then(function(){
-    svc(K,ID,TAB);
-    document.getElementById('bCl').style.display='inline-block';
-  }).catch(function(e){
-    shE(e.message||'Connection failed.');shD(e);
-    btn.disabled=false;btn.textContent='Connect & Load';
-  });
+  btn.disabled=true;btn.textContent='connecting...';
+  fetchD().then(function(){svc(K,ID,TAB);document.getElementById('bCl').style.display='inline-block';}).catch(function(e){shE(e.message);shD(e);btn.disabled=false;btn.textContent='connect & load';});
 }
 
-function doRef(){document.getElementById('st2').textContent='Refreshing...';fetchD().catch(function(e){document.getElementById('st2').textContent='Refresh failed';shD(e);});}
-function goSet(){
-  document.getElementById('dash').style.display='none';
-  document.getElementById('cW').style.display='flex';
-  document.getElementById('bR').style.display='none';
-  document.getElementById('bS').style.display='none';
-  document.getElementById('bC').disabled=false;
-  document.getElementById('bC').textContent='Connect & Load';
-}
+function doRef(){document.getElementById('st2').textContent='refreshing...';fetchD().catch(function(e){document.getElementById('st2').textContent='refresh failed';shD(e);});}
+function goSet(){document.getElementById('dash').style.display='none';document.getElementById('cW').style.display='flex';document.getElementById('bR').style.display='none';document.getElementById('bS').style.display='none';document.getElementById('bC').disabled=false;document.getElementById('bC').textContent='connect & load';}
 
+// ── FETCH ──────────────────────────────────────────────
 function fetchD(){
   var url='https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(ID)+'/values/'+encodeURIComponent(TAB)+'?key='+encodeURIComponent(K)+'&valueRenderOption=FORMATTED_VALUE';
   return fetch(url).then(function(res){
-    if(!res.ok){
-      return res.json().catch(function(){return{};}).then(function(j){
-        var msg=j&&j.error?j.error.message:'HTTP '+res.status;
-        if(res.status===400)throw new Error('Bad request - check your Spreadsheet ID. ('+msg+')');
-        if(res.status===403)throw new Error('Access denied - sheet must be public and Sheets API must be enabled. ('+msg+')');
-        if(res.status===404)throw new Error('Not found - check the tab name matches exactly. ('+msg+')');
-        throw new Error('API error '+res.status+': '+msg);
-      });
-    }
+    if(!res.ok){return res.json().catch(function(){return{};}).then(function(j){var msg=j&&j.error?j.error.message:'HTTP '+res.status;if(res.status===403)throw new Error('access denied — sheet must be public and sheets api must be enabled. ('+msg+')');if(res.status===404)throw new Error('not found — check the tab name. ('+msg+')');throw new Error('api error '+res.status+': '+msg);});}
     return res.json();
   }).then(function(j){
     var raw=j.values||[];
-    if(raw.length<2)throw new Error('Sheet returned only '+raw.length+' rows. Check the tab name - it must match exactly.');
-    rows=pR(raw);
-    if(!rows.length)throw new Error('No valid rows found. Check Account name and Month columns exist.');
+    if(raw.length<2)throw new Error('tab "'+TAB+'" has no data. run the apps script pipeline first.');
+    parseLooker(raw);
     shDash();
   });
 }
 
-function pR(raw){
-  var h=raw[0].map(function(x){return(x||'').toString().trim().replace(/\s+/g,' ');});
-  var out=[];
+// ── PARSE LOOKER SUMMARY ───────────────────────────────
+function parseLooker(raw){
+  lookerData={};
+  var hdrs=raw[0].map(function(h){return(h||'').toString().trim().toLowerCase();});
+  var runDate='',dateIdx=hdrs.indexOf('run date'),metIdx=hdrs.indexOf('metric'),secIdx=hdrs.indexOf('section'),v1Idx=hdrs.indexOf('value'),v2Idx=hdrs.indexOf('value2'),v3Idx=hdrs.indexOf('value3');
   for(var i=1;i<raw.length;i++){
-    var cells=raw[i]||[];if(!cells.length)continue;
-    var o={};h.forEach(function(k,j){o[k]=(cells[j]!==undefined?cells[j]:'').toString().trim();});
-    var ac=o['Account name']||o['Account Name']||'';
-    var mo=o['Month']||o['month']||'';
-    if(!ac||!mo||!mo.match(/20\d\d\s*M\d\d?/))continue;
-    o['Month']=mo.replace(/\s+/g,' ').trim();
-    o['Account name']=ac.trim();
-    out.push(o);
+    var r=raw[i]||[];
+    if(!r.length)continue;
+    var date=r[dateIdx]||'';
+    var metric=(r[metIdx]||'').trim();
+    var section=(r[secIdx]||'').trim();
+    var v1=(r[v1Idx]||'').trim();
+    var v2=(r[v2Idx]||'').trim();
+    var v3=(r[v3Idx]||'').trim();
+    if(!metric||!section)continue;
+    if(date>runDate)runDate=date;
+    var key=section+'|'+metric;
+    if(!lookerData[key])lookerData[key]=[];
+    lookerData[key].push({v1:v1,v2:v2,v3:v3,date:date});
   }
-  return out;
+  lookerData._runDate=runDate;
 }
 
-function gPl(r){var t=(r['Account Type']||r['Account type']||'').toLowerCase();return(t.includes('microsoft')||t.includes('bing'))?'Microsoft':'Google';}
-function gAu(r){return(r['Account name']||'').toUpperCase().includes('HCP')?'HCP':'DTC';}
-function fR(rs){return rs.filter(function(r){return(!fP||gPl(r)===fP)&&(!fA||gAu(r)===fA)&&(!fM||r['Month']===fM);});}
-
-function n(v,pct){
-  if(!v||v==='--'||v===''||v==='0')return 0;
-  var s=v.toString().replace(/[$,\s]/g,'');if(!s)return 0;
-  if(s.endsWith('%')){var x=parseFloat(s);return isNaN(x)?0:x;}
-  var x=parseFloat(s);if(isNaN(x))return 0;
-  if(pct&&x>0&&x<1)return x*100;
-  return x;
+function getLooker(section,metric){
+  var key=section+'|'+metric;
+  var rows=lookerData[key]||[];
+  if(!rows.length)return null;
+  return rows[rows.length-1];
 }
-function gc(r){return n(r['Clicks']);}
-function gi(r){return n(r['Impr.'])||n(r['Impr'])||n(r['Impressions']);}
-function gs(r){return n(r['Cost']);}
-function gpc(r){return n(r['Avg. CPC'])||n(r['Avg CPC']);}
-function gtr(r){return n(r['CTR'],true);}
-function ghq(r){return n(r['Brekiya - HCP QV Rate'],true);}
-function gdq(r){return n(r['Brekiya - DTC QV Rate'],true);}
-function gksa(r){return n(r['Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)'])||n(r['Brekiya - DTC Weighted KSAs 2025 (TOTAL)']);}
-function ghqa(r){return n(r['Brekiya - HCP QV - 2P + Action']);}
-function grc(r){return n(r['Brekiya - HCP - Request A Rep Click']);}
-function fm(v){return'$'+Math.round(v||0).toLocaleString();}
-function fk(v){return(v||0)>=1000?((v||0)/1000).toFixed(1)+'k':Math.round(v||0).toString();}
-function fp(v){return(v||0).toFixed(2)+'%';}
-function fd(v){return'$'+(v||0).toFixed(2);}
-function dl(a,b){if(!b)return'--';var d=((a-b)/b*100);return(d>=0?'+':'')+d.toFixed(1)+'%';}
-function pc(a,b){if(!b)return null;return((a-b)/b*100);}
-function de(ch){if(ch===null)return'<span class="df">--</span>';var c=Math.abs(ch)<5?'df':(ch>0?'du':'dd');return'<span class="'+c+'">'+(ch>=0?'+':'')+ch.toFixed(1)+'%</span>';}
-function gMo(){var f=new Set(rows.map(function(r){return r['Month'];}));return MO.filter(function(m){return f.has(m);});}
-function ag(rs){var cp=rs.filter(function(r){return gpc(r)>0;}),ct=rs.filter(function(r){return gtr(r)>0;});return{s:rs.reduce(function(t,r){return t+gs(r);},0),cl:rs.reduce(function(t,r){return t+gc(r);},0),im:rs.reduce(function(t,r){return t+gi(r);},0),ct:ct.length?ct.reduce(function(t,r){return t+gtr(r);},0)/ct.length:0,cp:cp.length?cp.reduce(function(t,r){return t+gpc(r);},0)/cp.length:0};}
-function agM(m,p,a){return ag(rows.filter(function(r){return r['Month']===m&&(!p||gPl(r)===p)&&(!a||gAu(r)===a);}));}
+function getLookerAll(section,metric){
+  var key=section+'|'+metric;
+  return lookerData[key]||[];
+}
 
+// Parse number from Looker value (strips $, %, commas)
+function pn(v){if(!v)return 0;return parseFloat(v.toString().replace(/[$,%,\s]/g,'').replace(/,/g,''))||0;}
+function pp(v){if(!v)return 0;var n=parseFloat(v.toString().replace(/[%,\s]/g,''));return isNaN(n)?0:n;}
+
+function fmt$(v){return'$'+Math.round(v||0).toLocaleString();}
+function fmtK(v){return(v||0)>=1000?((v||0)/1000).toFixed(1)+'k':Math.round(v||0).toString();}
+function fmtPct(v){return(v||0).toFixed(2)+'%';}
+function fmtDelta(a,b){if(!b)return'—';var d=((a-b)/b*100);return(d>=0?'+':'')+d.toFixed(1)+'%';}
+function deltaClass(d){if(Math.abs(d)<1)return'fl';return d>0?'up':'dn';}
+
+// ── SHOW DASH ──────────────────────────────────────────
 function shDash(){
   document.getElementById('cW').style.display='none';
   document.getElementById('dash').style.display='block';
   document.getElementById('bR').style.display='inline-block';
   document.getElementById('bS').style.display='inline-block';
   document.getElementById('sd').classList.add('live');
-  document.getElementById('st2').textContent=rows.length+' rows - live';
-  document.getElementById('lu').textContent='Updated '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('st2').textContent='live — '+( lookerData._runDate||'today');
+  document.getElementById('lu').textContent='updated '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
   bAll();
 }
-function bAll(){bHero();bStrip();bMoM();bCamps();bConv();bIns();bRecs();}
+function bAll(){bHero();bOverview();bHCP();bDTC();bIns();bRecs();}
 
+// ── HERO ───────────────────────────────────────────────
 function bHero(){
-  var mos=gMo();if(!mos.length)return;
-  var lat=mos[mos.length-1],prv=mos.length>1?mos[mos.length-2]:null;
-  var cur=agM(lat),prev=prv?agM(prv):null,lbl=ML[lat]||lat,plbl=prv?(ML[prv]||''):'';
-  var cK=rows.filter(function(r){return r['Month']===lat;}).reduce(function(t,r){return t+gksa(r);},0);
-  var pK=prv?rows.filter(function(r){return r['Month']===prv;}).reduce(function(t,r){return t+gksa(r);},0):0;
-  var bH=rows.filter(function(r){return r['Month']===lat&&ghq(r)>0;}).sort(function(a,b){return ghq(b)-ghq(a);})[0];
-  var sts=[
-    {l:lbl+' Spend',v:fm(cur.s),d:prev?dl(cur.s,prev.s):'',dc:prev?(cur.s>=prev.s?'up':'dn'):'fl'},
-    {l:lbl+' Clicks',v:fk(cur.cl),d:prev?dl(cur.cl,prev.cl):'',dc:prev?(cur.cl>=prev.cl?'up':'dn'):'fl'},
-    {l:lbl+' CTR',v:fp(cur.ct),d:prev?dl(cur.ct,prev.ct):'',dc:prev?(cur.ct>=prev.ct?'up':'dn'):'fl'},
-    {l:lbl+' KSA',v:fm(cK),d:prev?dl(cK,pK):'',dc:prev?(cK>=pK?'up':'dn'):'fl'},
-    {l:'Top HCP QV Rate',v:bH?ghq(bH).toFixed(0)+'%':'--',su:bH?(bH['Ad group']||'').slice(0,20):'This month',d:''},
+  var spend=getLooker('Combined','Media Spend');
+  var clicks=getLooker('Combined','Clicks');
+  var visits=getLooker('Combined','Qualified Visits');
+  var qvr=getLooker('Combined','QVR');
+  var hcpSpend=getLooker('HCP','Media Spend');
+  var dtcSpend=getLooker('DTC','Media Spend');
+
+  var stats=[
+    {l:'total spend',v:spend?spend.v1:'—',sub:''},
+    {l:'total clicks',v:clicks?clicks.v1:'—',sub:clicks?clicks.v2:''},
+    {l:'qualified visits',v:visits?visits.v1:'—',sub:visits?visits.v2+' cpqv':''},
+    {l:'qvr',v:qvr?qvr.v1:'—',sub:'qualified visit rate'},
+    {l:'hcp spend',v:hcpSpend?hcpSpend.v1:'—',sub:''},
+    {l:'dtc spend',v:dtcSpend?dtcSpend.v1:'—',sub:''},
   ];
-  document.getElementById('hSt').innerHTML=sts.map(function(s){return'<div class="ht"><div class="hl">'+s.l+'</div><div class="hv">'+s.v+'</div>'+(s.d?'<div class="hdl '+s.dc+'">'+s.d+' vs '+plbl+'</div>':'<div class="hsu">'+(s.su||'')+'</div>')+'</div>';}).join('');
+
+  document.getElementById('hSt').innerHTML=stats.map(function(s){
+    return'<div class="hstat"><div class="hstat-lbl">'+s.l+'</div><div class="hstat-val">'+s.v+'</div><div class="hstat-d fl">'+s.sub+'</div></div>';
+  }).join('');
 }
 
-function bStrip(){
-  var mos=gMo();if(!mos.length)return;
-  var cur=agM(mos[mos.length-1]),prv=mos.length>1?agM(mos[mos.length-2]):null;
-  var lbl=ML[mos[mos.length-1]]||mos[mos.length-1],plbl=prv?(ML[mos[mos.length-2]]||''):'';
-  var ts=[{l:'Total Spend',v:fm(cur.s),d:prv?dl(cur.s,prv.s):'--',iv:false},{l:'Total Clicks',v:fk(cur.cl),d:prv?dl(cur.cl,prv.cl):'--',iv:false},{l:'Impressions',v:fk(cur.im),d:prv?dl(cur.im,prv.im):'--',iv:false},{l:'Avg CTR',v:fp(cur.ct),d:prv?dl(cur.ct,prv.ct):'--',iv:false},{l:'Avg CPC',v:fd(cur.cp),d:prv?dl(cur.cp,prv.cp):'--',iv:true}];
-  document.getElementById('stp').innerHTML=ts.map(function(t){var pos=t.d!=='--'&&t.d.startsWith('+');var c=t.d==='--'?'fl':(t.iv?(pos?'dn':'up'):(pos?'up':'dn'));return'<div class="sti"><div class="stl">'+t.l+' - '+lbl+'</div><div class="stv">'+t.v+'</div><div class="std '+c+'">'+t.d+(t.d!=='--'&&plbl?' vs '+plbl:'')+'</div></div>';}).join('');
-}
+// ── OVERVIEW ───────────────────────────────────────────
+function bOverview(){
+  var spend=getLooker('Combined','Media Spend');
+  var clicks=getLooker('Combined','Clicks');
+  var visits=getLooker('Combined','Qualified Visits');
+  var qvr=getLooker('Combined','QVR');
+  var hcpSpend=getLooker('HCP','Media Spend');
+  var dtcSpend=getLooker('DTC','Media Spend');
 
-function bSeg(){
-  var mos=gMo();
-  function mkChips(elId,vals,cur,fn){
-    var h='<button class="sch all'+(cur===null?' on':'')+'" onclick="'+fn+'(null,this)">All</button>';
-    vals.forEach(function(v){h+='<button class="sch'+(cur===v?' on':'')+'" onclick="'+fn+'(\''+v+'\',this)">'+v+'</button>';});
-    document.getElementById(elId).innerHTML=h;
+  document.getElementById('ovCards').innerHTML=[
+    mkStatCard('combined program',[ ['media spend',spend?spend.v1:'—'], ['clicks',clicks?clicks.v1:'—'], ['ctr',clicks?clicks.v2:'—'] ]),
+    mkStatCard('qualified visits',[ ['total qvs',visits?visits.v1:'—'], ['cpqv',visits?visits.v2:'—'], ['qvr',qvr?qvr.v1:'—'] ]),
+    mkStatCard('hcp vs dtc spend',[ ['hcp spend',hcpSpend?hcpSpend.v1:'—'], ['dtc spend',dtcSpend?dtcSpend.v1:'—'], ['ratio',hcpSpend&&dtcSpend?Math.round(pn(hcpSpend.v1)/pn(dtcSpend.v1)*100)+'% hcp':'—'] ]),
+  ].join('');
+
+  // Spend by channel chart
+  var spCh=getLookerAll('Combined','Spend by Channel');
+  if(spCh.length){
+    var labels=spCh.map(function(r){return r.v1.toLowerCase();});
+    var vals=spCh.map(function(r){return pn(r.v2);});
+    dch('cSpCh');
+    var spOpts={responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:true,position:'right',labels:{color:'rgba(232,232,232,.5)',font:{family:'Outfit',size:10},boxWidth:8,padding:10}}}};
+    charts['cSpCh']=new Chart(document.getElementById('cSpCh'),{type:'doughnut',data:{labels:labels,datasets:[{data:vals,backgroundColor:['#2e5523','#95af4b','#7d9442','#8dcfc4'],borderWidth:0,hoverOffset:4}]},options:spOpts});
   }
-  mkChips('pC',['Google','Microsoft'],fP,'sP');
-  mkChips('aC',['DTC','HCP'],fA,'sA');
-  var mh='<button class="sch all'+(fM===null?' on':'')+'" onclick="sM(null,this)">All</button>';
-  mos.forEach(function(m){mh+='<button class="sch'+(fM===m?' on':'')+'" onclick="sM(\''+m+'\',this)">'+(ML[m]||m)+'</button>';});
-  document.getElementById('mC').innerHTML=mh;
-}
-function sP(v,b){fP=v;document.querySelectorAll('#pC .sch').forEach(function(x){x.classList.remove('on');});b.classList.add('on');uFS();rfT();}
-function sA(v,b){fA=v;document.querySelectorAll('#aC .sch').forEach(function(x){x.classList.remove('on');});b.classList.add('on');uFS();rfT();}
-function sM(v,b){fM=v;document.querySelectorAll('#mC .sch').forEach(function(x){x.classList.remove('on');});b.classList.add('on');uFS();rfT();}
-function rst(){fP=null;fA=null;fM=null;document.querySelectorAll('.sch').forEach(function(x){x.classList.remove('on');});uFS();rfT();}
-function uFS(){var p=[fP,fA,fM?ML[fM]||fM:null].filter(Boolean);document.getElementById('fT2').textContent=p.join(' - ');document.getElementById('fS').style.display=p.length?'flex':'none';}
-function rfT(){if(curT==='camps')rCamps();else if(curT==='conv')bConv();else if(curT==='ins')bIns();else if(curT==='recs')bRecs();}
 
-function sw(n,b){
-  document.querySelectorAll('.pan').forEach(function(p){p.classList.remove('on');});
-  document.querySelectorAll('.nt').forEach(function(x){x.classList.remove('on');});
-  document.getElementById('pan-'+n).classList.add('on');b.classList.add('on');curT=n;
-  var sb=document.getElementById('segb');
-  if(STABS.includes(n)){sb.style.display='flex';bSeg();}else{sb.style.display='none';}
-  uFS();
-}
+  // Visits by channel (use visits data as fallback)
+  var viCh=getLookerAll('Combined','Spend by Channel');
+  if(viCh.length){
+    var vLabels=viCh.map(function(r){return r.v1.toLowerCase();});
+    var vVals=viCh.map(function(r){return pn(r.v2);});
+    dch('cViCh');
+    var viOpts={responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:true,position:'right',labels:{color:'rgba(232,232,232,.5)',font:{family:'Outfit',size:10},boxWidth:8,padding:10}}}};
+    charts['cViCh']=new Chart(document.getElementById('cViCh'),{type:'doughnut',data:{labels:vLabels,datasets:[{data:vVals,backgroundColor:['#2e5523','#95af4b','#7d9442','#8dcfc4'],borderWidth:0,hoverOffset:4}]},options:viOpts});
+  }
 
-function bMoM(){
-  var mos=gMo();if(!mos.length)return;
-  var lbls=mos.map(function(m){return ML[m]||m;});
-  var segs=[{k:'Google|DTC',p:'Google',a:'DTC',c:'#3D7A4E'},{k:'Google|HCP',p:'Google',a:'HCP',c:'#1A73E8'},{k:'Microsoft|DTC',p:'Microsoft',a:'DTC',c:'#5BA670'},{k:'Microsoft|HCP',p:'Microsoft',a:'HCP',c:'#00617A'}];
-  var aS=segs.filter(function(sg){return rows.some(function(r){return gPl(r)===sg.p&&gAu(r)===sg.a;});});
-  dch('cSp');charts['cSp']=new Chart(document.getElementById('cSp'),{type:'bar',data:{labels:lbls,datasets:aS.map(function(sg){return{label:sg.k,data:mos.map(function(m){return agM(m,sg.p,sg.a).s;}),backgroundColor:sg.c,stack:'s',borderRadius:2};})},options:co({st:true,yf:function(v){return'$'+Math.round(v/1000)+'k';}})});
-  dch('cCl');charts['cCl']=new Chart(document.getElementById('cCl'),{type:'line',data:{labels:lbls,datasets:[{label:'Clicks',data:mos.map(function(m){return agM(m).cl;}),borderColor:'#3D7A4E',backgroundColor:'rgba(61,122,78,.08)',tension:.4,borderWidth:2,pointRadius:3,fill:true,yAxisID:'y'},{label:'Impr/100',data:mos.map(function(m){return Math.round(agM(m).im/100);}),borderColor:'rgba(61,122,78,.35)',tension:.4,borderWidth:1,borderDash:[4,3],pointRadius:2,yAxisID:'y2'}]},options:Object.assign({},co({yf:fk}),{scales:{x:xs(),y:ys(fk),y2:{position:'right',grid:{drawOnChartArea:false},ticks:{color:'rgba(26,26,46,.25)',font:{family:"'DM Mono',monospace",size:9}}}}})});
-  dch('cCT');charts['cCT']=new Chart(document.getElementById('cCT'),{type:'line',data:{labels:lbls,datasets:aS.map(function(sg){return{label:sg.k,data:mos.map(function(m){var r=agM(m,sg.p,sg.a);return r.ct||null;}),borderColor:sg.c,tension:.4,borderWidth:2,pointRadius:3,spanGaps:true,backgroundColor:'transparent'};})},options:co({yf:fp})});
-  dch('cCP');charts['cCP']=new Chart(document.getElementById('cCP'),{type:'line',data:{labels:lbls,datasets:aS.map(function(sg){return{label:sg.k,data:mos.map(function(m){var r=agM(m,sg.p,sg.a);return r.cp||null;}),borderColor:sg.c,tension:.4,borderWidth:2,pointRadius:3,spanGaps:true,backgroundColor:'transparent'};})},options:co({yf:function(v){return'$'+v.toFixed(2);}})});
+  // HCP vs DTC spend bar
+  var hSpend=hcpSpend?pn(hcpSpend.v1):0;
+  var dSpend=dtcSpend?pn(dtcSpend.v1):0;
+  dch('cHDSpend');
+  charts['cHDSpend']=new Chart(document.getElementById('cHDSpend'),{type:'bar',data:{labels:['hcp','dtc'],datasets:[{data:[hSpend,dSpend],backgroundColor:['#2e5523','#95af4b'],borderRadius:3}]},options:co({yf:function(v){return'$'+Math.round(v/1000)+'k';}})});
+
+  var hQV=getLooker('HCP','Qualified Visits');
+  var dQV=getLooker('DTC','Qualified Visits');
+  dch('cHDQV');
+  charts['cHDQV']=new Chart(document.getElementById('cHDQV'),{type:'bar',data:{labels:['hcp','dtc'],datasets:[{data:[hQV?pn(hQV.v1):0,dQV?pn(dQV.v1):0],backgroundColor:['#7d9442','#8dcfc4'],borderRadius:3}]},options:co({yf:fmtK})});
 }
 
-function bCamps(){var mos=gMo();if(!mos.length)return;cMo=mos[mos.length-1];document.getElementById('cMr').innerHTML=(function(){var h='';mos.forEach(function(m){h+='<button class="mc'+(m===cMo?' on':'')+'" data-v="'+m+'" onclick="sCM(this.dataset.v,this)">'+(ML[m]||m)+'</button>';});document.getElementById('cMr').innerHTML=h;rCamps();})();}
-function sCM(m,b){cMo=m;document.querySelectorAll('#cMr .mc').forEach(function(x){x.classList.remove('on');});b.classList.add('on');rCamps();}
-function rCamps(){
-  var mos=gMo();var mo=fM||cMo;var pmo=mos[mos.indexOf(mo)-1]||null;
-  var cr=fR(rows.filter(function(r){return r['Month']===mo&&gc(r)>0;})).sort(function(a,b){return gc(b)-gc(a);}).slice(0,30);
-  var pm={};if(pmo){rows.filter(function(r){return r['Month']===pmo;}).forEach(function(r){var k=gPl(r)+'|'+gAu(r)+'|'+(r['Campaign']||'')+'|'+(r['Ad group']||'');pm[k]=r;});}
-  document.getElementById('cSL').textContent=(ML[mo]||mo)+(fP?' - '+fP:'')+(fA?' - '+fA:'')+' - MoM vs '+(ML[pmo]||pmo||'prior');
-  document.getElementById('cBd').innerHTML=cr.map(function(r){var p=gPl(r),a=gAu(r),k=p+'|'+a+'|'+(r['Campaign']||'')+'|'+(r['Ad group']||''),pr=pm[k];return'<tr><td><span class="b '+(p==='Google'?'bg':'bm')+'">'+p+'</span></td><td><span class="b '+(a==='HCP'?'bh':'bd2')+'">'+a+'</span></td><td style="color:var(--t3);font-size:11px">'+(r['Campaign']||'')+'</td><td>'+(r['Ad group']||'')+'</td><td style="text-align:right">'+Math.round(gi(r)).toLocaleString()+'</td><td style="text-align:right;font-weight:600;color:var(--t1)">'+Math.round(gc(r)).toLocaleString()+'</td><td style="text-align:right">'+fp(gtr(r))+'</td><td style="text-align:right">'+fd(gpc(r))+'</td><td style="text-align:right;color:#3D7A4E;font-weight:600">'+fm(gs(r))+'</td><td style="text-align:right">'+de(pr?pc(gtr(r),gtr(pr)):null)+'</td><td style="text-align:right">'+de(pr?pc(gc(r),gc(pr)):null)+'</td><td style="text-align:right">'+de(pr?pc(gs(r),gs(pr)):null)+'</td></tr>';}).join('')||'<tr><td colspan="12" style="text-align:center;color:var(--t3);padding:28px">No data</td></tr>';
+// ── HCP ────────────────────────────────────────────────
+function bHCP(){
+  var spend=getLooker('HCP','Media Spend');
+  var clicks=getLooker('HCP','Clicks');
+  var visits=getLooker('HCP','Qualified Visits');
+  var qvr=getLooker('HCP','QVR');
+  var hcpVisits=getLooker('HCP','Site Visits');
+
+  document.getElementById('hcpCards').innerHTML=[
+    mkStatCard('hcp spend',[ ['media spend',spend?spend.v1:'—'], ['clicks',clicks?clicks.v1:'—'], ['ctr',clicks?clicks.v2:'—'] ]),
+    mkStatCard('hcp conversions',[ ['qualified visits',visits?visits.v1:'—'], ['cpqv',visits?visits.v2:'—'], ['qvr',qvr?qvr.v1:'—'] ]),
+    mkStatCard('hcp benchmark',[ ['industry cpc','$2.62'], ['industry cpqv','$4.37'], ['qvr target','80%+'] ]),
+  ].join('');
+
+  // HCP Keywords chart
+  var kws=getLookerAll('HCP','Keyword');
+  if(kws.length){
+    var kwLabels=kws.slice(0,8).map(function(r){return r.v1.toLowerCase().slice(0,20);});
+    var kwClicks=kws.slice(0,8).map(function(r){return pn(r.v2);});
+    dch('cHCPKW');
+    charts['cHCPKW']=new Chart(document.getElementById('cHCPKW'),{type:'bar',data:{labels:kwLabels,datasets:[{label:'clicks',data:kwClicks,backgroundColor:'#2e5523',borderRadius:2}]},options:{...co({yf:fmtK}),indexAxis:'y'}});
+  }
+
+  // HCP Publisher
+  var pubs=getLookerAll('HCP','Publisher');
+  if(pubs.length){
+    var pubLabels=pubs.map(function(r){return r.v1.toLowerCase().replace('dart search : ','');});
+    var pubClicks=pubs.map(function(r){return pn(r.v2);});
+    dch('cHCPPub');
+    charts['cHCPPub']=new Chart(document.getElementById('cHCPPub'),{type:'bar',data:{labels:pubLabels,datasets:[{label:'clicks',data:pubClicks,backgroundColor:['#95af4b','#8dcfc4','#7d9442'],borderRadius:2}]},options:co({yf:fmtK})});
+  }
+
+  // HCP Keywords table - pull full detail from search_keyword_performance
+  var allKws=getLookerAll('HCP','Keyword');
+  document.getElementById('hcpKWTbl').innerHTML=allKws.map(function(r){
+    return'<tr><td>'+r.v1.toLowerCase()+'</td><td class="tbl-num">—</td><td class="tbl-num">'+r.v2+'</td><td class="tbl-num">'+r.v3+'</td><td class="tbl-num">—</td><td class="tbl-num">—</td><td class="tbl-num">—</td></tr>';
+  }).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px">no keyword data — run the pipeline to populate</td></tr>';
 }
 
-function bConv(){
-  var mos=gMo();if(!mos.length)return;
-  var fm2=fM?[fM]:mos,lbls=fm2.map(function(m){return ML[m]||m;});
-  var dq=fm2.map(function(m){var rs=fR(rows.filter(function(r){return r['Month']===m&&gAu(r)==='DTC'&&gdq(r)>0;}));return rs.length?rs.reduce(function(t,r){return t+gdq(r);},0)/rs.length:null;});
-  var hq=fm2.map(function(m){var rs=fR(rows.filter(function(r){return r['Month']===m&&gAu(r)==='HCP'&&ghq(r)>0;}));return rs.length?rs.reduce(function(t,r){return t+ghq(r);},0)/rs.length:null;});
-  dch('cQV');charts['cQV']=new Chart(document.getElementById('cQV'),{type:'line',data:{labels:lbls,datasets:[{label:'DTC QV Rate',data:dq,borderColor:'#C8973A',backgroundColor:'rgba(200,151,58,.08)',tension:.4,borderWidth:2,pointRadius:3,fill:true,spanGaps:true},{label:'HCP QV Rate',data:hq,borderColor:'#3D7A4E',backgroundColor:'rgba(61,122,78,.08)',tension:.4,borderWidth:2,pointRadius:3,fill:true,spanGaps:true}]},options:co({yf:function(v){return v.toFixed(1)+'%';}})});
-  dch('cKS');charts['cKS']=new Chart(document.getElementById('cKS'),{type:'bar',data:{labels:lbls,datasets:[{label:'Google DTC',data:fm2.map(function(m){return fR(rows.filter(function(r){return r['Month']===m&&gPl(r)==='Google'&&gAu(r)==='DTC';})).reduce(function(t,r){return t+gksa(r);},0);}),backgroundColor:'#3D7A4E',borderRadius:3,stack:'s'},{label:'Microsoft DTC',data:fm2.map(function(m){return fR(rows.filter(function(r){return r['Month']===m&&gPl(r)==='Microsoft'&&gAu(r)==='DTC';})).reduce(function(t,r){return t+gksa(r);},0);}),backgroundColor:'#5BA670',borderRadius:3,stack:'s'}]},options:co({st:true,yf:function(v){return'$'+Math.round(v/1000)+'k';}})});
-  var fr=fR(fM?rows.filter(function(r){return r['Month']===fM;}):rows);
-  var cv=fr.filter(function(r){return ghq(r)>0||gdq(r)>0;}).sort(function(a,b){return ghqa(b)-ghqa(a);}).slice(0,25);
-  document.getElementById('cvBd').innerHTML=cv.map(function(r){var p=gPl(r),a=gAu(r);return'<tr><td><span class="b '+(p==='Google'?'bg':'bm')+'">'+p+'</span></td><td><span class="b '+(a==='HCP'?'bh':'bd2')+'">'+a+'</span></td><td style="color:var(--t3)">'+(ML[r['Month']]||r['Month'])+'</td><td>'+(r['Ad group']||'')+'</td><td style="text-align:right;color:#3D7A4E;font-weight:600">'+fp(ghq(r))+'</td><td style="text-align:right">'+fp(gdq(r))+'</td><td style="text-align:right">'+Math.round(ghqa(r)||0)+'</td><td style="text-align:right">'+Math.round(grc(r)||0)+'</td><td style="text-align:right;color:#C8973A;font-weight:600">'+fm(gksa(r))+'</td></tr>';}).join('')||'<tr><td colspan="9" style="text-align:center;color:var(--t3);padding:28px">No data</td></tr>';
+// ── DTC ────────────────────────────────────────────────
+function bDTC(){
+  var spend=getLooker('DTC','Media Spend');
+  var clicks=getLooker('DTC','Clicks');
+  var visits=getLooker('DTC','Qualified Visits');
+  var qvr=getLooker('DTC','QVR');
+
+  document.getElementById('dtcCards').innerHTML=[
+    mkStatCard('dtc spend',[ ['media spend',spend?spend.v1:'—'], ['clicks',clicks?clicks.v1:'—'], ['ctr',clicks?clicks.v2:'—'] ]),
+    mkStatCard('dtc conversions',[ ['qualified visits',visits?visits.v1:'—'], ['cpqv',visits?visits.v2:'—'], ['qvr',qvr?qvr.v1:'—'] ]),
+    mkStatCard('dtc benchmark',[ ['industry cpc','$2.62'], ['industry cpqv','$4.37'], ['qvr target','60%+'] ]),
+  ].join('');
+
+  var kws=getLookerAll('DTC','Keyword');
+  if(kws.length){
+    var kwLabels=kws.slice(0,8).map(function(r){return r.v1.toLowerCase().slice(0,20);});
+    var kwClicks=kws.slice(0,8).map(function(r){return pn(r.v2);});
+    dch('cDTCKW');
+    charts['cDTCKW']=new Chart(document.getElementById('cDTCKW'),{type:'bar',data:{labels:kwLabels,datasets:[{label:'clicks',data:kwClicks,backgroundColor:'#95af4b',borderRadius:2}]},options:{...co({yf:fmtK}),indexAxis:'y'}});
+  }
+
+  var pubs=getLookerAll('DTC','Publisher');
+  if(pubs.length){
+    var pubLabels=pubs.map(function(r){return r.v1.toLowerCase().replace('dart search : ','');});
+    var pubClicks=pubs.map(function(r){return pn(r.v2);});
+    dch('cDTCPub');
+    charts['cDTCPub']=new Chart(document.getElementById('cDTCPub'),{type:'bar',data:{labels:pubLabels,datasets:[{label:'clicks',data:pubClicks,backgroundColor:['#2e5523','#8dcfc4'],borderRadius:2}]},options:co({yf:fmtK})});
+  }
+
+  var allKws=getLookerAll('DTC','Keyword');
+  document.getElementById('dtcKWTbl').innerHTML=allKws.map(function(r){
+    return'<tr><td>'+r.v1.toLowerCase()+'</td><td class="tbl-num">—</td><td class="tbl-num">'+r.v2+'</td><td class="tbl-num">'+r.v3+'</td><td class="tbl-num">—</td><td class="tbl-num">—</td><td class="tbl-num">—</td></tr>';
+  }).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px">no keyword data</td></tr>';
 }
 
+// ── INSIGHTS ───────────────────────────────────────────
 function bIns(){
-  var mos=gMo();if(!mos.length)return;
-  var lat=fM||mos[mos.length-1],lbl=ML[lat]||lat;
-  var pmo=mos[mos.indexOf(lat)-1]||null,plbl=pmo?(ML[pmo]||pmo):'prior month';
+  var spend=getLooker('Combined','Media Spend');
+  var clicks=getLooker('Combined','Clicks');
+  var qvr=getLooker('Combined','QVR');
+  var hSpend=getLooker('HCP','Media Spend');
+  var hClicks=getLooker('HCP','Clicks');
+  var hQV=getLooker('HCP','Qualified Visits');
+  var hQVR=getLooker('HCP','QVR');
+  var dSpend=getLooker('DTC','Media Spend');
+  var dClicks=getLooker('DTC','Clicks');
+  var dQV=getLooker('DTC','Qualified Visits');
+  var dQVR=getLooker('DTC','QVR');
+  var hPubs=getLookerAll('HCP','Publisher');
+  var dPubs=getLookerAll('DTC','Publisher');
+  var hKWs=getLookerAll('HCP','Keyword');
+  var dKWs=getLookerAll('DTC','Keyword');
+  var runDate=lookerData._runDate||'this period';
 
-  // All rows for selected month, strictly filtered
-  var fc=fR(rows.filter(function(r){return r['Month']===lat;}));
-  var fp2=pmo?fR(rows.filter(function(r){return r['Month']===pmo;})):[];
-  var cur=ag(fc),prv=fp2.length?ag(fp2):null;
-  var sL=[fP,fA].filter(Boolean).join(' - ')||'All Segments';
+  // Find Google vs Microsoft splits
+  var hGoogle=hPubs.find(function(r){return r.v1.toLowerCase().includes('google');});
+  var hMsft=hPubs.find(function(r){return r.v1.toLowerCase().includes('msn')||r.v1.toLowerCase().includes('microsoft');});
+  var dGoogle=dPubs.find(function(r){return r.v1.toLowerCase().includes('google');});
+  var dMsft=dPubs.find(function(r){return r.v1.toLowerCase().includes('msn')||r.v1.toLowerCase().includes('microsoft');});
 
-  // ── SEGMENT BREAKDOWNS ──────────────────────────
-  // Platform
-  var gC=ag(fc.filter(function(r){return gPl(r)==='Google';}));
-  var mC=ag(fc.filter(function(r){return gPl(r)==='Microsoft';}));
-  var gP=fp2.length?ag(fp2.filter(function(r){return gPl(r)==='Google';})):null;
-  var mP=fp2.length?ag(fp2.filter(function(r){return gPl(r)==='Microsoft';})):null;
-  // Audience
-  var dtcC=ag(fc.filter(function(r){return gAu(r)==='DTC';}));
-  var hcpC=ag(fc.filter(function(r){return gAu(r)==='HCP';}));
-  var dtcP=fp2.length?ag(fp2.filter(function(r){return gAu(r)==='DTC';})):null;
-  var hcpP=fp2.length?ag(fp2.filter(function(r){return gAu(r)==='HCP';})):null;
-  // Conversions
-  var tKSA=fc.filter(function(r){return gAu(r)==='DTC';}).reduce(function(t,r){return t+gksa(r);},0);
-  var pKSA=fp2.filter(function(r){return gAu(r)==='DTC';}).reduce(function(t,r){return t+gksa(r);},0);
-  var tHCPQV=fc.filter(function(r){return gAu(r)==='HCP';}).reduce(function(t,r){return t+ghqa(r);},0);
-  var pHCPQV=fp2.filter(function(r){return gAu(r)==='HCP';}).reduce(function(t,r){return t+ghqa(r);},0);
-  var topHCP=fc.filter(function(r){return gAu(r)==='HCP'&&ghq(r)>0;}).sort(function(a,b){return ghq(b)-ghq(a);})[0];
-  var topDTC=fc.filter(function(r){return gAu(r)==='DTC'&&gdq(r)>0;}).sort(function(a,b){return gdq(b)-gdq(a);})[0];
-  // Top campaigns by CTR (for what worked)
-  var topCTR=fc.filter(function(r){return gc(r)>10&&gtr(r)>0;}).sort(function(a,b){return gtr(b)-gtr(a);}).slice(0,3);
-  var topSpend=fc.filter(function(r){return gs(r)>0;}).sort(function(a,b){return gs(b)-gs(a);}).slice(0,2);
-  // Notable movers for narrative (5%+ change)
-  var notables=[];
-  if(pmo){
-    var pm2={};fp2.forEach(function(r){var k=gPl(r)+'|'+gAu(r)+'|'+(r['Campaign']||'')+'|'+(r['Ad group']||'');pm2[k]=r;});
-    fc.filter(function(r){return gc(r)>20;}).forEach(function(r){
-      var k=gPl(r)+'|'+gAu(r)+'|'+(r['Campaign']||'')+'|'+(r['Ad group']||'');
-      var p=pm2[k];if(!p)return;
-      var cc=pc(gtr(r),gtr(p)),ck=pc(gc(r),gc(p)),cs=pc(gs(r),gs(p));
-      if(cc!==null&&Math.abs(cc)>=5)notables.push({ag:r['Ad group']||'',camp:r['Campaign']||'',pl:gPl(r),au:gAu(r),m:'CTR',ch:cc,cur:fp(gtr(r)),prv:fp(gtr(p))});
-      if(ck!==null&&Math.abs(ck)>=10)notables.push({ag:r['Ad group']||'',camp:r['Campaign']||'',pl:gPl(r),au:gAu(r),m:'Clicks',ch:ck,cur:fk(gc(r)),prv:fk(gc(p))});
-    });
-  }
-  notables=notables.sort(function(a,b){return Math.abs(b.ch)-Math.abs(a.ch);}).slice(0,4);
-
-  // ── BUILD INSIGHT COPY BLOCKS ────────────────────
-  // Four frames from the search manager questions:
-  // 1. What was most important / what changed / what did we launch?
-  // 2. Something worth noting / an update
-  // 3. What the client wants to know / timely & relevant
-  // 4. What are we doing as a result / what do we want to test?
+  // Top HCP keyword by clicks
+  var topHKW=hKWs.length?hKWs.reduce(function(a,b){return pn(b.v2)>pn(a.v2)?b:a;},hKWs[0]):null;
+  var topDKW=dKWs.length?dKWs.reduce(function(a,b){return pn(b.v2)>pn(a.v2)?b:a;},dKWs[0]):null;
 
   var blocks=[];
 
-  // FRAME 1 — Most important thing / what changed
-  var f1=[];
-  if(prv){
-    var spdD=dl(cur.s,prv.s),clkD=dl(cur.cl,prv.cl),ctrD=dl(cur.ct,prv.ct),cpcD=dl(cur.cp,prv.cp);
-    var trend=cur.s>prv.s?'increased':'decreased';
-    f1.push('Paid search investment '+trend+' '+spdD+' MoM in '+lbl+', driving '+fk(cur.cl)+' clicks ('+clkD+') across '+sL+' at an average CTR of '+fp(cur.ct)+' ('+ctrD+') and avg CPC of '+fd(cur.cp)+' ('+cpcD+')');
-    if(!fP){
-      if(gC.s>0&&gP)f1.push('Google '+( fA||'(DTC + HCP)')+': '+fm(gC.s)+' spend ('+dl(gC.s,gP.s)+' MoM), '+fk(gC.cl)+' clicks ('+dl(gC.cl,gP.cl)+'), '+fp(gC.ct)+' CTR, '+fd(gC.cp)+' avg CPC');
-      if(mC.s>0&&mP)f1.push('Microsoft '+(fA||'(DTC + HCP)')+': '+fm(mC.s)+' spend ('+dl(mC.s,mP.s)+' MoM), '+fk(mC.cl)+' clicks ('+dl(mC.cl,mP.cl)+'), '+fp(mC.ct)+' CTR, '+fd(mC.cp)+' avg CPC');
-    }
-    if(!fA){
-      if(dtcC.s>0&&dtcP)f1.push('DTC: '+fm(dtcC.s)+' spend ('+dl(dtcC.s,dtcP.s)+' MoM), '+fk(dtcC.cl)+' clicks ('+dl(dtcC.cl,dtcP.cl)+'), '+fp(dtcC.ct)+' CTR');
-      if(hcpC.s>0&&hcpP)f1.push('HCP: '+fm(hcpC.s)+' spend ('+dl(hcpC.s,hcpP.s)+' MoM), '+fk(hcpC.cl)+' clicks ('+dl(hcpC.cl,hcpP.cl)+'), '+fp(hcpC.ct)+' CTR');
-    }
-  } else {
-    f1.push('Paid search delivered '+fm(cur.s)+' in spend, '+fk(cur.cl)+' clicks, '+fp(cur.ct)+' avg CTR, and '+fd(cur.cp)+' avg CPC in '+lbl);
-  }
-  if(topCTR.length)f1.push('Highest CTR ad group: '+topCTR[0]['Ad group']+' ('+topCTR[0]['Campaign']+' - '+gPl(topCTR[0])+' '+gAu(topCTR[0])+') at '+fp(gtr(topCTR[0]))+' CTR');
-  blocks.push({icon:'📊',label:'Performance Overview - '+lbl,frame:'What was the most important thing? What changed?',lines:f1});
+  // ── FRAME 1: What was the most important thing? ──
+  var f1Lines=[];
+  if(spend)f1Lines.push('paid search investment reached <strong>'+spend.v1+'</strong> in total program spend across hcp and dtc channels as of '+runDate);
+  if(hSpend&&dSpend)f1Lines.push('<strong>hcp paid search:</strong> '+hSpend.v1+' spend — <strong>dtc paid search:</strong> '+dSpend.v1+' spend');
+  if(clicks)f1Lines.push('program drove <strong>'+clicks.v1+' total clicks</strong> at <strong>'+clicks.v2+' ctr</strong> across both audience segments');
+  if(hGoogle&&hMsft)f1Lines.push('<em>hcp publisher split —</em> google: '+hGoogle.v2+' clicks ('+hGoogle.v3+' ctr') // already added google
+  if(hGoogle)f1Lines.push('<em>hcp publisher split —</em> google: <strong>'+hGoogle.v2+' clicks</strong> at <strong>'+hGoogle.v3+' ctr</strong>'+( hMsft?' · microsoft: '+hMsft.v2+' clicks at '+hMsft.v3+' ctr':''));
+  blocks.push({color:'',eye:'performance overview · '+runDate,frame:'what was the most important thing?',lines:f1Lines,ns:'continue monitoring spend pacing and qv rate quality as investment scales; evaluate bid strategy adjustments as monthly budgets progress toward target.'});
 
-  // FRAME 2 — Something worth noting / an update
-  var f2=[];
-  if(notables.length){
-    notables.forEach(function(n){
-      var dir=n.ch>0?'increased':'decreased';
-      f2.push(n.pl+' '+n.au+' - '+n.ag+' ('+n.camp+'): '+n.m+' '+dir+' '+Math.abs(n.ch).toFixed(1)+'% MoM ('+n.prv+' to '+n.cur+')');
-    });
-  }
-  if(tHCPQV>0){
-    var hcpQVD=pHCPQV?dl(tHCPQV,pHCPQV):'';
-    f2.push('HCP qualified visit actions: '+Math.round(tHCPQV).toLocaleString()+(hcpQVD?' ('+hcpQVD+' vs '+plbl+')':''));
-    if(topHCP)f2.push('Top HCP QV rate: '+topHCP['Ad group']+' ('+topHCP['Campaign']+') at '+ghq(topHCP).toFixed(1)+'% - '+(ghq(topHCP)>80?'sustaining above-benchmark QVR':'holding near benchmark'));
-  }
-  if(tKSA>0){
-    var ksaD=pKSA?dl(tKSA,pKSA):'';
-    f2.push('DTC weighted KSA value: '+fm(tKSA)+(ksaD?' ('+ksaD+' vs '+plbl+')':'')+(topDTC?' - top converting group: '+topDTC['Ad group']+' at '+gdq(topDTC).toFixed(1)+'% DTC QV rate':''));
-  }
-  if(!f2.length&&prv){
-    if(Math.abs(pc(cur.ct,prv.ct)||0)>=5)f2.push('CTR moved '+dl(cur.ct,prv.ct)+' MoM to '+fp(cur.ct)+' - '+(cur.ct>prv.ct?'improved keyword-query alignment or updated ad copy driving engagement':'shift may reflect broader match type expansion or increased competitive pressure'));
-  }
-  if(f2.length)blocks.push({icon:'🔍',label:'Notable Observations - '+lbl,frame:'Something worth noting / an update from prior month',lines:f2});
+  // ── FRAME 2: HCP paid search ──
+  var f2Lines=[];
+  if(hQV)f2Lines.push('hcp paid search drove <strong>'+hQV.v1+' qualified visits</strong> at a <strong>'+hQV.v2+' cpqv</strong>'+( hQVR?' with a <strong>'+hQVR.v1+' qvr</strong>':''));
+  if(topHKW)f2Lines.push('top hcp keyword: <strong>"'+topHKW.v1.toLowerCase()+'"</strong> driving '+topHKW.v2+' clicks at '+topHKW.v3+' ctr — indicating strong intent alignment among hcp searchers');
+  if(hQVR){var qvrNum=pp(hQVR.v1);f2Lines.push('hcp qvr of <strong>'+hQVR.v1+'</strong> is '+(qvrNum>=80?'above benchmark, sustaining quality engagement at scale':'near benchmark — monitor as investment scales and keyword mix broadens'));}
+  if(hGoogle)f2Lines.push('google accounted for the majority of hcp paid search volume at '+hGoogle.v2+' clicks'+( hMsft?' — microsoft contributed '+hMsft.v2+' clicks at a lower ctr ('+hMsft.v3+'), typical of microsoft auction dynamics':''));
+  blocks.push({color:'leaf',eye:'hcp paid search signals · '+runDate,frame:'something worth noting — hcp audience performance',lines:f2Lines,ns:'monitor qvr quality in top-performing keywords as investment scales; audit request a rep landing page experience to reduce post-click friction and improve rep submit conversion rate.'});
 
-  // FRAME 3 — What the client wants to know / timely
-  var f3=[];
-  // Spend pacing relative to prior month
-  if(prv){
-    var sChg=pc(cur.s,prv.s);
-    if(sChg!==null&&Math.abs(sChg)>=5)f3.push('Investment '+(sChg>0?'ramped':'softened')+' '+dl(cur.s,prv.s)+' MoM - '+(sChg>0?'increased investment reflects deliberate scaling toward high-performing segments':'reduced pacing reflects budget optimization toward highest-efficiency ad groups'));
-  }
-  // Competitor and treatment signal
-  var compRows=fc.filter(function(r){return(r['Campaign']||'').toLowerCase().includes('competitor');});
-  var sympRows=fc.filter(function(r){return(r['Campaign']||'').toLowerCase().includes('symptom');});
-  if(compRows.length){var ca=ag(compRows);f3.push('Competitor campaigns: '+fm(ca.s)+' spend, '+fk(ca.cl)+' clicks, '+fp(ca.ct)+' CTR'+(ca.ct>4?' - strong resonance among searchers actively comparing treatment options':''));}
-  if(sympRows.length){var sa=ag(sympRows);f3.push('Symptoms campaigns: '+fm(sa.s)+' spend, '+fk(sa.cl)+' clicks, '+fp(sa.ct)+' CTR, '+fd(sa.cp)+' avg CPC - serving as an upper-funnel entry point, engaging audiences earlier in the search journey');}
-  // HCP rep submit gap
-  var repS=fc.filter(function(r){return gAu(r)==='HCP';}).reduce(function(t,r){return t+grc(r);},0);
-  if(repS<5&&tHCPQV>20)f3.push('Request a Rep submit volume at '+Math.round(repS)+' - low relative to HCP QV volume; landing page experience warrants review to reduce post-click friction');
-  if(f3.length)blocks.push({icon:'💡',label:'Client Priority Signals - '+lbl,frame:'What does the client want to know? What is timely and relevant?',lines:f3});
+  // ── FRAME 3: DTC paid search ──
+  var f3Lines=[];
+  if(dQV)f3Lines.push('dtc paid search drove <strong>'+dQV.v1+' qualified visits</strong> at a <strong>'+dQV.v2+' cpqv</strong>'+( dQVR?' with a <strong>'+dQVR.v1+' qvr</strong>':''));
+  if(topDKW)f3Lines.push('top dtc keyword: <strong>"'+topDKW.v1.toLowerCase()+'"</strong> driving '+topDKW.v2+' clicks at '+topDKW.v3+' ctr — serving as an upper-funnel entry point engaging patients earlier in the search journey');
+  if(dQVR){var dqvrNum=pp(dQVR.v1);f3Lines.push('dtc qvr of <strong>'+dQVR.v1+'</strong> is '+(dqvrNum>=60?'above the 60% benchmark — qualified visit quality holding as unbranded campaigns scale':'below the 60% benchmark — refine keyword and negative keyword targeting to improve engagement quality'));}
+  if(dGoogle&&dMsft)f3Lines.push('google drove '+dGoogle.v2+' clicks at '+dGoogle.v3+' ctr · microsoft contributed '+dMsft.v2+' clicks at '+dMsft.v3+' ctr — microsoft cpcs typically 30-40% lower than google equivalents');
+  blocks.push({color:'dew',eye:'dtc paid search signals · '+runDate,frame:'what does the client want to know? timely and relevant',lines:f3Lines,ns:'optimize bid strategies toward high-value site actions; continue scaling symptoms and competitor campaigns — lowest-cpc unbranded drivers with strong patient intent signals.'});
 
-  // FRAME 4 — What we are doing as a result / what to test
-  var f4=[];
-  if(prv){
-    var cpcChg=pc(cur.cp,prv.cp);
-    var ctrChg2=pc(cur.ct,prv.ct);
-    if(cpcChg!==null&&cpcChg>5)f4.push('CPC increased '+dl(cur.cp,prv.cp)+' MoM to '+fd(cur.cp)+' - monitoring bid efficiency across high-CPC groups; evaluating whether Quality Score improvements can offset auction pressure');
-    if(ctrChg2!==null&&ctrChg2<-5)f4.push('CTR softened '+dl(cur.ct,prv.ct)+' MoM - implementing thematic RSA copy test across low-CTR, high-impression ad groups to drive engagement without bid changes');
-    if(ctrChg2!==null&&ctrChg2>5)f4.push('CTR improved '+dl(cur.ct,prv.ct)+' MoM to '+fp(cur.ct)+' - scaling investment in top-performing ad groups to maximize efficient click volume');
-  }
-  if(topHCP&&ghq(topHCP)>0)f4.push('Monitoring QV rate quality in '+topHCP['Ad group']+' ('+topHCP['Campaign']+') as investment scales - optimizing bid strategies toward high-value HCP site actions');
-  if(sympRows.length){var sa2=ag(sympRows);f4.push('Continuing to refine keyword and negative keyword targeting within Symptoms campaigns to improve engagement quality as upper-funnel reach expands at '+fd(sa2.cp)+' avg CPC');}
-  f4.push('Looking Ahead: Continuing to monitor spend pacing and QV rate quality; evaluating bid strategy adjustments as monthly budgets progress toward target');
-  blocks.push({icon:'🔜',label:'Actions & Next Steps - '+lbl,frame:'What are we doing as a result? What do we want to test?',lines:f4});
+  // ── FRAME 4: Actions & Next Steps ──
+  var f4Lines=[];
+  f4Lines.push('monitoring qv rate quality across hcp and dtc segments as investment scales — bid strategies being optimized toward highest-value site actions');
+  if(hQVR){var hq=pp(hQVR.v1);if(hq<80)f4Lines.push('hcp qvr of '+hQVR.v1+' below 80% target — implementing bid strategy refinement toward stronger intent signals within treatment and branded campaigns');}
+  if(dQVR){var dq=pp(dQVR.v1);if(dq<60)f4Lines.push('dtc qvr of '+dQVR.v1+' below 60% benchmark — refining keyword and negative keyword targeting within unbranded campaigns to improve engagement quality');}
+  f4Lines.push('looking ahead: evaluating thematic rsa copy test across low-ctr, high-impression ad groups to drive ctr lift without bid changes; monitoring impact of full promo campaign launch on qualified visit volume');
+  blocks.push({color:'olive',eye:'actions & next steps',frame:'what are we doing as a result? what do we want to test?',lines:f4Lines,ns:null});
 
-  // ── RENDER ───────────────────────────────────────
-  // Build plain text for copy block
-  function buildPlainText(){
-    var NL='\n';
-    var txt='BREKIYA SEM INSIGHTS - '+lbl.toUpperCase()+(sL!=='All Segments'?' - '+sL.toUpperCase():'')+NL;
-    txt+='Generated '+new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})+NL+NL;
-    blocks.forEach(function(b){
-      txt+=b.label.toUpperCase()+NL;
-      b.lines.forEach(function(l,i){
-        var plain=l.replace(/<[^>]+>/g,'');
-        txt+=(i===0?'* ':'   - ')+plain+NL;
-      });
-      txt+=NL;
-    });
-    return txt;
-  }
-
-  function renderBlock(b){
+  // Render
+  document.getElementById('insCards').innerHTML=blocks.map(function(b){
     var linesHtml=b.lines.map(function(l,i){
-      var st=i===0?'font-weight:500;color:var(--t1)':'color:var(--t2);padding-left:8px;border-left:2px solid var(--bd)';
-      var mb=i===0?'8px':'5px';
-      return'<li style="margin-bottom:'+mb+';line-height:1.7;'+st+'">'+l+'</li>';
+      var isFt=i===0;
+      return'<li style="'+(isFt?'font-weight:400;color:var(--text);border-left-color:var(--leaf)':'')+'">' +l+'</li>';
     }).join('');
-    var out='<div style="background:var(--w);border:1px solid var(--bd);border-radius:var(--r2);padding:20px 24px;box-shadow:0 1px 3px rgba(26,26,46,.08);margin-bottom:12px">';
-    out+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">';
-    out+='<span style="font-size:16px">'+b.icon+'</span>';
-    out+='<div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--g);font-weight:600">'+b.label+'</div>';
-    out+='</div>';
-    out+='<div style="font-size:10px;color:var(--t3);margin-bottom:12px;font-style:italic">'+b.frame+'</div>';
-    out+='<ul style="padding-left:0;margin:0;list-style:none">'+linesHtml+'</ul>';
-    out+='</div>';
-    return out;
-  }
-
-  var insHtml=blocks.map(renderBlock).join('');
-
-  // Copy block
-  var copyBtn='<div style="margin-top:16px;padding:16px 20px;background:var(--glt);border:1px solid rgba(61,122,78,.2);border-radius:var(--r2);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">';
-  copyBtn+='<div><div style="font-size:11px;font-weight:600;color:var(--g);margin-bottom:2px">Copy all insights</div>';
-  copyBtn+='<div style="font-size:11px;color:var(--t3)">Ready to paste into your report</div></div>';
-  copyBtn+='<button onclick="copyIns()" id="copyBtn" style="padding:8px 18px;background:var(--g);color:#fff;border:none;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer">Copy Insights</button>';
-  copyBtn+='</div>';
-
-  document.getElementById('iOv').innerHTML=insHtml+copyBtn;
-  document.getElementById('iOS').textContent=lbl+(prv?' vs '+plbl:'')+' - '+sL;
-  document.getElementById('mGr').innerHTML='';
+    var nsHtml=b.ns?'<div class="ins-ns"><div class="ins-ns-lbl">good apple next steps</div><div class="ins-ns-body">'+b.ns+'</div></div>':'';
+    return'<div class="ins-card '+(b.color||'')+'"><div class="ins-eye">'+b.eye+'</div><div class="ins-frame">'+b.frame+'</div><ul class="ins-list">'+linesHtml+'</ul>'+nsHtml+'</div>';
+  }).join('');
 
   // Store plain text for copy
-  window._insightsCopy=buildPlainText();
+  var NL=String.fromCharCode(10);
+  var txt='BREKIYA SEM INSIGHTS — '+runDate.toUpperCase()+NL+NL;
+  blocks.forEach(function(b){
+    txt+=b.eye.toUpperCase()+NL;
+    b.lines.forEach(function(l,i){
+      txt+=(i===0?'* ':'   - ')+l.replace(/<[^>]+>/g,'')+NL;
+    });
+    if(b.ns)txt+='   GOOD APPLE NEXT STEPS: '+b.ns+NL;
+    txt+=NL;
+  });
+  window._insightsCopy=txt;
 }
 
 function copyIns(){
   if(!window._insightsCopy)return;
   navigator.clipboard.writeText(window._insightsCopy).then(function(){
-    var btn=document.getElementById('copyBtn');
-    if(btn){btn.textContent='✓ Copied!';btn.style.background='#2D8A6E';setTimeout(function(){btn.textContent='📋 Copy Insights';btn.style.background='var(--g)';},2500);}
-  }).catch(function(){
-    // Fallback
-    var ta=document.createElement('textarea');
-    ta.value=window._insightsCopy;
-    ta.style.position='fixed';ta.style.opacity='0';
-    document.body.appendChild(ta);ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    var btn=document.getElementById('copyBtn');
-    if(btn){btn.textContent='✓ Copied!';btn.style.background='#2D8A6E';setTimeout(function(){btn.textContent='📋 Copy Insights';btn.style.background='var(--g)';},2500);}
-  });
+    var btn=document.getElementById('copyBtn');if(btn){btn.textContent='copied ✓';btn.style.background='var(--leaf)';setTimeout(function(){btn.textContent='copy insights';btn.style.background='var(--green)';},2500);}
+  }).catch(function(){var ta=document.createElement('textarea');ta.value=window._insightsCopy;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);var btn=document.getElementById('copyBtn');if(btn){btn.textContent='copied ✓';btn.style.background='var(--leaf)';setTimeout(function(){btn.textContent='copy insights';btn.style.background='var(--green)';},2500);}});
 }
 
-
+// ── RECOMMENDATIONS ────────────────────────────────────
 function bRecs(){
-  var mos=gMo();var lat=fM||mos[mos.length-1]||'';var lbl=ML[lat]||lat;
-  var fc=fR(rows.filter(function(r){return r['Month']===lat;}));
-  var sL=[fP,fA].filter(Boolean).join(' - ')||'All Segments';
-  var bc=fc.filter(function(r){return gpc(r)>0&&gc(r)>10;}).sort(function(a,b){return gpc(a)-gpc(b);})[0];
-  var wc=fc.filter(function(r){return gtr(r)>0&&gi(r)>1000;}).sort(function(a,b){return gtr(a)-gtr(b);}).slice(0,2);
-
-  function rc(pri,segs,title,sumStr,actions,impacts){
+  function rc(pri,title,sumStr,actions,impacts){
     var id='r'+Math.random().toString(36).slice(2,8);
-    var sb=segs.map(function(s){
-      if(s==='Google')return'<span class="b bg">Google</span>';
-      if(s==='Microsoft')return'<span class="b bm">Microsoft</span>';
-      if(s==='HCP')return'<span class="b bh">HCP</span>';
-      if(s==='DTC')return'<span class="b bd2">DTC</span>';
-      return'<span class="b">'+s+'</span>';
-    }).join('');
-    var nh='<div style="margin-top:10px;padding:10px 14px;background:var(--glt);border-radius:var(--r);border-left:3px solid var(--g)"><div style="font-size:9px;font-weight:700;color:var(--g);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Good Apple Next Steps</div><ul style="padding-left:16px;font-size:12px;color:var(--t2);line-height:1.65">'+actions.map(function(a){return'<li style="margin-bottom:3px">'+a+'</li>';}).join('')+'</ul></div>';
-    var ih=impacts.length?'<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">'+impacts.map(function(p){return'<span style="padding:3px 10px;border-radius:20px;font-size:10px;font-weight:500;background:var(--glt);color:var(--g);border:1px solid rgba(61,122,78,.2)">'+p+'</span>';}).join('')+'</div>':'';
-    var out='<div class="rc" id="'+id+'"><div class="rh" onclick="tgR(\'' +id+ '\')"><span class="rp '+pri+'">'+pri.toUpperCase()+'</span><div class="rtg">'+sb+'</div><span class="rti">'+title+'</span><span class="rch">&#9660;</span></div>';
-    out+='<div class="rb"><div class="rsm">'+sumStr+'</div>'+nh+ih+'</div></div>';
+    var nsHtml='<div class="rec-ns"><div class="rec-ns-lbl">good apple next steps</div><ul>'+actions.map(function(a){return'<li>'+a+'</li>';}).join('')+'</ul></div>';
+    var impHtml=impacts.length?'<div class="rec-impact">'+impacts.map(function(p){return'<span class="rec-pill">'+p+'</span>';}).join('')+'</div>':'';
+    var out='<div class="rec-card" id="'+id+'"><div class="rec-hdr" onclick="tgR(\'' +id+ '\')"><span class="rec-pri '+pri+'">'+pri+'</span><span class="rec-title">'+title+'</span><span class="rec-chev">&#9660;</span></div>';
+    out+='<div class="rec-body"><div class="rec-sum">'+sumStr+'</div>'+nsHtml+impHtml+'</div></div>';
     return out;
   }
 
-  var wcNames=wc.map(function(r){return r['Ad group']||'';}).join(', ');
-  var sumCTR1=(wc.length?'<strong>'+wcNames+'</strong> generating high impression volume with below-average CTR. ':'')+' Thematic RSA testing aligning headline copy to campaign intent typically drives 5-15% CTR lift without bid changes.';
-  var sumCTR2='Image extensions expand the ad unit on eligible impressions and drive incremental direct clicks on both Google and Microsoft.';
-  document.getElementById('rCT').innerHTML=[
-    rc('high',['Google','HCP','DTC'],'Implement thematic ad copy test to drive CTR gains at scale',sumCTR1,
-      ['Identify 3-5 ad groups with highest impressions and lowest CTR in '+lbl,'Write 3 thematic variants: symptom-empathy, mechanism-led, and action-led','Run 30-day test with rotation set to Do Not Optimize','For Competitor campaigns, test comparison-context copy','Evaluate by CTR and QV rate together'],['Expected CTR lift: +5-15%','Timeline: 30-day test']),
-    rc('med',['Google','Microsoft','DTC','HCP'],'Expand image extensions to increase SERP real estate',sumCTR2,
-      ['Audit image extension coverage - identify gaps or assets older than 90 days','Upload 3 image variants per ad group: brand, patient lifestyle, clinical','Verify Microsoft eligibility separately','Monitor impression share and click rate monthly'],['Expected SERP coverage: +30-50%','Effort: Low']),
+  document.getElementById('rCTR').innerHTML=[
+    rc('high','implement thematic ad copy test to drive ctr gains at scale','thematic rsa testing — aligning headline copy to the specific search intent of each campaign type (symptoms, competitor, treatment, branded) — typically drives 5–15% ctr lift without bid changes.',
+      ['identify 3–5 ad groups with highest impression volume and lowest ctr','write 3 thematic variants: symptom-empathy led, mechanism-led, action-led','run 30-day test with rotation set to do not optimize','for competitor campaigns, test comparison-context copy: "considering alternatives? learn about brekiya"','evaluate winning variants by ctr and qv rate together'],
+      ['expected ctr lift: +5–15%','timeline: 30-day test']),
+    rc('med','expand image extensions across all active campaigns','image extensions expand the ad unit on eligible impressions, increasing serp real estate and driving incremental direct clicks on both google and microsoft.',
+      ['audit image extension coverage — identify gaps or assets older than 90 days','upload 3 image variants per ad group: brand imagery, patient lifestyle, clinical','verify microsoft eligibility separately — serving thresholds differ from google','monitor impression share and direct click rate monthly'],
+      ['expected serp coverage: +30–50%','effort: low']),
   ].join('');
 
-  document.getElementById('rCv').innerHTML=[
-    rc('high',['Google','HCP'],'Audit Request a Rep landing page to reduce conversion friction','Low rep submit rates relative to QV volume suggest post-click friction. Form complexity, page load, or CTA placement are the most common causes.',
-      ['Run heatmap and session recording analysis to identify drop-off points','Simplify form to minimum fields: Name, Specialty, NPI, Preferred Contact','Move form above the fold on desktop and mobile','Add response commitment: Your rep will follow up within 1 business day'],['Expected rep submit lift: +30-60%','Priority: Immediate']),
-    rc('high',['Google','Microsoft','DTC'],'Scale Symptoms and Competitor campaigns','Symptoms campaigns reach patients at the awareness stage at the lowest CPC. Competitor campaigns reach patients in comparison mode with the highest intent.',
-      ['Continue scaling Symptoms investment - monitor QVR stays above 40% benchmark','Scale Competitor investment with comparison-context copy and dedicated landing pages','Apply image extensions to Symptoms and Competitor campaigns','Mirror top-performing Google structure on Microsoft'],['Expected visit growth: +15-25%','CPC target: under $3.50']),
+  document.getElementById('rConv').innerHTML=[
+    rc('high','audit request a rep landing page to reduce hcp conversion friction','low rep submit rates relative to qv volume suggest post-click friction — form complexity, page load speed, or cta placement are the most common causes.',
+      ['run heatmap and session recording analysis to identify drop-off points','simplify form to minimum fields: name, specialty, npi, preferred contact','move form above the fold on desktop and mobile','add response commitment adjacent to form: "your rep will follow up within 1 business day"'],
+      ['expected rep submit lift: +30–60%','priority: immediate']),
+    rc('high','scale symptoms and competitor campaigns — lowest-cpc unbranded drivers','symptoms campaigns reach patients at the awareness stage at the lowest cpc. competitor campaigns reach patients in active comparison mode with the highest intent.',
+      ['continue scaling symptoms investment — monitor qvr stays above 60% dtc benchmark','scale competitor investment with comparison-context copy and dedicated landing pages','apply image extensions to symptoms and competitor campaigns','mirror top-performing google structure on microsoft'],
+      ['expected visit growth: +15–25%','cpc target: under $3.50']),
   ].join('');
 
-  var bcName=bc?bc['Ad group']||'':'';
-  var bcCamp=bc?bc['Campaign']||'':'';
-  var bcCPC=bc?fd(gpc(bc)):'';
-  var sumCost1=(bc?'<strong>'+bcName+'</strong> ('+bcCamp+') delivering <strong>'+bcCPC+' CPC</strong>. ':'')+' Shifting 15-25% of budget from lower-efficiency groups to top QV drivers is the primary lever for reducing CPQV.';
-  document.getElementById('rCo').innerHTML=[
-    rc('high',['Google','HCP'],'Reallocate budget toward '+(bc?'the lowest-CPC efficiency leader in '+lbl:'highest-efficiency groups to reduce CPQV'),sumCost1,
-      ['Pull CPQV ranking across all active '+sL+' groups for last 60 days','Reduce budget 15-20% on the 3 highest-CPQV groups and reallocate to top performers','Set a program-wide CPQV target and review monthly','Benchmark Microsoft CPCs against Google - Microsoft should be 50-65% of Google'],['Expected CPQV reduction: 15-30%','Timeline: 30-60 days']),
-    rc('med',['Google','Microsoft','DTC','HCP'],'Monthly search term audit to recover 5-10% of budget','Broad and phrase match keywords capture irrelevant queries. A monthly 30-minute review is the simplest cost efficiency lever in the program.',
-      ['Pull Search Terms reports for last 60 days - filter to zero-conversion terms over $10 spend','Add irrelevant terms as exact match negatives','Create shared Negative Keyword List across DTC accounts','Schedule monthly 30-minute review as a standing agenda item'],['Expected budget recovered: 5-10%','Timeline: Ongoing']),
+  document.getElementById('rCost').innerHTML=[
+    rc('high','reallocate budget toward highest-efficiency groups to reduce program-wide cpqv','shifting 15–25% of budget from lower-efficiency groups to top qv drivers is the primary lever for reducing cpqv without sacrificing volume.',
+      ['pull cpqv ranking across all active groups for the last 60 days','reduce budget 15–20% on the 3 highest-cpqv groups; reallocate to top generic and symptoms groups','set a program-wide cpqv target and review monthly against that benchmark','benchmark microsoft cpcs against google — microsoft should be 50–65% of google'],
+      ['expected cpqv reduction: 15–30%','timeline: 30–60 days']),
+    rc('med','monthly search term audit to recover 5–10% of budget','broad and phrase match keywords capture irrelevant queries. a monthly 30-minute review is the simplest cost efficiency lever in the program.',
+      ['pull search terms reports for last 60 days on google and microsoft separately','add irrelevant terms as exact match negatives','create shared negative keyword list across dtc accounts','schedule monthly 30-minute review as a standing agenda item'],
+      ['expected budget recovered: 5–10%','timeline: ongoing']),
   ].join('');
 }
 
 function tgR(id){document.getElementById(id).classList.toggle('open');}
 
-function dch(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
-function xs(){return{ticks:{color:'rgba(26,26,46,.35)',font:{family:"'DM Mono',monospace",size:9}},grid:{display:false}};}
-function ys(f){return{ticks:{color:'rgba(26,26,46,.35)',font:{family:"'DM Mono',monospace",size:9},callback:f},grid:{color:'rgba(26,26,46,.05)'}};}
-function co(o){o=o||{};var st=o.st||false,yf=o.yf||function(v){return v;};return{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{color:'rgba(26,26,46,.5)',font:{family:"'DM Sans',sans-serif",size:11},boxWidth:10,padding:12}}},scales:{x:{stacked:st,ticks:{color:'rgba(26,26,46,.35)',font:{family:"'DM Mono',monospace",size:9}},grid:{display:false}},y:{stacked:st,ticks:{color:'rgba(26,26,46,.35)',font:{family:"'DM Mono',monospace",size:9},callback:yf},grid:{color:'rgba(26,26,46,.05)'}}}};}
+// ── DISCREPANCY ────────────────────────────────────────
+function runDisc(){
+  var ytdTabName=document.getElementById('ytdTab').value.trim()||'Brekiya_YTD Data';
+  var errEl=document.getElementById('discErr');
+  errEl.style.display='none';
 
+  var url='https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(ID)+'/values/'+encodeURIComponent(ytdTabName)+'?key='+encodeURIComponent(K)+'&valueRenderOption=FORMATTED_VALUE';
+  fetch(url).then(function(res){
+    if(!res.ok)throw new Error('could not load ytd tab "'+ytdTabName+'" — check the tab name.');
+    return res.json();
+  }).then(function(j){
+    var raw=j.values||[];
+    if(raw.length<2)throw new Error('ytd tab has no data.');
+    buildDiscrepancy(raw);
+  }).catch(function(e){
+    errEl.textContent=e.message;errEl.style.display='block';
+  });
+}
+
+function buildDiscrepancy(ytdRaw){
+  var hdrs=ytdRaw[0].map(function(h){return(h||'').toString().trim().replace(/\s+/g,' ');});
+  // Aggregate from YTD: sum Cost, Clicks, Impressions
+  var ytdSpend=0,ytdClicks=0,ytdImpr=0;
+  var ytdHCPSpend=0,ytdHCPClicks=0,ytdHCPImpr=0;
+  var ytdDTCSpend=0,ytdDTCClicks=0,ytdDTCImpr=0;
+  var cIdx=hdrs.indexOf('Cost'),clIdx=hdrs.indexOf('Clicks'),imIdx=hdrs.indexOf('Impr.')||hdrs.indexOf('Impr')||hdrs.indexOf('Impressions');
+  var anIdx=hdrs.indexOf('Account name')||hdrs.indexOf('Account Name');
+  var atIdx=hdrs.indexOf('Account Type')||hdrs.indexOf('Account type');
+  if(cIdx<0)cIdx=hdrs.indexOf('Cost');
+  if(clIdx<0)clIdx=hdrs.indexOf('Clicks');
+  imIdx=hdrs.findIndex(function(h){return h.toLowerCase().startsWith('impr');});
+  anIdx=hdrs.findIndex(function(h){return h.toLowerCase().includes('account name');});
+  atIdx=hdrs.findIndex(function(h){return h.toLowerCase().includes('account type');});
+
+  function pn2(v){if(!v)return 0;return parseFloat(v.toString().replace(/[$,\s]/g,''))||0;}
+
+  for(var i=1;i<ytdRaw.length;i++){
+    var r=ytdRaw[i]||[];if(!r.length)continue;
+    var spend=pn2(r[cIdx]);var clicks=pn2(r[clIdx]);var impr=pn2(r[imIdx]);
+    var acct=(r[anIdx]||'').toUpperCase();
+    var type=(r[atIdx]||'').toLowerCase();
+    var isHCP=acct.includes('HCP');
+    ytdSpend+=spend;ytdClicks+=clicks;ytdImpr+=impr;
+    if(isHCP){ytdHCPSpend+=spend;ytdHCPClicks+=clicks;ytdHCPImpr+=impr;}
+    else{ytdDTCSpend+=spend;ytdDTCClicks+=clicks;ytdDTCImpr+=impr;}
+  }
+
+  // Get Looker totals
+  var lSpend=getLooker('Combined','Media Spend');var lClicks=getLooker('Combined','Clicks');
+  var lHSpend=getLooker('HCP','Media Spend');var lHClicks=getLooker('HCP','Clicks');
+  var lDSpend=getLooker('DTC','Media Spend');var lDClicks=getLooker('DTC','Clicks');
+
+  function discRow(metric,seg,looker,sheets){
+    var diff=looker-sheets;var pct=sheets?((diff/sheets)*100):0;
+    var status=Math.abs(pct)<5?'<span style="color:var(--leaf);font-size:10px">within range</span>':Math.abs(pct)<15?'<span style="color:var(--dew);font-size:10px">notable</span>':'<span style="color:var(--red);font-size:10px">flag</span>';
+    var dCls=Math.abs(pct)<5?'fl':pct>0?'up':'dn';
+    return'<tr><td>'+metric+'</td><td>'+seg+'</td><td class="tbl-num">'+( metric.includes('spend')||metric.includes('cost')?fmt$(looker):fmtK(looker))+'</td><td class="tbl-num">'+( metric.includes('spend')||metric.includes('cost')?fmt$(sheets):fmtK(sheets))+'</td><td class="tbl-num '+dCls+'">'+(diff>=0?'+':'')+( metric.includes('spend')||metric.includes('cost')?fmt$(diff):fmtK(diff))+'</td><td class="tbl-num '+dCls+'">'+(pct>=0?'+':'')+pct.toFixed(1)+'%</td><td>'+status+'</td></tr>';
+  }
+
+  document.getElementById('discBody').innerHTML=[
+    discRow('spend','combined',lSpend?pn(lSpend.v1):0,ytdSpend),
+    discRow('clicks','combined',lClicks?pn(lClicks.v1):0,ytdClicks),
+    discRow('spend','hcp',lHSpend?pn(lHSpend.v1):0,ytdHCPSpend),
+    discRow('clicks','hcp',lHClicks?pn(lHClicks.v1):0,ytdHCPClicks),
+    discRow('spend','dtc',lDSpend?pn(lDSpend.v1):0,ytdDTCSpend),
+    discRow('clicks','dtc',lDClicks?pn(lDClicks.v1):0,ytdDTCClicks),
+  ].join('');
+
+  document.getElementById('discResults').style.display='block';
+}
+
+// ── STAT CARD ──────────────────────────────────────────
+function mkStatCard(section,rows){
+  var rowsHtml=rows.map(function(r){return'<div class="sc-row"><span class="sc-k">'+r[0]+'</span><span class="sc-v">'+r[1]+'</span></div>';}).join('');
+  return'<div class="stat-card"><div class="sc-section">'+section+'</div>'+rowsHtml+'</div>';
+}
+
+// ── SEG / NAV ──────────────────────────────────────────
+function sw(n,b){
+  document.querySelectorAll('.pan').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.nt').forEach(function(x){x.classList.remove('on');});
+  document.getElementById('pan-'+n).classList.add('on');b.classList.add('on');curT=n;
+  var sb=document.getElementById('segbar');
+  if(STABS.includes(n)){sb.style.display='flex';}else{sb.style.display='none';}
+}
+function rst(){fP=null;fA=null;}
+
+// ── CHART HELPERS ──────────────────────────────────────
+function dch(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+function co(o){
+  o=o||{};var yf=o.yf||function(v){return v;};
+  return{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{ticks:{color:'rgba(80,80,70,.6)',font:{family:'Outfit',size:9,weight:'300'}},grid:{color:'rgba(200,195,185,.8)'}},
+      y:{ticks:{color:'rgba(160,160,160,.4)',font:{family:'Outfit',size:9,weight:'300'},callback:yf},grid:{color:'rgba(42,42,42,.5)'}}
+    }
+  };
+}
+
+// ── ERRORS ─────────────────────────────────────────────
 function shE(msg){var e=document.getElementById('eB');if(e){e.textContent=msg;e.style.display='block';}}
 function hdE(){var e=document.getElementById('eB'),d=document.getElementById('dB');if(e)e.style.display='none';if(d)d.style.display='none';}
-function shD(e){var b=document.getElementById('dB');if(b){b.style.display='block';b.textContent='Debug: '+(e&&e.message?e.message:String(e));}}
+function shD(e){var b=document.getElementById('dB');if(b){b.style.display='block';b.textContent='debug: '+(e&&e.message?e.message:String(e));}}
 
+// ── DEMO ───────────────────────────────────────────────
 function loadDemo(){
-  rows=[
-    {'Account name':'Amneal - BREKIYA DTC','Account Type':'Google Ads','Campaign':'Branded','Ad group':'Brekiya General','Month':'2026 M01','Impr.':'1946','Clicks':'81','Cost':'188.30','Avg. CPC':'2.32','CTR':'4.16%','Brekiya - HCP QV Rate':'0%','Brekiya - DTC QV Rate':'102.47%','Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)':'1395','Brekiya - HCP QV - 2P + Action':'6','Brekiya - HCP - Request A Rep Click':'0'},
-    {'Account name':'Amneal - BREKIYA HCP','Account Type':'Google Ads','Campaign':'Treatment','Ad group':'Prescription','Month':'2026 M01','Impr.':'2737','Clicks':'270','Cost':'1652','Avg. CPC':'6.12','CTR':'9.86%','Brekiya - HCP QV Rate':'77.78%','Brekiya - DTC QV Rate':'0%','Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)':'345','Brekiya - HCP QV - 2P + Action':'210','Brekiya - HCP - Request A Rep Click':'0'},
-    {'Account name':'Brekiya - HCP','Account Type':'Google Ads','Campaign':'Generic','Ad group':'Indication','Month':'2026 M02','Impr.':'4511','Clicks':'179','Cost':'518','Avg. CPC':'2.90','CTR':'3.97%','Brekiya - HCP QV Rate':'45.81%','Brekiya - DTC QV Rate':'4.47%','Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)':'40','Brekiya - HCP QV - 2P + Action':'82','Brekiya - HCP - Request A Rep Click':'1'},
-    {'Account name':'Amneal - BREKIYA DTC','Account Type':'Google Ads','Campaign':'Symptoms','Ad group':'Migraine Symptoms','Month':'2026 M02','Impr.':'53255','Clicks':'1631','Cost':'5139','Avg. CPC':'3.15','CTR':'3.06%','Brekiya - HCP QV Rate':'0%','Brekiya - DTC QV Rate':'70.32%','Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)':'5795','Brekiya - HCP QV - 2P + Action':'0','Brekiya - HCP - Request A Rep Click':'0'},
-    {'Account name':'Brekiya - DTC','Account Type':'Microsoft','Campaign':'Branded','Ad group':'Brekiya General','Month':'2026 M02','Impr.':'880','Clicks':'34','Cost':'32.40','Avg. CPC':'0.95','CTR':'3.86%','Brekiya - HCP QV Rate':'0%','Brekiya - DTC QV Rate':'38.24%','Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)':'55','Brekiya - HCP QV - 2P + Action':'0','Brekiya - HCP - Request A Rep Click':'0'},
-    {'Account name':'Amneal - BREKIYA HCP','Account Type':'Google Ads','Campaign':'Competitor - BC','Ad group':'Imitrex','Month':'2026 M03','Impr.':'6236','Clicks':'572','Cost':'2926','Avg. CPC':'5.12','CTR':'9.17%','Brekiya - HCP QV Rate':'79.9%','Brekiya - DTC QV Rate':'33.39%','Brekiya - DTC Weighted KSAs 2025 (TOTAL) (Converted currency)':'975','Brekiya - HCP QV - 2P + Action':'457','Brekiya - HCP - Request A Rep Click':'1'},
+  var demoRaw=[
+    ['Run Date','Metric','Section','Value','Value2','Value3'],
+    ['2026-11-16','Media Spend','Combined','$2,423,381.12','',''],
+    ['2026-11-16','Clicks','Combined','860,365','0.61%',''],
+    ['2026-11-16','Site Visits','Combined','936,927','$3.45',''],
+    ['2026-11-16','Qualified Visits','Combined','634,805','$5.08',''],
+    ['2026-11-16','QVR','Combined','64.39%','',''],
+    ['2026-11-16','Spend by Channel','Combined','Paid Social','$995,967.68',''],
+    ['2026-11-16','Spend by Channel','Combined','Paid Search','$731,367.23',''],
+    ['2026-11-16','Spend by Channel','Combined','Programmatic','$659,604.90',''],
+    ['2026-11-16','Media Spend','HCP','$1,226,416.50','',''],
+    ['2026-11-16','Clicks','HCP','198,136','0.80%',''],
+    ['2026-11-16','Site Visits','HCP','296,000','$6.43',''],
+    ['2026-11-16','Qualified Visits','HCP','217,379','$8.83',''],
+    ['2026-11-16','QVR','HCP','72.64%','',''],
+    ['2026-11-16','Media Spend','DTC','$1,195,057.27','',''],
+    ['2026-11-16','Clicks','DTC','662,214','0.57%',''],
+    ['2026-11-16','Site Visits','DTC','605,000','$2.13',''],
+    ['2026-11-16','Qualified Visits','DTC','396,425','$3.29',''],
+    ['2026-11-16','QVR','DTC','67.75%','',''],
+    ['2026-11-16','Keyword','HCP','CLUSTER HEADACHE','5,887','6.89%'],
+    ['2026-11-16','Keyword','HCP','WHAT IS A MIGRAINE','2,391','1.65%'],
+    ['2026-11-16','Keyword','HCP','TREAT MIGRAINES','3,227','6.08%'],
+    ['2026-11-16','Keyword','HCP','MIGRAINE SOLUTIONS','3,157','6.07%'],
+    ['2026-11-16','Keyword','HCP','SUMATRIPTAN','2,683','7.89%'],
+    ['2026-11-16','Keyword','DTC','HEADACHE MEDICATION FOR MIGRAINES','29,400','20.27%'],
+    ['2026-11-16','Keyword','DTC','TREAT MIGRAINES','6,099','9.37%'],
+    ['2026-11-16','Keyword','DTC','CLUSTER HEADACHE','4,066','4.50%'],
+    ['2026-11-16','Keyword','DTC','SUMATRIPTAN','5,555','4.43%'],
+    ['2026-11-16','Publisher','HCP','DART Search : Google','67,051','5.52%'],
+    ['2026-11-16','Publisher','HCP','DART Search : MSN','6,387','2.99%'],
+    ['2026-11-16','Publisher','DTC','DART Search : Google','86,568','3.69%'],
+    ['2026-11-16','Publisher','DTC','DART Search : MSN','8,139','3.14%'],
   ];
+  parseLooker(demoRaw);
   document.getElementById('sd').classList.add('live');
-  document.getElementById('st2').textContent='Demo - '+rows.length+' rows';
-  document.getElementById('lu').textContent='Demo data';
+  document.getElementById('st2').textContent='demo data — 2026-11-16';
+  document.getElementById('lu').textContent='demo mode';
   document.getElementById('bR').style.display='inline-block';
   document.getElementById('bS').style.display='inline-block';
   document.getElementById('cW').style.display='none';
