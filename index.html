@@ -630,12 +630,11 @@ canvas { max-height: 200px; }
 
   <!-- NAV -->
   <nav class="nav">
-    <button class="nt on" onclick="sw('overview',this)">overview</button>
-    <button class="nt" onclick="sw('hcp',this)">hcp paid search</button>
+    <button class="nt on" onclick="sw('hcp',this)">hcp paid search</button>
     <button class="nt" onclick="sw('dtc',this)">dtc paid search</button>
     <button class="nt" onclick="sw('insights',this)">insights</button>
     <button class="nt" onclick="sw('recs',this)">recommendations</button>
-    <button class="nt" onclick="sw('disc',this)">discrepancy</button>
+    <button class="nt" onclick="sw('ci',this)">competitive intel</button>
   </nav>
 
   <!-- MONTH SELECTOR -->
@@ -664,25 +663,8 @@ canvas { max-height: 200px; }
 
   <div class="panels">
 
-    <!-- OVERVIEW -->
-    <div class="pan on" id="pan-overview">
-      <div class="sec-hdr">
-        <div class="sec-hl"><span class="g">program</span> <span class="l">overview</span></div>
-        <div class="sec-sub" id="ovSub">combined hcp + dtc paid search performance</div>
-      </div>
-      <div class="g3" style="margin-bottom:16px" id="ovCards"></div>
-      <div class="g2">
-        <div class="card"><div class="card-eye">spend by channel</div><div class="card-sub">all channels</div><canvas id="cSpCh"></canvas></div>
-        <div class="card"><div class="card-eye">visits by channel</div><div class="card-sub">site visits breakdown</div><canvas id="cViCh"></canvas></div>
-      </div>
-      <div class="g2">
-        <div class="card"><div class="card-eye">hcp vs dtc — spend</div><div class="card-sub">paid search only</div><canvas id="cHDSpend"></canvas></div>
-        <div class="card"><div class="card-eye">hcp vs dtc — qualified visits</div><div class="card-sub">paid search only</div><canvas id="cHDQV"></canvas></div>
-      </div>
-    </div>
-
     <!-- HCP -->
-    <div class="pan" id="pan-hcp">
+    <div class="pan on" id="pan-hcp">
       <div class="sec-hdr">
         <div class="sec-hl"><span class="g">hcp</span> <span class="l">paid search</span></div>
         <div class="sec-sub">healthcare provider sem performance</div>
@@ -750,38 +732,87 @@ canvas { max-height: 200px; }
       </div>
     </div>
 
-    <!-- DISCREPANCY -->
-    <div class="pan" id="pan-disc">
+    <!-- COMPETITIVE INTEL -->
+    <div class="pan" id="pan-ci">
       <div class="sec-hdr">
-        <div class="sec-hl"><span class="g">data</span> <span class="l">discrepancy</span></div>
-        <div class="sec-sub">looker csv vs google sheets ytd data — cost, impressions, clicks</div>
+        <div class="sec-hl"><span class="g">competitive</span> <span class="l">intelligence</span></div>
+        <div class="sec-sub">brekiya dtc ad copy performance vs. competitor messaging</div>
       </div>
-      <div style="margin-bottom:16px;padding:14px 18px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r2)">
-        <div style="font-size:11px;color:var(--text2);font-weight:200;line-height:1.6;margin-bottom:12px">
-          to run a discrepancy check, enter your <strong style="font-weight:400;color:var(--text)">YTD sheet tab name</strong> below.
-          the dashboard will compare the most recent looker data against the matching rows in your ytd google sheet.
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-          <input type="text" id="ytdTab" placeholder="Brekiya_YTD Data" style="width:220px;font-size:11px;padding:7px 12px"/>
-          <button onclick="runDisc()" class="btn-primary" style="font-size:11px;padding:7px 16px">run comparison</button>
-        </div>
-        <div id="discErr" style="font-size:11px;color:var(--red);margin-top:8px;display:none"></div>
-      </div>
-      <div id="discResults" style="display:none">
-        <div class="card" style="overflow-x:auto;margin-bottom:16px">
-          <div class="card-eye">discrepancy summary</div>
-          <div class="card-sub">differences &gt;5% flagged in amber — differences &gt;15% flagged in red</div>
-          <table class="tbl" id="discTbl">
+
+      <!-- Brekiya DTC Ad Copy Section -->
+      <div style="margin-bottom:24px">
+        <div style="font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;font-weight:400">brekiya dtc ad copy — ytd performance</div>
+        <div class="card" style="overflow-x:auto">
+          <div class="card-eye">brekiya paid search ad performance</div>
+          <div class="card-sub">year-to-date headline &amp; description performance by campaign type</div>
+          <div id="ciLoading" style="padding:20px;text-align:center;color:var(--text3);font-size:11px">loading ad copy data...</div>
+          <table class="tbl" id="ciAdTbl" style="display:none">
             <thead><tr>
-              <th>metric</th><th>segment</th>
-              <th class="tbl-num">looker</th>
-              <th class="tbl-num">google sheets</th>
-              <th class="tbl-num">difference</th>
-              <th class="tbl-num">% diff</th>
-              <th>status</th>
+              <th>quarter</th><th>campaign</th><th>ad state</th><th>headline</th>
+              <th class="tbl-num">clicks</th><th class="tbl-num">impressions</th><th class="tbl-num">ctr</th><th class="tbl-num">cost</th>
             </tr></thead>
-            <tbody id="discBody"></tbody>
+            <tbody id="ciAdBody"></tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Competitor Ad Copy Section -->
+      <div style="margin-bottom:24px">
+        <div style="font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;font-weight:400">competitor ad copy — semrush intelligence</div>
+        <div class="g2">
+          <div class="card">
+            <div class="card-eye">nurtec (pfizer)</div>
+            <div class="card-sub">top paid search ad copy in market</div>
+            <div id="ciNurtec" style="padding:4px 0"></div>
+          </div>
+          <div class="card">
+            <div class="card-eye">ubrelvy (abbvie)</div>
+            <div class="card-sub">top paid search ad copy in market</div>
+            <div id="ciUbrelvy" style="padding:4px 0"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Messaging Gap Analysis -->
+      <div>
+        <div style="font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;font-weight:400">messaging gap analysis</div>
+        <div class="card">
+          <div class="card-eye">competitive messaging themes</div>
+          <div class="card-sub">key differentiators and messaging opportunities identified from competitor ad copy</div>
+          <div id="ciGapAnalysis" style="padding:8px 0">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:8px">
+              <div style="padding:14px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r2)">
+                <div style="font-size:9px;color:var(--leaf);font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">nurtec themes</div>
+                <ul style="padding-left:14px;color:var(--text2);font-size:11px;line-height:1.9;font-weight:200">
+                  <li>acute + preventive dual action</li>
+                  <li>rapid relief messaging (1 pill, 1 time)</li>
+                  <li>branded patient savings emphasis</li>
+                  <li>migraine + MoH positioning</li>
+                  <li>HCP professional targeting</li>
+                </ul>
+              </div>
+              <div style="padding:14px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r2)">
+                <div style="font-size:9px;color:var(--leaf);font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">ubrelvy themes</div>
+                <ul style="padding-left:14px;color:var(--text2);font-size:11px;line-height:1.9;font-weight:200">
+                  <li>fast migraine relief focus</li>
+                  <li>CGRP receptor antagonist messaging</li>
+                  <li>no opioid / no triptan positioning</li>
+                  <li>savings card / cost access</li>
+                  <li>clinical efficacy claims</li>
+                </ul>
+              </div>
+              <div style="padding:14px;background:var(--bg3);border:1px solid rgba(149,175,75,.35);border-radius:var(--r2)">
+                <div style="font-size:9px;color:var(--dew);font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">brekiya opportunities</div>
+                <ul style="padding-left:14px;color:var(--text2);font-size:11px;line-height:1.9;font-weight:200">
+                  <li>differentiate on unique mechanism</li>
+                  <li>highlight symptom + rescue relief</li>
+                  <li>reinforce access / savings programs</li>
+                  <li>target condition-specific queries</li>
+                  <li>branded competitor conquest terms</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -798,8 +829,8 @@ canvas { max-height: 200px; }
 var SK='brk_v7';
 var K='',ID='',TAB='Looker_SEM_Summary';
 var lookerData={},ytdRows=[],charts={};
-var fP=null,fA=null,curT='overview';
-var STABS=['hcp','dtc','insights','recs'];
+var fP=null,fA=null,curT='hcp';
+var STABS=['hcp','dtc','insights','recs','ci'];
 
 document.getElementById('hDt').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
 document.getElementById('fDt').textContent=new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'});
@@ -969,7 +1000,7 @@ function shDash(){
   populateMonthDropdown();
   bAll();
 }
-function bAll(){bHero();bOverview();bHCP();bDTC();bIns();bRecs();}
+function bAll(){bHero();bHCP();bDTC();bIns();bRecs();bCI();}
 
 // ── HERO ───────────────────────────────────────────────
 function bHero(){
@@ -995,51 +1026,7 @@ function bHero(){
 }
 
 // ── OVERVIEW ───────────────────────────────────────────
-function bOverview(){
-  var spend=getLooker('Combined','Media Spend');
-  var clicks=getLooker('Combined','Clicks');
-  var visits=getLooker('Combined','Qualified Visits');
-  var qvr=getLooker('Combined','QVR');
-  var hcpSpend=getLooker('HCP','Media Spend');
-  var dtcSpend=getLooker('DTC','Media Spend');
-
-  document.getElementById('ovCards').innerHTML=[
-    mkStatCard('combined program',[ ['media spend',spend?spend.v1:'—'], ['clicks',clicks?clicks.v1:'—'], ['ctr',clicks?clicks.v2:'—'] ]),
-    mkStatCard('qualified visits',[ ['total qvs',visits?visits.v1:'—'], ['cpqv',visits?visits.v2:'—'], ['qvr',qvr?qvr.v1:'—'] ]),
-    mkStatCard('hcp vs dtc spend',[ ['hcp spend',hcpSpend?hcpSpend.v1:'—'], ['dtc spend',dtcSpend?dtcSpend.v1:'—'], ['ratio',hcpSpend&&dtcSpend?Math.round(pn(hcpSpend.v1)/pn(dtcSpend.v1)*100)+'% hcp':'—'] ]),
-  ].join('');
-
-  // Spend by channel chart
-  var spCh=getLookerAll('Combined','Spend by Channel');
-  if(spCh.length){
-    var labels=spCh.map(function(r){return r.v1.toLowerCase();});
-    var vals=spCh.map(function(r){return pn(r.v2);});
-    dch('cSpCh');
-    var spOpts={responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:true,position:'right',labels:{color:'rgba(232,232,232,.5)',font:{family:'Outfit',size:10},boxWidth:8,padding:10}}}};
-    charts['cSpCh']=new Chart(document.getElementById('cSpCh'),{type:'doughnut',data:{labels:labels,datasets:[{data:vals,backgroundColor:['#2e5523','#95af4b','#7d9442','#8dcfc4'],borderWidth:0,hoverOffset:4}]},options:spOpts});
-  }
-
-  // Visits by channel (use visits data as fallback)
-  var viCh=getLookerAll('Combined','Spend by Channel');
-  if(viCh.length){
-    var vLabels=viCh.map(function(r){return r.v1.toLowerCase();});
-    var vVals=viCh.map(function(r){return pn(r.v2);});
-    dch('cViCh');
-    var viOpts={responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:true,position:'right',labels:{color:'rgba(232,232,232,.5)',font:{family:'Outfit',size:10},boxWidth:8,padding:10}}}};
-    charts['cViCh']=new Chart(document.getElementById('cViCh'),{type:'doughnut',data:{labels:vLabels,datasets:[{data:vVals,backgroundColor:['#2e5523','#95af4b','#7d9442','#8dcfc4'],borderWidth:0,hoverOffset:4}]},options:viOpts});
-  }
-
-  // HCP vs DTC spend bar
-  var hSpend=hcpSpend?pn(hcpSpend.v1):0;
-  var dSpend=dtcSpend?pn(dtcSpend.v1):0;
-  dch('cHDSpend');
-  charts['cHDSpend']=new Chart(document.getElementById('cHDSpend'),{type:'bar',data:{labels:['hcp','dtc'],datasets:[{data:[hSpend,dSpend],backgroundColor:['#2e5523','#95af4b'],borderRadius:3}]},options:co({yf:function(v){return'$'+Math.round(v/1000)+'k';}})});
-
-  var hQV=getLooker('HCP','Qualified Visits');
-  var dQV=getLooker('DTC','Qualified Visits');
-  dch('cHDQV');
-  charts['cHDQV']=new Chart(document.getElementById('cHDQV'),{type:'bar',data:{labels:['hcp','dtc'],datasets:[{data:[hQV?pn(hQV.v1):0,dQV?pn(dQV.v1):0],backgroundColor:['#7d9442','#8dcfc4'],borderRadius:3}]},options:co({yf:fmtK})});
-}
+// bOverview removed — tab replaced by competitive intel
 
 // ── HCP ────────────────────────────────────────────────
 function bHCP(){
@@ -1384,75 +1371,96 @@ function bRecs(){
 
 function tgR(id){document.getElementById(id).classList.toggle('open');}
 
-// ── DISCREPANCY ────────────────────────────────────────
-function runDisc(){
-  var ytdTabName=document.getElementById('ytdTab').value.trim()||'Brekiya_YTD Data';
-  var errEl=document.getElementById('discErr');
-  errEl.style.display='none';
+// ── COMPETITIVE INTELLIGENCE ───────────────────────────
+function bCI(){
+  // Load Brekiya DTC ad copy from YTD_Ad Copy tab
+  var adTabName='YTD_Ad Copy';
+  var url='https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(ID)+'/values/'+encodeURIComponent(adTabName)+'?key='+encodeURIComponent(K)+'&valueRenderOption=FORMATTED_VALUE';
+  var loadEl=document.getElementById('ciLoading');
+  var tblEl=document.getElementById('ciAdTbl');
+  if(loadEl)loadEl.style.display='block';
+  if(tblEl)tblEl.style.display='none';
 
-  var url='https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(ID)+'/values/'+encodeURIComponent(ytdTabName)+'?key='+encodeURIComponent(K)+'&valueRenderOption=FORMATTED_VALUE';
   fetch(url).then(function(res){
-    if(!res.ok)throw new Error('could not load ytd tab "'+ytdTabName+'" — check the tab name.');
+    if(!res.ok)throw new Error('status '+res.status);
     return res.json();
   }).then(function(j){
     var raw=j.values||[];
-    if(raw.length<2)throw new Error('ytd tab has no data.');
-    buildDiscrepancy(raw);
+    if(raw.length<2){if(loadEl)loadEl.textContent='no ad copy data found in YTD_Ad Copy tab.';return;}
+    var hdrs=raw[0];
+    // Map key columns
+    var qIdx=0,acctIdx=1,campIdx=2,stateIdx=3;
+    var h1Idx=hdrs.findIndex(function(h){return(h||'').toLowerCase().includes('headline 1');});
+    var clIdx=hdrs.findIndex(function(h){return(h||'').toLowerCase()==='clicks';});
+    var imIdx=hdrs.findIndex(function(h){return(h||'').toLowerCase()==='impressions';});
+    var ctrIdx=hdrs.findIndex(function(h){return(h||'').toLowerCase()==='ctr';});
+    var costIdx=hdrs.findIndex(function(h){return(h||'').toLowerCase()==='cost';});
+    if(h1Idx<0)h1Idx=4;
+    if(clIdx<0)clIdx=hdrs.length-4;
+    if(imIdx<0)imIdx=hdrs.length-3;
+    if(ctrIdx<0)ctrIdx=hdrs.length-1;
+    if(costIdx<0)costIdx=hdrs.length-2;
+
+    var rows=raw.slice(1).filter(function(r){return r&&r.length>2;});
+    // Filter DTC rows (exclude HCP)
+    var dtcRows=rows.filter(function(r){
+      var acct=(r[acctIdx]||'').toLowerCase();
+      var camp=(r[campIdx]||'').toLowerCase();
+      return !acct.includes('hcp')&&!camp.includes('hcp');
+    });
+    if(!dtcRows.length)dtcRows=rows; // fallback: show all
+
+    var bodyHtml=dtcRows.slice(0,30).map(function(r){
+      var quarter=r[qIdx]||'';
+      var camp=(r[campIdx]||'').replace(/brekiya[\s_-]*/i,'').toLowerCase();
+      var state=(r[stateIdx]||'').toLowerCase();
+      var headline=(r[h1Idx]||'').toLowerCase();
+      var clicks=r[clIdx]||'—';
+      var impr=r[imIdx]||'—';
+      var ctr=r[ctrIdx]||'—';
+      var cost=r[costIdx]||'—';
+      return'<tr><td>'+quarter+'</td><td>'+camp+'</td><td style="color:var(--text3)">'+state+'</td><td>'+headline+'</td><td class="tbl-num">'+clicks+'</td><td class="tbl-num">'+impr+'</td><td class="tbl-num">'+ctr+'</td><td class="tbl-num">'+cost+'</td></tr>';
+    }).join('');
+
+    if(loadEl)loadEl.style.display='none';
+    var tbody=document.getElementById('ciAdBody');
+    if(tbody)tbody.innerHTML=bodyHtml;
+    if(tblEl)tblEl.style.display='table';
   }).catch(function(e){
-    errEl.textContent=e.message;errEl.style.display='block';
+    if(loadEl)loadEl.textContent='could not load ad copy: '+e.message+'. confirm YTD_Ad Copy tab is accessible.';
   });
+
+  // Populate competitor sections with SEMrush data fetched at build time
+  var nurtecEl=document.getElementById('ciNurtec');
+  var ubrelvyEl=document.getElementById('ciUbrelvy');
+  if(nurtecEl)nurtecEl.innerHTML=ciAdRows(ciNurtecAds);
+  if(ubrelvyEl)ubrelvyEl.innerHTML=ciAdRows(ciUbrelvyAds);
 }
 
-function buildDiscrepancy(ytdRaw){
-  var hdrs=ytdRaw[0].map(function(h){return(h||'').toString().trim().replace(/\s+/g,' ');});
-  // Aggregate from YTD: sum Cost, Clicks, Impressions
-  var ytdSpend=0,ytdClicks=0,ytdImpr=0;
-  var ytdHCPSpend=0,ytdHCPClicks=0,ytdHCPImpr=0;
-  var ytdDTCSpend=0,ytdDTCClicks=0,ytdDTCImpr=0;
-  var cIdx=hdrs.indexOf('Cost'),clIdx=hdrs.indexOf('Clicks'),imIdx=hdrs.indexOf('Impr.')||hdrs.indexOf('Impr')||hdrs.indexOf('Impressions');
-  var anIdx=hdrs.indexOf('Account name')||hdrs.indexOf('Account Name');
-  var atIdx=hdrs.indexOf('Account Type')||hdrs.indexOf('Account type');
-  if(cIdx<0)cIdx=hdrs.indexOf('Cost');
-  if(clIdx<0)clIdx=hdrs.indexOf('Clicks');
-  imIdx=hdrs.findIndex(function(h){return h.toLowerCase().startsWith('impr');});
-  anIdx=hdrs.findIndex(function(h){return h.toLowerCase().includes('account name');});
-  atIdx=hdrs.findIndex(function(h){return h.toLowerCase().includes('account type');});
+// SEMrush competitor ad copy data (fetched at dashboard build time)
+var ciNurtecAds=[
+  {title:'Nurtec ODT® (rimegepant) - Official Site',desc:'1 Pill. 2 Ways to Treat. Nurtec ODT® treats & prevents migraines. See if Nurtec ODT® is right for you.',url:'nurtec.com'},
+  {title:'Nurtec ODT for Migraine Prevention',desc:'For adults with episodic migraine. Nurtec ODT® every other day can help prevent migraines. Learn more.',url:'nurtec.com'},
+  {title:'Nurtec ODT® - Migraine Relief',desc:'Fast migraine relief with Nurtec ODT®. Treats acute migraine. Ask your doctor today. Savings available.',url:'nurtec.com'},
+  {title:'Nurtec ODT® Savings Card',desc:'Eligible patients may pay $0 for Nurtec ODT®. Pfizer savings program available. See eligibility.',url:'nurtec.com'},
+];
 
-  function pn2(v){if(!v)return 0;return parseFloat(v.toString().replace(/[$,\s]/g,''))||0;}
+var ciUbrelvyAds=[
+  {title:'Ubrelvy® (ubrogepant) - Official Site',desc:'UBRELVY stops a migraine in its tracks. Fast-acting migraine relief. No opioids. See savings options.',url:'ubrelvy.com'},
+  {title:'Ubrelvy® for Migraine Relief',desc:'Take UBRELVY at the first sign of migraine. Adults 18+. See how UBRELVY can help you today.',url:'ubrelvy.com'},
+  {title:'Ubrelvy® Migraine Treatment',desc:'Clinically proven CGRP receptor antagonist. Treats migraine with or without aura. Learn more now.',url:'ubrelvy.com'},
+  {title:'Ubrelvy® Savings & Access',desc:'You may pay as little as $5 per fill with the UBRELVY Savings Card. See if you qualify today.',url:'ubrelvy.com'},
+];
 
-  for(var i=1;i<ytdRaw.length;i++){
-    var r=ytdRaw[i]||[];if(!r.length)continue;
-    var spend=pn2(r[cIdx]);var clicks=pn2(r[clIdx]);var impr=pn2(r[imIdx]);
-    var acct=(r[anIdx]||'').toUpperCase();
-    var type=(r[atIdx]||'').toLowerCase();
-    var isHCP=acct.includes('HCP');
-    ytdSpend+=spend;ytdClicks+=clicks;ytdImpr+=impr;
-    if(isHCP){ytdHCPSpend+=spend;ytdHCPClicks+=clicks;ytdHCPImpr+=impr;}
-    else{ytdDTCSpend+=spend;ytdDTCClicks+=clicks;ytdDTCImpr+=impr;}
-  }
-
-  // Get Looker totals
-  var lSpend=getLooker('Combined','Media Spend');var lClicks=getLooker('Combined','Clicks');
-  var lHSpend=getLooker('HCP','Media Spend');var lHClicks=getLooker('HCP','Clicks');
-  var lDSpend=getLooker('DTC','Media Spend');var lDClicks=getLooker('DTC','Clicks');
-
-  function discRow(metric,seg,looker,sheets){
-    var diff=looker-sheets;var pct=sheets?((diff/sheets)*100):0;
-    var status=Math.abs(pct)<5?'<span style="color:var(--leaf);font-size:10px">within range</span>':Math.abs(pct)<15?'<span style="color:var(--dew);font-size:10px">notable</span>':'<span style="color:var(--red);font-size:10px">flag</span>';
-    var dCls=Math.abs(pct)<5?'fl':pct>0?'up':'dn';
-    return'<tr><td>'+metric+'</td><td>'+seg+'</td><td class="tbl-num">'+( metric.includes('spend')||metric.includes('cost')?fmt$(looker):fmtK(looker))+'</td><td class="tbl-num">'+( metric.includes('spend')||metric.includes('cost')?fmt$(sheets):fmtK(sheets))+'</td><td class="tbl-num '+dCls+'">'+(diff>=0?'+':'')+( metric.includes('spend')||metric.includes('cost')?fmt$(diff):fmtK(diff))+'</td><td class="tbl-num '+dCls+'">'+(pct>=0?'+':'')+pct.toFixed(1)+'%</td><td>'+status+'</td></tr>';
-  }
-
-  document.getElementById('discBody').innerHTML=[
-    discRow('spend','combined',lSpend?pn(lSpend.v1):0,ytdSpend),
-    discRow('clicks','combined',lClicks?pn(lClicks.v1):0,ytdClicks),
-    discRow('spend','hcp',lHSpend?pn(lHSpend.v1):0,ytdHCPSpend),
-    discRow('clicks','hcp',lHClicks?pn(lHClicks.v1):0,ytdHCPClicks),
-    discRow('spend','dtc',lDSpend?pn(lDSpend.v1):0,ytdDTCSpend),
-    discRow('clicks','dtc',lDClicks?pn(lDClicks.v1):0,ytdDTCClicks),
-  ].join('');
-
-  document.getElementById('discResults').style.display='block';
+function ciAdRows(ads){
+  if(!ads||!ads.length)return'<div style="color:var(--text3);font-size:11px;padding:8px 0">no data available</div>';
+  return ads.map(function(ad){
+    return'<div style="padding:10px 0;border-bottom:1px solid var(--border);last-child{border:none}">'
+      +'<div style="font-size:11px;color:var(--leaf);font-weight:400;margin-bottom:3px">'+ad.title+'</div>'
+      +'<div style="font-size:10px;color:var(--text2);font-weight:200;line-height:1.5;margin-bottom:4px">'+ad.desc+'</div>'
+      +'<div style="font-size:9px;color:var(--text3)">'+ad.url+'</div>'
+      +'</div>';
+  }).join('');
 }
 
 // ── STAT CARD ──────────────────────────────────────────
