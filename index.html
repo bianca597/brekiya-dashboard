@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brekiya SEM Insights Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0f1a0c;
+  --bg2:      #162010;
+  --bg3:      #1c2914;
+  --border:   #2a3d20;
+  --border2:  #344d26;
+  --green:    #2e5523;
+  --leaf:     #95af4b;
+  --olive:    #7d9442;
+  --dew:      #8dcfc4;
+  --text:     #e8ead4;
+  --text2:    #a8b090;
+  --text3:    #607050;
+  --white:    #ffffff;
+  --red:      #e05252;
+  --r:        6px;
+  --r2:       10px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.tb {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  height: 52px;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 300;
+}
+.tb-left { display: flex; align-items: center; gap: 16px; }
+.tb-logo {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--leaf);
+  letter-spacing: -0.02em;
+}
+.tb-logo span { color: var(--text3); font-weight: 400; }
+.tb-divider { width: 1px; height: 18px; background: var(--border2); }
+.tb-client { font-size: 11px; color: var(--text3); font-weight: 300; letter-spacing: 0.06em; text-transform: uppercase; }
+.tb-right { display: flex; align-items: center; gap: 10px; }
+.tb-status {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 12px;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 300;
+  letter-spacing: 0.04em;
+}
+.tb-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text3); flex-shrink: 0; }
+.tb-dot.live { background: var(--leaf); animation: pulse 2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.tb-btn {
+  padding: 5px 14px;
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  background: transparent;
+  color: var(--text2);
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 300;
+  cursor: pointer;
+  transition: all .15s;
+}
+.tb-btn:hover { border-color: var(--leaf); color: var(--leaf); }
+#lu { font-size: 10px; color: var(--text3); font-weight: 200; }
+
+/* ── CONNECT ── */
+.cw {
+  min-height: calc(100vh - 52px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+.cc {
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 40px;
+}
+.cc-hl {
+  font-size: 36px;
+  font-weight: 300;
+  line-height: 1.1;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+.cc-hl .g { color: var(--leaf); }
+.cc-hl .l { color: var(--leaf); }
+.cc-sub { font-size: 12px; color: var(--text3); font-weight: 200; margin-bottom: 28px; line-height: 1.6; }
+.cc-field { margin-bottom: 14px; }
+.cc-lbl { font-size: 10px; color: var(--text3); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; display: block; }
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 9px 14px;
+  background: rgba(46,85,35,.2);
+  border: 1px solid rgba(46,85,35,.35);
+  border-radius: var(--r);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s;
+}
+input:focus { border-color: var(--leaf); }
+input::placeholder { color: var(--text3); }
+.cc-hint { font-size: 10px; color: var(--text3); margin-top: 4px; line-height: 1.5; }
+.cc-hint a { color: var(--leaf); text-decoration: none; }
+.cc-err { font-size: 11px; color: var(--red); padding: 8px 12px; background: rgba(224,82,82,.08); border: 1px solid rgba(224,82,82,.2); border-radius: var(--r); margin-top: 10px; display: none; line-height: 1.5; }
+.cc-dbg { font-size: 10px; color: var(--text3); padding: 8px 12px; background: var(--bg3); border-radius: var(--r); margin-top: 6px; display: none; line-height: 1.6; }
+.cc-actions { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+.btn-primary {
+  padding: 9px 20px;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: var(--r);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background .15s;
+}
+.btn-primary:hover { background: var(--leaf); }
+.btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+.btn-ghost {
+  padding: 9px 20px;
+  background: transparent;
+  color: var(--text2);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-ghost:hover { border-color: var(--leaf); color: var(--leaf); }
+.cc-div { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+.cc-steps { display: flex; flex-direction: column; gap: 8px; }
+.cc-step { display: flex; gap: 10px; align-items: flex-start; font-size: 11px; color: var(--text3); line-height: 1.6; }
+.cc-sn { width: 18px; height: 18px; border-radius: 50%; background: var(--green); color: #fff; font-size: 9px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+
+/* ── HERO ── */
+.hero {
+  padding: 40px 40px 36px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 100% 0%, rgba(46,85,35,.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-date { font-size: 10px; color: rgba(232,234,212,.6); font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+.hero-hl {
+  font-size: 48px;
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  margin-bottom: 8px;
+}
+.hero-hl .g { color: #ffffff; }
+.hero-hl .l { color: #c8e08a; }
+.hero-hl .d { color: var(--dew); }
+.hero-sub { font-size: 13px; color: rgba(255,255,255,.75); font-weight: 400; margin-bottom: 32px; letter-spacing: 0.04em; }
+.hero-stats { display: flex; gap: 2px; flex-wrap: wrap; }
+.hstat {
+  flex: 1;
+  min-width: 120px;
+  padding: 16px 20px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--green);
+}
+.hstat:first-child { border-radius: var(--r) 0 0 var(--r); }
+.hstat:last-child { border-radius: 0 var(--r) var(--r) 0; }
+.hstat-lbl { font-size: 9px; color: rgba(255,255,255,.55); font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.hstat-val { font-size: 24px; font-weight: 300; color: #ffffff; line-height: 1; margin-bottom: 4px; letter-spacing: -0.02em; }
+.hstat-d { font-size: 10px; font-weight: 300; color: rgba(255,255,255,.5); }
+.hstat-d.up { color: var(--leaf); }
+.hstat-d.dn { color: var(--red); }
+.hstat-d.fl { color: var(--text3); }
+
+/* ── NAV ── */
+.nav {
+  display: flex;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  position: sticky;
+  top: 52px;
+  z-index: 200;
+  overflow-x: auto;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nt {
+  padding: 12px 18px 11px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text3);
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: 'Outfit', sans-serif;
+  border-bottom: 1px solid transparent;
+  margin-bottom: -1px;
+  transition: color .15s;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+.nt:hover { color: var(--text2); }
+.nt.on { color: var(--leaf); border-bottom-color: var(--leaf); font-weight: 500; }
+
+/* ── SEG BAR ── */
+.segbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 40px;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.seg-lbl { font-size: 9px; color: var(--text3); font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; min-width: 60px; }
+.seg-chips { display: flex; gap: 4px; }
+.sch {
+  padding: 3px 12px;
+  font-size: 10px;
+  font-weight: 300;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  background: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  transition: all .14s;
+}
+.sch:hover { border-color: var(--leaf); color: var(--leaf); }
+.sch.on { background: var(--green); color: var(--white); border-color: var(--green); }
+.seg-div { width: 1px; height: 16px; background: var(--border2); flex-shrink: 0; }
+.seg-rst { padding: 3px 10px; font-size: 10px; color: var(--text3); cursor: pointer; border: none; background: none; font-family: 'Outfit', sans-serif; text-decoration: underline; }
+.seg-rst:hover { color: var(--leaf); }
+.fsum { background: rgba(46,85,35,.08); border-bottom: 1px solid rgba(46,85,35,.3); padding: 5px 40px; font-size: 10px; color: var(--leaf); font-weight: 300; display: none; align-items: center; gap: 6px; letter-spacing: 0.04em; }
+
+/* ── PANELS ── */
+.panels { padding: 32px 40px; max-width: 1440px; margin: 0 auto; }
+.pan { display: none; }
+.pan.on { display: block; animation: fu .2s ease both; }
+@keyframes fu { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── GRID ── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-bottom: 1px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; margin-bottom: 1px; }
+.g5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 1px; margin-bottom: 1px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 20px 22px;
+}
+.card-eye {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--leaf);
+  font-weight: 400;
+  margin-bottom: 2px;
+}
+.card-sub { font-size: 11px; color: var(--text3); font-weight: 400; margin-bottom: 14px; }
+canvas { max-height: 200px; }
+
+/* ── STAT CARDS ── */
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--green);
+  border-radius: var(--r2);
+  padding: 20px;
+}
+.sc-section { font-size: 9px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 400; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.sc-row { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; border-bottom: 1px solid rgba(42,61,32,.6); }
+.sc-row:last-child { border-bottom: none; }
+.sc-k { font-size: 11px; color: var(--text3); font-weight: 400; }
+.sc-v { font-size: 15px; font-weight: 500; color: var(--text); }
+.sc-v2 { font-size: 11px; font-weight: 400; color: var(--text2); }
+
+/* ── BADGE ── */
+.bdg { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 400; letter-spacing: 0.04em; }
+.bdg-g { background: rgba(149,175,75,.12); color: var(--leaf); border: 1px solid rgba(149,175,75,.25); }
+.bdg-m { background: rgba(141,207,196,.1); color: var(--dew); border: 1px solid rgba(141,207,196,.2); }
+.bdg-h { background: rgba(125,148,66,.1); color: var(--olive); border: 1px solid rgba(125,148,66,.2); }
+.bdg-d { background: rgba(46,85,35,.1); color: var(--leaf); border: 1px solid rgba(46,85,35,.2); }
+
+/* ── TABLE ── */
+.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tbl th {
+  text-align: left;
+  padding: 7px 12px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border2);
+  font-weight: 400;
+  white-space: nowrap;
+}
+.tbl td {
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(42,61,32,.8);
+  color: var(--text2);
+  font-weight: 400;
+  vertical-align: middle;
+}
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td { background: rgba(0,0,0,.02); }
+.tbl td:first-child { color: var(--text); font-weight: 500; }
+.tbl-num { text-align: right; font-variant-numeric: tabular-nums; }
+.up { color: var(--leaf); } .dn { color: var(--red); } .fl { color: var(--text3); }
+
+/* ── SECTION HEADER ── */
+.sec-hdr { margin-bottom: 20px; }
+.sec-hl {
+  font-size: 36px;
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.sec-hl .g { color: var(--leaf); }
+.sec-hl .l { color: #c8e08a; }
+.sec-sub { font-size: 13px; color: var(--text3); font-weight: 400; }
+
+/* ── INSIGHT CARDS ── */
+.ins-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--green);
+  border-radius: 0 var(--r2) var(--r2) 0;
+  padding: 20px 22px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--green);
+}
+.ins-card.leaf { border-left-color: var(--leaf); }
+.ins-card.dew { border-left-color: var(--dew); }
+.ins-card.olive { border-left-color: var(--olive); }
+.ins-eye {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  font-weight: 400;
+  margin-bottom: 10px;
+}
+.ins-frame {
+  font-size: 12px;
+  color: var(--text3);
+  font-weight: 400;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+.ins-list { padding: 0; margin: 0; list-style: none; }
+.ins-list li {
+  padding: 5px 0 5px 14px;
+  border-left: 1px solid var(--border2);
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text2);
+  line-height: 1.65;
+}
+.ins-list li:first-child {
+  font-weight: 400;
+  color: var(--text);
+  border-left-color: var(--leaf);
+  padding-left: 14px;
+}
+.ins-list li em { font-style: normal; color: var(--dew); font-weight: 400; }
+.ins-list li strong { font-weight: 500; color: var(--white); }
+.ins-ns {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: rgba(46,85,35,.15);
+  border: 1px solid rgba(46,85,35,.3);
+  border-radius: var(--r);
+}
+.ins-ns-lbl {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--leaf);
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+.ins-ns-body { font-size: 13px; color: var(--text2); font-weight: 400; line-height: 1.6; }
+
+/* ── COPY BLOCK ── */
+/* ── CI SUB-NAV ── */
+.ci-tab {
+  padding: 5px 14px;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text3);
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all .15s;
+}
+.ci-tab:hover { border-color: var(--leaf); color: var(--leaf); }
+.ci-tab.on { background: var(--green); border-color: var(--green); color: #fff; }
+.ci-pane { display: none; }
+.ci-pane.on { display: block; }
+
+.copy-block {
+  margin-top: 20px;
+  padding: 14px 18px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.copy-lbl { font-size: 13px; color: var(--text3); font-weight: 400; }
+.copy-btn {
+  padding: 7px 16px;
+  background: var(--green);
+  color: var(--white);
+  border: none;
+  border-radius: var(--r);
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background .15s;
+}
+.copy-btn:hover { background: var(--leaf); }
+
+/* ── REC CARDS ── */
+.rec-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.rec-hdr {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.rec-hdr:hover { background: rgba(149,175,75,.04); }
+.rec-pri {
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.rec-pri.high { background: rgba(224,82,82,.1); color: var(--red); border: 1px solid rgba(224,82,82,.2); }
+.rec-pri.med  { background: rgba(141,207,196,.08); color: var(--dew); border: 1px solid rgba(141,207,196,.2); }
+.rec-pri.low  { background: rgba(149,175,75,.08); color: var(--leaf); border: 1px solid rgba(149,175,75,.2); }
+.rec-tags { display: flex; gap: 4px; flex-shrink: 0; }
+.rec-title { font-size: 12px; font-weight: 300; color: var(--text); flex: 1; }
+.rec-chev { font-size: 10px; color: var(--text3); transition: transform .2s; flex-shrink: 0; }
+.rec-card.open .rec-chev { transform: rotate(180deg); }
+.rec-body { display: none; padding: 0 18px 18px; border-top: 1px solid var(--border); }
+.rec-card.open .rec-body { display: block; }
+.rec-sum { font-size: 13px; color: var(--text2); font-weight: 400; line-height: 1.6; padding: 12px 0 10px; }
+.rec-ns {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: rgba(46,85,35,.2);
+  border: 1px solid rgba(46,85,35,.35);
+  border-radius: var(--r);
+}
+.rec-ns-lbl {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--leaf);
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+.rec-ns ul { padding-left: 14px; }
+.rec-ns ul li { font-size: 13px; color: var(--text2); font-weight: 400; line-height: 1.65; margin-bottom: 3px; }
+.rec-impact { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.rec-pill {
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 300;
+  background: rgba(149,175,75,.08);
+  color: var(--leaf);
+  border: 1px solid rgba(149,175,75,.2);
+}
+
+/* ── DISCREPANCY ── */
+.disc-row-ok td { }
+.disc-row-warn td:nth-child(5) { color: var(--dew); }
+.disc-row-alert td:nth-child(5) { color: var(--red); font-weight: 400; }
+
+/* ── MONTH CHIPS ── */
+.mrow { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; }
+.mchip {
+  padding: 3px 12px;
+  font-size: 10px;
+  font-weight: 300;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  background: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  transition: all .14s;
+}
+.mchip:hover { border-color: var(--leaf); color: var(--leaf); }
+.mchip.on { background: var(--green); color: var(--white); border-color: var(--green); }
+
+/* ── FOOTER ── */
+.ftr {
+  margin-top: 60px;
+  padding: 20px 40px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text3);
+  font-weight: 400;
+  background: var(--bg2);
+}
+.ftr a { color: var(--leaf); text-decoration: none; }
+
+@media(max-width:960px){
+  .tb,.nav,.panels,.ftr,.segbar,.fsum,.hero{padding-left:20px;padding-right:20px;}
+  .g2,.g3,.g5{grid-template-columns:1fr;}
+  .hero-hl{font-size:36px;}
+  .sec-hl{font-size:36px;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="tb">
+  <div class="tb-left">
+    <div class="tb-logo">good <span>apple</span></div>
+    <div class="tb-divider"></div>
+    <div class="tb-client">brekiya sem insights generator</div>
+  </div>
+  <div class="tb-right">
+    <span id="lu"></span>
+    <div class="tb-status"><span class="tb-dot" id="sd"></span><span id="st2">not connected</span></div>
+    <button class="tb-btn" id="bR" onclick="doRef()" style="display:none">refresh</button>
+    <button class="tb-btn" id="bS" onclick="goSet()" style="display:none">settings</button>
+  </div>
+</header>
+
+<!-- CONNECT -->
+<div class="cw" id="cW">
+  <div class="cc">
+    <div class="cc-hl"><span class="g">connect</span> <span class="l">your data</span></div>
+    <div class="cc-sub">enter your google sheets api key once — it saves locally and auto-connects on every visit.</div>
+    <div class="cc-field">
+      <label class="cc-lbl">api key</label>
+      <input type="password" id="fK" placeholder="AIza..."/>
+      <div class="cc-hint">from <a href="https://console.cloud.google.com/apis/credentials" target="_blank">google cloud console</a> — sheets api must be enabled.</div>
+    </div>
+    <div class="cc-field">
+      <label class="cc-lbl">spreadsheet id</label>
+      <input type="text" id="fI" placeholder="the id between /d/ and /edit in your sheet url"/>
+    </div>
+    <div class="cc-field">
+      <label class="cc-lbl">tab name</label>
+      <input type="text" id="fT" value="Looker_SEM_Summary"/>
+      <div class="cc-hint">default: Looker_SEM_Summary — the tab written by the daily apps script pipeline.</div>
+    </div>
+    <div class="cc-err" id="eB"></div>
+    <div class="cc-dbg" id="dB"></div>
+    <div class="cc-actions">
+      <button class="btn-primary" id="bC" onclick="doConn()">connect &amp; load</button>
+      <button class="btn-ghost" onclick="loadDemo()">load demo</button>
+      <button class="btn-ghost" id="bCl" onclick="clrC()" style="display:none">clear saved</button>
+    </div>
+    <hr class="cc-div">
+    <div class="cc-steps">
+      <div class="cc-step"><div class="cc-sn">1</div><div>sheet must be <strong style="font-weight:400;color:var(--text)">"anyone with the link can view"</strong></div></div>
+      <div class="cc-step"><div class="cc-sn">2</div><div>google sheets api must be enabled in your cloud project</div></div>
+      <div class="cc-step"><div class="cc-sn">3</div><div>run the apps script pipeline at least once to populate the looker_sem_summary tab</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dash" style="display:none">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-date" id="hDt"></div>
+    <div class="hero-hl"><span class="g">brekiya</span> <span class="l">sem</span> <span class="d">insights generator</span></div>
+    <div class="hero-sub">good apple digital &mdash; paid search reporting</div>
+    <div class="hero-stats" id="hSt"></div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <button class="nt on" onclick="sw('hcp',this)">hcp paid search</button>
+    <button class="nt" onclick="sw('dtc',this)">dtc paid search</button>
+    <button class="nt" onclick="sw('insights',this)">insights</button>
+    <button class="nt" onclick="sw('recs',this)">recommendations</button>
+    <button class="nt" onclick="sw('ci',this)">competitive intel</button>
+  </nav>
+
+  <!-- MONTH SELECTOR -->
+  <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 40px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <span style="font-size:9px;color:var(--text3);font-weight:400;letter-spacing:.1em;text-transform:uppercase">reporting period</span>
+    <select id="monthSel" onchange="onMonthChange()" style="padding:5px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:11px;font-weight:300;color:var(--text);cursor:pointer;outline:none;">
+      <option value="">loading...</option>
+    </select>
+    <span style="font-size:9px;color:var(--text3);font-weight:400;letter-spacing:.1em;text-transform:uppercase;margin-left:8px">ytd source</span>
+    <select id="ytdMonthSel" onchange="onYTDMonthChange()" style="padding:5px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:11px;font-weight:300;color:var(--text);cursor:pointer;outline:none;display:none">
+      <option value="">all months</option>
+    </select>
+    <span id="dataSourceTag" style="font-size:9px;padding:2px 8px;border-radius:10px;background:rgba(149,175,75,.1);color:var(--leaf);border:1px solid rgba(149,175,75,.2);font-weight:400">looker</span>
+  </div>
+
+  <!-- SEG BAR -->
+  <div class="segbar" id="segbar">
+    <span class="seg-lbl">platform</span>
+    <div class="seg-chips" id="pC"></div>
+    <div class="seg-div"></div>
+    <span class="seg-lbl">audience</span>
+    <div class="seg-chips" id="aC"></div>
+    <button class="seg-rst" onclick="rst()">reset</button>
+  </div>
+  <div class="fsum" id="fS"><span>filtered:</span><span id="fT2"></span></div>
+
+  <div class="panels">
+
+    <!-- HCP -->
+    <div class="pan on" id="pan-hcp">
+      <div class="sec-hdr">
+        <div class="sec-hl"><span class="g">hcp</span> <span class="l">paid search</span></div>
+        <div class="sec-sub">healthcare provider sem performance</div>
+      </div>
+      <div class="g3" style="margin-bottom:16px" id="hcpCards"></div>
+      <div class="g2">
+        <div class="card"><div class="card-eye">hcp keyword performance</div><div class="card-sub">top keywords by qualified visits</div><canvas id="cHCPKW"></canvas></div>
+        <div class="card"><div class="card-eye">hcp publisher performance</div><div class="card-sub">google vs microsoft</div><canvas id="cHCPPub"></canvas></div>
+      </div>
+      <div class="card" style="margin-top:16px;overflow-x:auto">
+        <div class="card-eye">hcp search keyword detail</div>
+        <div class="card-sub">impressions, clicks, ctr, site visits, qvr, spend</div>
+        <table class="tbl"><thead><tr><th>keyword</th><th class="tbl-num">impr.</th><th class="tbl-num">clicks</th><th class="tbl-num">ctr</th><th class="tbl-num">site visits</th><th class="tbl-num">qvr</th><th class="tbl-num">spend</th></tr></thead><tbody id="hcpKWTbl"></tbody></table>
+      </div>
+    </div>
+
+    <!-- DTC -->
+    <div class="pan" id="pan-dtc">
+      <div class="sec-hdr">
+        <div class="sec-hl"><span class="g">dtc</span> <span class="l">paid search</span></div>
+        <div class="sec-sub">direct-to-consumer sem performance</div>
+      </div>
+      <div class="g3" style="margin-bottom:16px" id="dtcCards"></div>
+      <div class="g2">
+        <div class="card"><div class="card-eye">dtc keyword performance</div><div class="card-sub">top keywords by qualified visits</div><canvas id="cDTCKW"></canvas></div>
+        <div class="card"><div class="card-eye">dtc publisher performance</div><div class="card-sub">google vs microsoft</div><canvas id="cDTCPub"></canvas></div>
+      </div>
+      <div class="card" style="margin-top:16px;overflow-x:auto">
+        <div class="card-eye">dtc search keyword detail</div>
+        <div class="card-sub">impressions, clicks, ctr, site visits, qvr, spend</div>
+        <table class="tbl"><thead><tr><th>keyword</th><th class="tbl-num">impr.</th><th class="tbl-num">clicks</th><th class="tbl-num">ctr</th><th class="tbl-num">site visits</th><th class="tbl-num">qvr</th><th class="tbl-num">spend</th></tr></thead><tbody id="dtcKWTbl"></tbody></table>
+      </div>
+    </div>
+
+    <!-- INSIGHTS -->
+    <div class="pan" id="pan-insights">
+      <div class="sec-hdr">
+        <div class="sec-hl"><span class="g">search</span> <span class="l">insights</span></div>
+        <div class="sec-sub" id="insSub">fact-checked insights ready to copy into your report</div>
+      </div>
+      <div id="insCards"></div>
+      <div class="copy-block">
+        <div class="copy-lbl">copy all insights as plain text — ready to paste into your report</div>
+        <button class="copy-btn" id="copyBtn" onclick="copyIns()">copy insights</button>
+      </div>
+    </div>
+
+    <!-- RECOMMENDATIONS -->
+    <div class="pan" id="pan-recs">
+      <div class="sec-hdr">
+        <div class="sec-hl"><span class="g">recommendations</span></div>
+        <div class="sec-sub">prioritized actions based on current performance</div>
+      </div>
+      <div style="margin-bottom:20px">
+        <div style="font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;font-weight:400">ctr improvement</div>
+        <div id="rCTR"></div>
+      </div>
+      <div style="margin-bottom:20px">
+        <div style="font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;font-weight:400">conversion actions</div>
+        <div id="rConv"></div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;font-weight:400">cost efficiency</div>
+        <div id="rCost"></div>
+      </div>
+    </div>
+
+    <!-- COMPETITIVE INTEL -->
+    <div class="pan" id="pan-ci">
+      <div class="sec-hdr">
+        <div class="sec-hl"><span class="g">competitive</span> <span class="l">intelligence</span></div>
+        <div class="sec-sub">brekiya dtc ad copy performance vs. nurtec &amp; ubrelvy — sourced from semrush</div>
+      </div>
+
+      <!-- CI Tab Nav -->
+      <div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap">
+        <button class="ci-tab on" onclick="ciSw('ad-copy',this)">ad copy comparison</button>
+        <button class="ci-tab" onclick="ciSw('kw-intel',this)">keyword intelligence</button>
+        <button class="ci-tab" onclick="ciSw('gap',this)">messaging gaps</button>
+      </div>
+
+      <!-- AD COPY COMPARISON -->
+      <div class="ci-pane on" id="ci-ad-copy">
+        <!-- Brekiya DTC row -->
+        <div style="margin-bottom:20px">
+          <div style="font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;font-weight:400">brekiya dtc — your active ad copy (ytd)</div>
+          <div class="card" style="overflow-x:auto">
+            <div class="card-eye">brekiya dtc paid search ad performance</div>
+            <div class="card-sub">year-to-date active ads by campaign type — clicks, impressions, ctr, cost</div>
+            <div id="ciLoading" style="padding:20px;text-align:center;color:var(--text3);font-size:11px">loading ad copy data...</div>
+            <table class="tbl" id="ciAdTbl" style="display:none">
+              <thead><tr>
+                <th>quarter</th><th>campaign</th><th>ad state</th><th>headline</th>
+                <th class="tbl-num">clicks</th><th class="tbl-num">impressions</th><th class="tbl-num">ctr</th><th class="tbl-num">cost</th>
+              </tr></thead>
+              <tbody id="ciAdBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Side-by-side competitor ad copy -->
+        <div style="font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;font-weight:400">competitor ad copy — semrush live data</div>
+        <div class="g2" style="margin-bottom:0">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <div class="card-eye">nurtec odt (pfizer)</div>
+              <span style="font-size:9px;padding:2px 7px;background:rgba(141,207,196,.08);color:var(--dew);border:1px solid rgba(141,207,196,.2);border-radius:10px">nurtec.com</span>
+            </div>
+            <div class="card-sub">top ads ranked by keyword coverage — semrush nov 2026</div>
+            <div id="ciNurtec" style="padding:4px 0"></div>
+          </div>
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <div class="card-eye">ubrelvy (abbvie)</div>
+              <span style="font-size:9px;padding:2px 7px;background:rgba(149,175,75,.08);color:var(--leaf);border:1px solid rgba(149,175,75,.2);border-radius:10px">ubrelvy.com</span>
+            </div>
+            <div class="card-sub">top ads ranked by keyword coverage — semrush nov 2026</div>
+            <div id="ciUbrelvy" style="padding:4px 0"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KEYWORD INTELLIGENCE -->
+      <div class="ci-pane" id="ci-kw-intel">
+        <div style="font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;font-weight:400">competitor keyword positions &amp; cpcs — semrush</div>
+        <div class="g2">
+          <div class="card" style="overflow-x:auto">
+            <div class="card-eye">nurtec — top paid keywords</div>
+            <div class="card-sub">position, monthly search volume, cpc — us market</div>
+            <table class="tbl">
+              <thead><tr><th>keyword</th><th class="tbl-num">pos</th><th class="tbl-num">volume</th><th class="tbl-num">cpc</th><th class="tbl-num">traffic est.</th></tr></thead>
+              <tbody>
+                <tr><td>nurtec</td><td class="tbl-num">1</td><td class="tbl-num">90,500</td><td class="tbl-num">$5.96</td><td class="tbl-num">4,253</td></tr>
+                <tr><td>nurtec odt</td><td class="tbl-num">1</td><td class="tbl-num">12,100</td><td class="tbl-num">$4.38</td><td class="tbl-num">568</td></tr>
+                <tr><td>rimegepant</td><td class="tbl-num">1</td><td class="tbl-num">9,900</td><td class="tbl-num">$14.00</td><td class="tbl-num">465</td></tr>
+                <tr><td>nurtec side effects</td><td class="tbl-num">2</td><td class="tbl-num">14,800</td><td class="tbl-num">$3.46</td><td class="tbl-num">192</td></tr>
+                <tr><td>nurtec generic</td><td class="tbl-num">1</td><td class="tbl-num">5,400</td><td class="tbl-num">$15.50</td><td class="tbl-num">253</td></tr>
+                <tr><td>nurtec for migraines</td><td class="tbl-num">1</td><td class="tbl-num">1,900</td><td class="tbl-num">$4.73</td><td class="tbl-num">89</td></tr>
+                <tr><td>how does nurtec work</td><td class="tbl-num">1</td><td class="tbl-num">1,600</td><td class="tbl-num">—</td><td class="tbl-num">75</td></tr>
+                <tr><td>how long does nurtec take to work</td><td class="tbl-num">1</td><td class="tbl-num">720</td><td class="tbl-num">$26.00</td><td class="tbl-num">33</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card" style="overflow-x:auto">
+            <div class="card-eye">ubrelvy — top paid keywords</div>
+            <div class="card-sub">position, monthly search volume, cpc — us market</div>
+            <table class="tbl">
+              <thead><tr><th>keyword</th><th class="tbl-num">pos</th><th class="tbl-num">volume</th><th class="tbl-num">cpc</th><th class="tbl-num">traffic est.</th></tr></thead>
+              <tbody>
+                <tr><td>ubrelvy side effects</td><td class="tbl-num">1</td><td class="tbl-num">12,100</td><td class="tbl-num">$5.08</td><td class="tbl-num">568</td></tr>
+                <tr><td>ubrelvy copay card</td><td class="tbl-num">1</td><td class="tbl-num">3,600</td><td class="tbl-num">—</td><td class="tbl-num">169</td></tr>
+                <tr><td>ubrelvy coupon</td><td class="tbl-num">1</td><td class="tbl-num">3,600</td><td class="tbl-num">$9.20</td><td class="tbl-num">169</td></tr>
+                <tr><td>ubrelvy cost</td><td class="tbl-num">1</td><td class="tbl-num">2,900</td><td class="tbl-num">$6.40</td><td class="tbl-num">136</td></tr>
+                <tr><td>ubrelvy 100 mg</td><td class="tbl-num">1</td><td class="tbl-num">1,900</td><td class="tbl-num">$5.25</td><td class="tbl-num">89</td></tr>
+                <tr><td>ubrelvy dosing</td><td class="tbl-num">1</td><td class="tbl-num">1,900</td><td class="tbl-num">$4.70</td><td class="tbl-num">89</td></tr>
+                <tr><td>ubrelvy generic name</td><td class="tbl-num">1</td><td class="tbl-num">720</td><td class="tbl-num">$9.72</td><td class="tbl-num">33</td></tr>
+                <tr><td>how often can you take ubrelvy</td><td class="tbl-num">1</td><td class="tbl-num">480</td><td class="tbl-num">$5.20</td><td class="tbl-num">22</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div class="card-eye">competitive keyword insight</div>
+          <div class="card-sub">what competitor keyword data tells us about their strategy</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px">
+            <div style="padding:12px;background:var(--bg3);border-radius:var(--r2);border:1px solid var(--border2)">
+              <div style="font-size:9px;color:var(--dew);font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">nurtec strategy signal</div>
+              <div style="font-size:11px;color:var(--text2);font-weight:200;line-height:1.7">Heavy branded defense — bidding on own brand at pos. 1 across 90K+ monthly searches. Rimegepant ($14 CPC) signals INN conquest targeting. "Generic" bidding ($15–24 CPC) captures cost-conscious patients actively seeking alternatives.</div>
+            </div>
+            <div style="padding:12px;background:var(--bg3);border-radius:var(--r2);border:1px solid var(--border2)">
+              <div style="font-size:9px;color:var(--leaf);font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">ubrelvy strategy signal</div>
+              <div style="font-size:11px;color:var(--text2);font-weight:200;line-height:1.7">Access-first keyword strategy — top traffic from "side effects," "copay card," and "coupon" terms. Lower overall search volume than Nurtec signals smaller active patient base. Savings messaging dominates their creative approach.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MESSAGING GAPS -->
+      <div class="ci-pane" id="ci-gap">
+        <div style="font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;font-weight:400">messaging gap analysis — brekiya vs. competitors</div>
+
+        <!-- Theme matrix -->
+        <div class="card" style="overflow-x:auto;margin-bottom:16px">
+          <div class="card-eye">messaging theme matrix</div>
+          <div class="card-sub">which themes each brand owns in paid search — based on live semrush ad copy</div>
+          <table class="tbl" style="margin-top:8px">
+            <thead>
+              <tr>
+                <th>messaging theme</th>
+                <th style="text-align:center">brekiya</th>
+                <th style="text-align:center">nurtec</th>
+                <th style="text-align:center">ubrelvy</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>branded / product name defense</td><td style="text-align:center;color:var(--leaf)">✓</td><td style="text-align:center;color:var(--leaf)">✓✓</td><td style="text-align:center;color:var(--leaf)">✓✓</td></tr>
+              <tr><td>how it works / mechanism</td><td style="text-align:center;color:var(--text3)">—</td><td style="text-align:center;color:var(--leaf)">✓✓</td><td style="text-align:center;color:var(--leaf)">✓✓</td></tr>
+              <tr><td>dosing / administration</td><td style="text-align:center;color:var(--text3)">—</td><td style="text-align:center;color:var(--leaf)">✓✓</td><td style="text-align:center;color:var(--leaf)">✓✓</td></tr>
+              <tr><td>savings / access / copay card</td><td style="text-align:center;color:var(--text3)">—</td><td style="text-align:center;color:var(--leaf)">✓</td><td style="text-align:center;color:var(--leaf)">✓✓</td></tr>
+              <tr><td>side effects / safety profile</td><td style="text-align:center;color:var(--text3)">—</td><td style="text-align:center;color:var(--leaf)">✓✓</td><td style="text-align:center;color:var(--leaf)">✓✓</td></tr>
+              <tr><td>symptom / condition targeting</td><td style="text-align:center;color:var(--leaf)">✓</td><td style="text-align:center;color:var(--text3)">—</td><td style="text-align:center;color:var(--text3)">—</td></tr>
+              <tr><td>generic name (INN) conquest</td><td style="text-align:center;color:var(--text3)">—</td><td style="text-align:center;color:var(--leaf)">✓✓</td><td style="text-align:center;color:var(--text3)">—</td></tr>
+              <tr><td>competitor conquest</td><td style="text-align:center;color:var(--text3)">—</td><td style="text-align:center;color:var(--text3)">—</td><td style="text-align:center;color:var(--text3)">—</td></tr>
+            </tbody>
+          </table>
+          <div style="font-size:10px;color:var(--text3);margin-top:8px;line-height:1.6">✓✓ = strong presence &nbsp;·&nbsp; ✓ = present &nbsp;·&nbsp; — = not observed in semrush data</div>
+        </div>
+
+        <!-- Opportunity cards -->
+        <div style="font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;font-weight:400">identified opportunities for brekiya</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+          <div style="padding:14px;background:var(--bg3);border:1px solid rgba(141,207,196,.25);border-radius:var(--r2)">
+            <div style="font-size:9px;color:var(--dew);font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">🎯 access + savings messaging</div>
+            <div style="font-size:11px;color:var(--text2);font-weight:200;line-height:1.7;margin-bottom:8px">Ubrelvy drives significant volume from "copay card" and "coupon" searches ($9.20 CPC). Brekiya has no savings-focused ad copy visible in market. Patients actively searching for cost help are going to competitors first.</div>
+            <div style="font-size:10px;color:var(--dew)">opportunity: add savings-focused ad variations targeting cost + access queries</div>
+          </div>
+          <div style="padding:14px;background:var(--bg3);border:1px solid rgba(149,175,75,.25);border-radius:var(--r2)">
+            <div style="font-size:9px;color:var(--leaf);font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">🎯 "how it works" / mechanism</div>
+            <div style="font-size:11px;color:var(--text2);font-weight:200;line-height:1.7;margin-bottom:8px">Both Nurtec and Ubrelvy run "how does it work" and "see how this treatment works" copy across top-traffic terms. This educational angle builds trust at the awareness stage and Brekiya is currently absent from it.</div>
+            <div style="font-size:10px;color:var(--leaf)">opportunity: develop mechanism-focused creative and test on mid-funnel query types</div>
+          </div>
+          <div style="padding:14px;background:var(--bg3);border:1px solid rgba(149,175,75,.25);border-radius:var(--r2)">
+            <div style="font-size:9px;color:var(--leaf);font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">🎯 competitor conquest opportunity</div>
+            <div style="font-size:11px;color:var(--text2);font-weight:200;line-height:1.7;margin-bottom:8px">Neither Nurtec nor Ubrelvy appears to be running conquest campaigns against each other. Brekiya could own branded competitor keywords ("nurtec alternative," "ubrelvy alternative") at potentially lower CPCs with differentiation copy.</div>
+            <div style="font-size:10px;color:var(--leaf)">opportunity: test competitor-branded conquest terms with comparison landing pages</div>
+          </div>
+          <div style="padding:14px;background:var(--bg3);border:1px solid rgba(141,207,196,.25);border-radius:var(--r2)">
+            <div style="font-size:9px;color:var(--dew);font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">🎯 brekiya's current edge: symptoms</div>
+            <div style="font-size:11px;color:var(--text2);font-weight:200;line-height:1.7;margin-bottom:8px">Brekiya's symptom/condition campaign targets unbranded migraine queries that neither competitor dominates. This is a whitespace Brekiya already occupies — increasing budget here captures patients earlier in the decision journey.</div>
+            <div style="font-size:10px;color:var(--dew)">action: protect and scale symptoms investment — this is Brekiya's clearest competitive moat</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="ftr">
+    <span>good apple digital &mdash; brekiya sem insights generator &mdash; <span id="fDt"></span></span>
+    <span>auto-updated daily via looker pipeline &mdash; <a href="https://github.com/bianca597/brekiya-dashboard" target="_blank">github</a></span>
+  </footer>
+</div>
+
+<script>
+var SK='brk_v7';
+var K='',ID='',TAB='Looker_SEM_Summary';
+var lookerData={},ytdRows=[],charts={};
+var fP=null,fA=null,curT='hcp';
+var STABS=['hcp','dtc','insights','recs','ci'];
+
+document.getElementById('hDt').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+document.getElementById('fDt').textContent=new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'});
+
+// ── CREDS ──────────────────────────────────────────────
+function svc(k,id,t){localStorage.setItem(SK,JSON.stringify({k:k,id:id,t:t}));}
+function ldc(){try{return JSON.parse(localStorage.getItem(SK)||'null');}catch(e){return null;}}
+function clrC(){localStorage.removeItem(SK);document.getElementById('bCl').style.display='none';document.getElementById('fK').value='';document.getElementById('fI').value='';alert('cleared.');}
+
+window.addEventListener('load',function(){
+  var c=ldc();
+  if(c&&c.k&&c.id){
+    document.getElementById('fK').value=c.k;
+    document.getElementById('fI').value=c.id;
+    document.getElementById('fT').value=c.t||TAB;
+    document.getElementById('bCl').style.display='inline-block';
+    K=c.k;ID=c.id;TAB=c.t||TAB;
+    document.getElementById('st2').textContent='auto-connecting...';
+    fetchD().catch(function(e){shE(e.message);shD(e);});
+  }
+});
+
+function doConn(){
+  hdE();
+  K=document.getElementById('fK').value.trim();
+  ID=document.getElementById('fI').value.trim();
+  TAB=document.getElementById('fT').value.trim()||'Looker_SEM_Summary';
+  if(!K){shE('please enter your api key.');return;}
+  if(!ID){shE('please enter the spreadsheet id.');return;}
+  var m=ID.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if(m){ID=m[1];document.getElementById('fI').value=ID;}
+  var btn=document.getElementById('bC');
+  btn.disabled=true;btn.textContent='connecting...';
+  fetchD().then(function(){svc(K,ID,TAB);document.getElementById('bCl').style.display='inline-block';}).catch(function(e){shE(e.message);shD(e);btn.disabled=false;btn.textContent='connect & load';});
+}
+
+function doRef(){document.getElementById('st2').textContent='refreshing...';fetchD().catch(function(e){document.getElementById('st2').textContent='refresh failed';shD(e);});}
+function goSet(){document.getElementById('dash').style.display='none';document.getElementById('cW').style.display='flex';document.getElementById('bR').style.display='none';document.getElementById('bS').style.display='none';document.getElementById('bC').disabled=false;document.getElementById('bC').textContent='connect & load';}
+
+// ── FETCH ──────────────────────────────────────────────
+function fetchD(){
+  var url='https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(ID)+'/values/'+encodeURIComponent(TAB)+'?key='+encodeURIComponent(K)+'&valueRenderOption=FORMATTED_VALUE';
+  return fetch(url).then(function(res){
+    if(!res.ok){return res.json().catch(function(){return{};}).then(function(j){var msg=j&&j.error?j.error.message:'HTTP '+res.status;if(res.status===403)throw new Error('access denied — sheet must be public and sheets api must be enabled. ('+msg+')');if(res.status===404)throw new Error('not found — check the tab name. ('+msg+')');throw new Error('api error '+res.status+': '+msg);});}
+    return res.json();
+  }).then(function(j){
+    var raw=j.values||[];
+    if(raw.length<2)throw new Error('tab "'+TAB+'" has no data. run the apps script pipeline first.');
+    parseLooker(raw);
+    shDash();
+  });
+}
+
+// ── PARSE LOOKER SUMMARY ───────────────────────────────
+function parseLooker(raw){
+  lookerData={};
+  var hdrs=raw[0].map(function(h){return(h||'').toString().trim().toLowerCase();});
+  var runDate='',dateIdx=hdrs.indexOf('run date'),metIdx=hdrs.indexOf('metric'),secIdx=hdrs.indexOf('section'),v1Idx=hdrs.indexOf('value'),v2Idx=hdrs.indexOf('value2'),v3Idx=hdrs.indexOf('value3');
+  var allDates=[];
+  for(var i=1;i<raw.length;i++){
+    var r=raw[i]||[];
+    if(!r.length)continue;
+    var date=(r[dateIdx]||'').trim();
+    var metric=(r[metIdx]||'').trim();
+    var section=(r[secIdx]||'').trim();
+    var v1=(r[v1Idx]||'').trim();
+    var v2=(r[v2Idx]||'').trim();
+    var v3=(r[v3Idx]||'').trim();
+    if(!metric||!section)continue;
+    if(date>runDate)runDate=date;
+    if(date&&allDates.indexOf(date)===-1)allDates.push(date);
+    var key=section+'|'+metric+'|'+date;
+    if(!lookerData[key])lookerData[key]=[];
+    lookerData[key].push({v1:v1,v2:v2,v3:v3,date:date});
+    // Also store under date-agnostic key for backward compat
+    var gkey=section+'|'+metric;
+    if(!lookerData[gkey])lookerData[gkey]=[];
+    lookerData[gkey].push({v1:v1,v2:v2,v3:v3,date:date});
+  }
+  lookerData._runDate=runDate;
+  lookerData._allDates=allDates.sort().reverse(); // newest first
+}
+
+// Get all unique months from the data as YYYY-MM strings
+function getAvailableMonths(){
+  return lookerData._allDates||[];
+}
+
+// selectedMonth: YYYY-MM-DD string or '' for latest
+var selectedMonth='';
+
+function getLooker(section,metric){
+  if(selectedMonth){
+    var key=section+'|'+metric+'|'+selectedMonth;
+    var rows=lookerData[key]||[];
+    if(rows.length)return rows[rows.length-1];
+  }
+  // Fall back to latest
+  var key=section+'|'+metric;
+  var rows=lookerData[key]||[];
+  if(!rows.length)return null;
+  // Filter to selected month if set
+  if(selectedMonth){
+    var filtered=rows.filter(function(r){return r.date===selectedMonth;});
+    if(filtered.length)return filtered[filtered.length-1];
+  }
+  return rows[rows.length-1];
+}
+
+function getLookerAll(section,metric){
+  var key=section+'|'+metric;
+  var rows=lookerData[key]||[];
+  if(!rows.length)return[];
+  if(selectedMonth){
+    var filtered=rows.filter(function(r){return r.date===selectedMonth;});
+    return filtered.length?filtered:rows;
+  }
+  return rows;
+}
+
+function populateMonthDropdown(){
+  var sel=document.getElementById('monthSel');
+  if(!sel)return;
+  var months=getAvailableMonths();
+  if(!months.length){sel.innerHTML='<option value="">no data</option>';return;}
+  sel.innerHTML=months.map(function(d,i){
+    var label=formatMonthLabel(d);
+    return'<option value="'+d+'"'+(i===0?' selected':'')+'>'+label+'</option>';
+  }).join('');
+  selectedMonth=months[0]||'';
+}
+
+function formatMonthLabel(dateStr){
+  if(!dateStr)return dateStr;
+  // dateStr is YYYY-MM-DD — format as "November 2026"
+  try{
+    var d=new Date(dateStr+'T12:00:00');
+    return d.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  }catch(e){return dateStr;}
+}
+
+function onMonthChange(){
+  var sel=document.getElementById('monthSel');
+  selectedMonth=sel?sel.value:'';
+  bAll();
+}
+
+// Parse number from Looker value (strips $, %, commas)
+function pn(v){if(!v)return 0;return parseFloat(v.toString().replace(/[$,%,\s]/g,'').replace(/,/g,''))||0;}
+function pp(v){if(!v)return 0;var n=parseFloat(v.toString().replace(/[%,\s]/g,''));return isNaN(n)?0:n;}
+
+function fmt$(v){return'$'+Math.round(v||0).toLocaleString();}
+function fmtK(v){return(v||0)>=1000?((v||0)/1000).toFixed(1)+'k':Math.round(v||0).toString();}
+function fmtPct(v){return(v||0).toFixed(2)+'%';}
+function fmtDelta(a,b){if(!b)return'—';var d=((a-b)/b*100);return(d>=0?'+':'')+d.toFixed(1)+'%';}
+function deltaClass(d){if(Math.abs(d)<1)return'fl';return d>0?'up':'dn';}
+
+// ── SHOW DASH ──────────────────────────────────────────
+function shDash(){
+  document.getElementById('cW').style.display='none';
+  document.getElementById('dash').style.display='block';
+  document.getElementById('bR').style.display='inline-block';
+  document.getElementById('bS').style.display='inline-block';
+  document.getElementById('sd').classList.add('live');
+  document.getElementById('st2').textContent='live — '+(lookerData._runDate||'today');
+  document.getElementById('lu').textContent='updated '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  populateMonthDropdown();
+  bAll();
+}
+function bAll(){bHero();bHCP();bDTC();bIns();bRecs();bCI();}
+
+// ── HERO ───────────────────────────────────────────────
+function bHero(){
+  var spend=getLooker('Combined','Media Spend');
+  var clicks=getLooker('Combined','Clicks');
+  var visits=getLooker('Combined','Qualified Visits');
+  var qvr=getLooker('Combined','QVR');
+  var hcpSpend=getLooker('HCP','Media Spend');
+  var dtcSpend=getLooker('DTC','Media Spend');
+
+  var stats=[
+    {l:'total spend',v:spend?spend.v1:'—',sub:''},
+    {l:'total clicks',v:clicks?clicks.v1:'—',sub:clicks?clicks.v2:''},
+    {l:'qualified visits',v:visits?visits.v1:'—',sub:visits?visits.v2+' cpqv':''},
+    {l:'qvr',v:qvr?qvr.v1:'—',sub:'qualified visit rate'},
+    {l:'hcp spend',v:hcpSpend?hcpSpend.v1:'—',sub:''},
+    {l:'dtc spend',v:dtcSpend?dtcSpend.v1:'—',sub:''},
+  ];
+
+  document.getElementById('hSt').innerHTML=stats.map(function(s){
+    return'<div class="hstat"><div class="hstat-lbl">'+s.l+'</div><div class="hstat-val">'+s.v+'</div><div class="hstat-d fl">'+s.sub+'</div></div>';
+  }).join('');
+}
+
+// ── OVERVIEW ───────────────────────────────────────────
+// bOverview removed — tab replaced by competitive intel
+
+// ── HCP ────────────────────────────────────────────────
+function bHCP(){
+  var spend=getLooker('HCP','Media Spend');
+  var clicks=getLooker('HCP','Clicks');
+  var visits=getLooker('HCP','Qualified Visits');
+  var qvr=getLooker('HCP','QVR');
+  var hcpVisits=getLooker('HCP','Site Visits');
+
+  document.getElementById('hcpCards').innerHTML=[
+    mkStatCard('hcp spend',[ ['media spend',spend?spend.v1:'—'], ['clicks',clicks?clicks.v1:'—'], ['ctr',clicks?clicks.v2:'—'] ]),
+    mkStatCard('hcp conversions',[ ['qualified visits',visits?visits.v1:'—'], ['cpqv',visits?visits.v2:'—'], ['qvr',qvr?qvr.v1:'—'] ]),
+    mkStatCard('hcp benchmark',[ ['industry cpc','$2.62'], ['industry cpqv','$4.37'], ['qvr target','80%+'] ]),
+  ].join('');
+
+  // HCP Keywords chart
+  var kws=getLookerAll('HCP','Keyword');
+  if(kws.length){
+    var kwLabels=kws.slice(0,8).map(function(r){return r.v1.toLowerCase().slice(0,20);});
+    var kwClicks=kws.slice(0,8).map(function(r){return pn(r.v2);});
+    dch('cHCPKW');
+    charts['cHCPKW']=new Chart(document.getElementById('cHCPKW'),{type:'bar',data:{labels:kwLabels,datasets:[{label:'clicks',data:kwClicks,backgroundColor:'#2e5523',borderRadius:2}]},options:{...co({yf:fmtK}),indexAxis:'y'}});
+  }
+
+  // HCP Publisher
+  var pubs=getLookerAll('HCP','Publisher');
+  if(pubs.length){
+    var pubLabels=pubs.map(function(r){return r.v1.toLowerCase().replace('dart search : ','');});
+    var pubClicks=pubs.map(function(r){return pn(r.v2);});
+    dch('cHCPPub');
+    charts['cHCPPub']=new Chart(document.getElementById('cHCPPub'),{type:'bar',data:{labels:pubLabels,datasets:[{label:'clicks',data:pubClicks,backgroundColor:['#95af4b','#8dcfc4','#7d9442'],borderRadius:2}]},options:co({yf:fmtK})});
+  }
+
+  // HCP Keywords table - pull full detail from search_keyword_performance
+  var allKws=getLookerAll('HCP','Keyword');
+  document.getElementById('hcpKWTbl').innerHTML=allKws.map(function(r){
+    return'<tr><td>'+r.v1.toLowerCase()+'</td><td class="tbl-num">—</td><td class="tbl-num">'+r.v2+'</td><td class="tbl-num">'+r.v3+'</td><td class="tbl-num">—</td><td class="tbl-num">—</td><td class="tbl-num">—</td></tr>';
+  }).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px">no keyword data — run the pipeline to populate</td></tr>';
+}
+
+// ── DTC ────────────────────────────────────────────────
+function bDTC(){
+  var spend=getLooker('DTC','Media Spend');
+  var clicks=getLooker('DTC','Clicks');
+  var visits=getLooker('DTC','Qualified Visits');
+  var qvr=getLooker('DTC','QVR');
+
+  document.getElementById('dtcCards').innerHTML=[
+    mkStatCard('dtc spend',[ ['media spend',spend?spend.v1:'—'], ['clicks',clicks?clicks.v1:'—'], ['ctr',clicks?clicks.v2:'—'] ]),
+    mkStatCard('dtc conversions',[ ['qualified visits',visits?visits.v1:'—'], ['cpqv',visits?visits.v2:'—'], ['qvr',qvr?qvr.v1:'—'] ]),
+    mkStatCard('dtc benchmark',[ ['industry cpc','$2.62'], ['industry cpqv','$4.37'], ['qvr target','60%+'] ]),
+  ].join('');
+
+  var kws=getLookerAll('DTC','Keyword');
+  if(kws.length){
+    var kwLabels=kws.slice(0,8).map(function(r){return r.v1.toLowerCase().slice(0,20);});
+    var kwClicks=kws.slice(0,8).map(function(r){return pn(r.v2);});
+    dch('cDTCKW');
+    charts['cDTCKW']=new Chart(document.getElementById('cDTCKW'),{type:'bar',data:{labels:kwLabels,datasets:[{label:'clicks',data:kwClicks,backgroundColor:'#95af4b',borderRadius:2}]},options:{...co({yf:fmtK}),indexAxis:'y'}});
+  }
+
+  var pubs=getLookerAll('DTC','Publisher');
+  if(pubs.length){
+    var pubLabels=pubs.map(function(r){return r.v1.toLowerCase().replace('dart search : ','');});
+    var pubClicks=pubs.map(function(r){return pn(r.v2);});
+    dch('cDTCPub');
+    charts['cDTCPub']=new Chart(document.getElementById('cDTCPub'),{type:'bar',data:{labels:pubLabels,datasets:[{label:'clicks',data:pubClicks,backgroundColor:['#2e5523','#8dcfc4'],borderRadius:2}]},options:co({yf:fmtK})});
+  }
+
+  var allKws=getLookerAll('DTC','Keyword');
+  document.getElementById('dtcKWTbl').innerHTML=allKws.map(function(r){
+    return'<tr><td>'+r.v1.toLowerCase()+'</td><td class="tbl-num">—</td><td class="tbl-num">'+r.v2+'</td><td class="tbl-num">'+r.v3+'</td><td class="tbl-num">—</td><td class="tbl-num">—</td><td class="tbl-num">—</td></tr>';
+  }).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px">no keyword data</td></tr>';
+}
+
+// ── INSIGHTS ───────────────────────────────────────────
+function bIns(){
+  // Pull all metrics for selected month
+  var spend=getLooker('Combined','Media Spend');
+  var clicks=getLooker('Combined','Clicks');
+  var qvr=getLooker('Combined','QVR');
+  var hSpend=getLooker('HCP','Media Spend');
+  var hClicks=getLooker('HCP','Clicks');
+  var hQV=getLooker('HCP','Qualified Visits');
+  var hQVR=getLooker('HCP','QVR');
+  var dSpend=getLooker('DTC','Media Spend');
+  var dClicks=getLooker('DTC','Clicks');
+  var dQV=getLooker('DTC','Qualified Visits');
+  var dQVR=getLooker('DTC','QVR');
+  var hPubs=getLookerAll('HCP','Publisher');
+  var dPubs=getLookerAll('DTC','Publisher');
+  var hKWs=getLookerAll('HCP','Keyword');
+  var dKWs=getLookerAll('DTC','Keyword');
+  var runDate=selectedMonth||lookerData._runDate||'this period';
+  var monthLabel=formatMonthLabel(runDate)||runDate;
+
+  // Publisher splits
+  var hGoogle=hPubs.find(function(r){return r.v1.toLowerCase().includes('google');});
+  var hMsft=hPubs.find(function(r){return r.v1.toLowerCase().includes('msn')||r.v1.toLowerCase().includes('microsoft');});
+  var dGoogle=dPubs.find(function(r){return r.v1.toLowerCase().includes('google');});
+  var dMsft=dPubs.find(function(r){return r.v1.toLowerCase().includes('msn')||r.v1.toLowerCase().includes('microsoft');});
+
+  // Top keywords by clicks
+  var topHKWs=hKWs.slice().sort(function(a,b){return pn(b.v2)-pn(a.v2);}).slice(0,3);
+  var topDKWs=dKWs.slice().sort(function(a,b){return pn(b.v2)-pn(a.v2);}).slice(0,3);
+
+  // ── RENDER HELPER: PDF-style bullet block ────────────────
+  function insCard(color, eyeLabel, bullets, nextSteps){
+    // bullets[0] is the opening lead bullet (bold, larger)
+    // bullets[1+] are sub-bullets indented
+    var bHtml=bullets.map(function(b,i){
+      if(i===0){
+        return'<li style="font-weight:500;color:var(--text);font-size:13px;line-height:1.6;margin-bottom:10px;list-style:disc;padding-left:4px">'+b+'</li>';
+      }
+      return'<li style="color:var(--text2);font-size:12px;line-height:1.65;margin-bottom:6px;list-style:circle;margin-left:16px;padding-left:4px">'+b+'</li>';
+    }).join('');
+
+    var nsHtml='';
+    if(nextSteps){
+      nsHtml='<div style="margin-top:16px;padding:12px 16px;background:rgba(46,85,35,.2);border:1px solid rgba(46,85,35,.4);border-radius:var(--r)">'
+        +'<span style="font-size:9px;font-weight:600;color:var(--leaf);letter-spacing:.1em;text-transform:uppercase">Next Steps: </span>'
+        +'<span style="font-size:12px;color:var(--text2);font-weight:300;line-height:1.65">'+nextSteps+'</span>'
+        +'</div>';
+    }
+
+    return'<div class="ins-card '+color+'" style="margin-bottom:16px">'
+      +'<div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);font-weight:400;margin-bottom:14px">'+eyeLabel+'</div>'
+      +'<ul style="padding-left:18px;margin:0">'+bHtml+'</ul>'
+      +nsHtml
+      +'</div>';
+  }
+
+  var cards=[];
+
+  // ── HCP PAID SEARCH ─────────────────────────────────────
+  if(hSpend||hQV){
+    var hcpBullets=[];
+
+    // Lead bullet — matches PDF opening: "In [month], SEM HCP campaigns drove X QVs at X QVR"
+    var leadHCP='';
+    if(hQV&&hQVR){
+      leadHCP='In '+monthLabel+', SEM HCP campaigns drove <strong>'+hQV.v1+' qualified visits</strong> at a <strong>'+hQVR.v1+' QVR</strong>';
+      if(hQV.v2)leadHCP+=', at a <strong>'+hQV.v2+' CPQV</strong>';
+      leadHCP+='.';
+    } else if(hSpend){
+      leadHCP='HCP paid search investment reached <strong>'+hSpend.v1+'</strong> in '+monthLabel+'.';
+    }
+    if(leadHCP)hcpBullets.push(leadHCP);
+
+    // Publisher split — "Google drove X% of HCP paid search QVs / clicks"
+    if(hGoogle&&hMsft){
+      var gClk=pn(hGoogle.v2),mClk=pn(hMsft.v2),tot=gClk+mClk;
+      if(tot>0){
+        var gPct=Math.round(gClk/tot*100);
+        hcpBullets.push('Google accounted for <strong>'+gPct+'% of HCP paid search volume</strong> ('+hGoogle.v2+' clicks at '+hGoogle.v3+' CTR); Microsoft contributed '+hMsft.v2+' clicks at '+hMsft.v3+' CTR');
+      }
+    } else if(hGoogle){
+      hcpBullets.push('Google HCP: <strong>'+hGoogle.v2+' clicks</strong> at <strong>'+hGoogle.v3+' CTR</strong>');
+    }
+
+    // Top keywords
+    if(topHKWs.length){
+      var kwStr=topHKWs.map(function(k){return'"'+k.v1.toLowerCase()+'" ('+k.v2+' clicks, '+k.v3+' CTR)';}).join('; ');
+      hcpBullets.push('Top QV-driving keywords: <strong>'+kwStr+'</strong>');
+    }
+
+    // QVR quality note
+    if(hQVR){
+      var hqn=pp(hQVR.v1);
+      if(hqn>=80){
+        hcpBullets.push('QVR held at <strong>'+hQVR.v1+'</strong>, sustaining above-benchmark engagement quality as investment scaled — <em>2X industry benchmark of 40%</em>');
+      } else if(hqn>=60){
+        hcpBullets.push('QVR of <strong>'+hQVR.v1+'</strong> remains above benchmark — monitoring as investment scales and keyword mix broadens');
+      } else {
+        hcpBullets.push('QVR softened to <strong>'+hQVR.v1+'</strong> — reviewing keyword and negative keyword targeting to improve engagement quality');
+      }
+    }
+
+    // HCP spend context
+    if(hSpend&&dSpend){
+      var hS=pn(hSpend.v1),dS=pn(dSpend.v1),tot=hS+dS;
+      if(tot>0){
+        var hPct=Math.round(hS/tot*100);
+        hcpBullets.push('HCP represented <strong>'+hPct+'% of total SEM investment</strong> ('+hSpend.v1+' of '+(spend?spend.v1:'total')+')');
+      }
+    }
+
+    var hcpNS='Monitoring QVR quality as investment scales; ';
+    hcpNS+='optimizing bid strategies toward high-value HCP site actions; ';
+    hcpNS+='reviewing rep submit landing page experience to reduce post-click friction.';
+
+    if(hcpBullets.length){
+      cards.push(insCard('','HCP Paid Search SEM — '+monthLabel, hcpBullets, hcpNS));
+    }
+  }
+
+  // ── DTC PAID SEARCH ─────────────────────────────────────
+  if(dSpend||dQV){
+    var dtcBullets=[];
+
+    // Lead bullet — "In [month], SEM patient campaigns drove X QVs at X QVR"
+    var leadDTC='';
+    if(dQV&&dQVR){
+      leadDTC='In '+monthLabel+', SEM patient campaigns drove <strong>'+dQV.v1+' qualified visits</strong> at a <strong>'+dQVR.v1+' QVR</strong>';
+      if(dQV.v2)leadDTC+=', at a <strong>'+dQV.v2+' CPQV</strong>';
+      leadDTC+='.';
+    } else if(dSpend){
+      leadDTC='DTC paid search investment reached <strong>'+dSpend.v1+'</strong> in '+monthLabel+'.';
+    }
+    if(leadDTC)dtcBullets.push(leadDTC);
+
+    // Publisher split
+    if(dGoogle&&dMsft){
+      var gClk2=pn(dGoogle.v2),mClk2=pn(dMsft.v2),tot2=gClk2+mClk2;
+      if(tot2>0){
+        var gPct2=Math.round(gClk2/tot2*100);
+        dtcBullets.push('Google accounted for <strong>'+gPct2+'% of DTC paid search volume</strong> ('+dGoogle.v2+' clicks at '+dGoogle.v3+' CTR); Microsoft contributed '+dMsft.v2+' clicks at '+dMsft.v3+' CTR');
+      }
+    }
+
+    // QVR note — mirrors PDF "QVR decreased slightly (-7% MoM) as investment was increased within unbranded campaigns"
+    if(dQVR){
+      var dqn=pp(dQVR.v1);
+      if(dqn>=70){
+        dtcBullets.push('QVR of <strong>'+dQVR.v1+'</strong> remained above the 60% benchmark, sustaining strong qualified visit quality as investment scaled into unbranded campaigns');
+      } else if(dqn>=60){
+        dtcBullets.push('QVR of <strong>'+dQVR.v1+'</strong> above benchmark — softening slightly as investment increased within unbranded campaigns to expand reach; will refine keyword and negative keyword targeting to improve engagement quality');
+      } else {
+        dtcBullets.push('QVR of <strong>'+dQVR.v1+'</strong> below 60% benchmark — QVR decrease reflects investment shift toward unbranded campaigns to expand reach; refining keyword targeting to improve engagement quality');
+      }
+    }
+
+    // Top keywords
+    if(topDKWs.length){
+      var dkwStr=topDKWs.map(function(k){return'"'+k.v1.toLowerCase()+'" ('+k.v2+' clicks, '+k.v3+' CTR)';}).join('; ');
+      dtcBullets.push('Top QV-driving keywords: <strong>'+dkwStr+'</strong>');
+    }
+
+    // Campaign type insight if keyword data suggests it
+    var hasHeadacheMed=dKWs.some(function(k){return k.v1.toLowerCase().includes('headache medication');});
+    var hasSymptomsKW=dKWs.some(function(k){return k.v1.toLowerCase().includes('symptom');});
+    if(hasHeadacheMed){
+      dtcBullets.push('"Headache medication for migraines" continues to drive the highest DTC click volume — indicating strong unbranded Symptoms campaign performance; <em>lowest-CPC unbranded driver</em>');
+    } else if(hasSymptomsKW){
+      dtcBullets.push('Symptoms campaign keywords driving meaningful DTC volume — serving as an upper-funnel entry point engaging patients earlier in the search journey');
+    }
+
+    var dtcNS='Continuing to refine keyword and negative keyword targeting within Symptoms campaigns to improve engagement quality as upper-funnel reach expands; ';
+    dtcNS+='optimizing bid strategies toward high-value DTC site actions; ';
+    dtcNS+='monitoring QVR as investment scales into unbranded campaigns.';
+
+    if(dtcBullets.length){
+      cards.push(insCard('leaf','DTC Paid Search SEM — '+monthLabel, dtcBullets, dtcNS));
+    }
+  }
+
+  // ── COMBINED PROGRAM NOTE ───────────────────────────────
+  if(spend&&clicks){
+    var combBullets=[];
+    combBullets.push('Combined SEM program delivered <strong>'+spend.v1+' in total investment</strong> in '+monthLabel+', driving <strong>'+(clicks?clicks.v1:'—')+' clicks</strong> at <strong>'+(clicks?clicks.v2:'—')+' CTR</strong>');
+    if(qvr)combBullets.push('Program QVR: <strong>'+qvr.v1+'</strong> — '+(pp(qvr.v1)>=65?'above benchmark, sustaining strong qualified visit quality across both HCP and DTC segments':'monitoring as investment scales across both audience segments'));
+    if(hSpend&&dSpend){
+      combBullets.push('<em>Industry benchmarks:</em> CPC $2.62 &nbsp;·&nbsp; CPQV $4.37 &nbsp;·&nbsp; Use Discrepancy tab to compare Looker vs Google Sheets data');
+    }
+    cards.push(insCard('dew','Combined Program Overview — '+monthLabel, combBullets, null));
+  }
+
+  if(!cards.length){
+    cards.push(insCard('','No data for selected period',['Run the Apps Script pipeline or select a month with data from the dropdown above.'],null));
+  }
+
+  document.getElementById('insCards').innerHTML=cards.join('');
+  document.getElementById('insSub').textContent='sem insights — '+monthLabel+' — select month above to change period';
+
+  // Build plain text for copy (PDF style)
+  var NL=String.fromCharCode(10);
+  var txt='BREKIYA SEM INSIGHTS — '+monthLabel.toUpperCase()+NL+NL;
+
+  // HCP block
+  if(hQV||hSpend){
+    txt+='HCP PAID SEARCH'+NL;
+    txt+='*Industry Benchmarks: CPC $2.62, CPQV $4.37'+NL+NL;
+    var hLead='In '+monthLabel+', SEM HCP campaigns drove '+(hQV?hQV.v1:'—')+' QVs'+(hQVR?' at a '+hQVR.v1+' QVR':'')+(hQV&&hQV.v2?' at a '+hQV.v2+' CPQV':'');
+    txt+='* '+hLead+NL;
+    if(topHKWs.length)txt+='   - Top QV-driving keywords: '+topHKWs.map(function(k){return '"'+k.v1.toLowerCase()+'" ('+k.v2+' clicks, '+k.v3+' CTR)';}).join('; ')+NL;
+    if(hGoogle)txt+='   - Google HCP: '+hGoogle.v2+' clicks at '+hGoogle.v3+' CTR'+(hMsft?' | Microsoft: '+hMsft.v2+' clicks at '+hMsft.v3+' CTR':'')+NL;
+    txt+='   Next Steps: Monitoring QVR quality as investment scales; optimizing bid strategies toward high-value HCP site actions; reviewing rep submit landing page to reduce post-click friction'+NL+NL;
+  }
+
+  // DTC block
+  if(dQV||dSpend){
+    txt+='DTC PAID SEARCH'+NL;
+    txt+='*Industry Benchmarks: CPC $2.62, CPQV $4.37'+NL+NL;
+    var dLead='In '+monthLabel+', SEM patient campaigns drove '+(dQV?dQV.v1:'—')+' QVs'+(dQVR?' at a '+dQVR.v1+' QVR':'')+(dQV&&dQV.v2?' at a '+dQV.v2+' CPQV':'');
+    txt+='* '+dLead+NL;
+    if(topDKWs.length)txt+='   - Top QV-driving keywords: '+topDKWs.map(function(k){return '"'+k.v1.toLowerCase()+'" ('+k.v2+' clicks, '+k.v3+' CTR)';}).join('; ')+NL;
+    if(dGoogle)txt+='   - Google DTC: '+dGoogle.v2+' clicks at '+dGoogle.v3+' CTR'+(dMsft?' | Microsoft: '+dMsft.v2+' clicks at '+dMsft.v3+' CTR':'')+NL;
+    txt+='   Next Steps: Continuing to refine keyword and negative keyword targeting within Symptoms campaigns; optimizing bid strategies toward high-value DTC site actions'+NL+NL;
+  }
+
+  window._insightsCopy=txt;
+}
+
+
+function bRecs(){
+  function rc(pri,title,sumStr,actions,impacts){
+    var id='r'+Math.random().toString(36).slice(2,8);
+    var nsHtml='<div class="rec-ns"><div class="rec-ns-lbl">good apple next steps</div><ul>'+actions.map(function(a){return'<li>'+a+'</li>';}).join('')+'</ul></div>';
+    var impHtml=impacts.length?'<div class="rec-impact">'+impacts.map(function(p){return'<span class="rec-pill">'+p+'</span>';}).join('')+'</div>':'';
+    var out='<div class="rec-card" id="'+id+'"><div class="rec-hdr" onclick="tgR(\'' +id+ '\')"><span class="rec-pri '+pri+'">'+pri+'</span><span class="rec-title">'+title+'</span><span class="rec-chev">&#9660;</span></div>';
+    out+='<div class="rec-body"><div class="rec-sum">'+sumStr+'</div>'+nsHtml+impHtml+'</div></div>';
+    return out;
+  }
+
+  document.getElementById('rCTR').innerHTML=[
+    rc('high','implement thematic ad copy test to drive ctr gains at scale','thematic rsa testing — aligning headline copy to the specific search intent of each campaign type (symptoms, competitor, treatment, branded) — typically drives 5–15% ctr lift without bid changes.',
+      ['identify 3–5 ad groups with highest impression volume and lowest ctr','write 3 thematic variants: symptom-empathy led, mechanism-led, action-led','run 30-day test with rotation set to do not optimize','for competitor campaigns, test comparison-context copy: "considering alternatives? learn about brekiya"','evaluate winning variants by ctr and qv rate together'],
+      ['expected ctr lift: +5–15%','timeline: 30-day test']),
+    rc('med','expand image extensions across all active campaigns','image extensions expand the ad unit on eligible impressions, increasing serp real estate and driving incremental direct clicks on both google and microsoft.',
+      ['audit image extension coverage — identify gaps or assets older than 90 days','upload 3 image variants per ad group: brand imagery, patient lifestyle, clinical','verify microsoft eligibility separately — serving thresholds differ from google','monitor impression share and direct click rate monthly'],
+      ['expected serp coverage: +30–50%','effort: low']),
+  ].join('');
+
+  document.getElementById('rConv').innerHTML=[
+    rc('high','audit request a rep landing page to reduce hcp conversion friction','low rep submit rates relative to qv volume suggest post-click friction — form complexity, page load speed, or cta placement are the most common causes.',
+      ['run heatmap and session recording analysis to identify drop-off points','simplify form to minimum fields: name, specialty, npi, preferred contact','move form above the fold on desktop and mobile','add response commitment adjacent to form: "your rep will follow up within 1 business day"'],
+      ['expected rep submit lift: +30–60%','priority: immediate']),
+    rc('high','scale symptoms and competitor campaigns — lowest-cpc unbranded drivers','symptoms campaigns reach patients at the awareness stage at the lowest cpc. competitor campaigns reach patients in active comparison mode with the highest intent.',
+      ['continue scaling symptoms investment — monitor qvr stays above 60% dtc benchmark','scale competitor investment with comparison-context copy and dedicated landing pages','apply image extensions to symptoms and competitor campaigns','mirror top-performing google structure on microsoft'],
+      ['expected visit growth: +15–25%','cpc target: under $3.50']),
+  ].join('');
+
+  document.getElementById('rCost').innerHTML=[
+    rc('high','reallocate budget toward highest-efficiency groups to reduce program-wide cpqv','shifting 15–25% of budget from lower-efficiency groups to top qv drivers is the primary lever for reducing cpqv without sacrificing volume.',
+      ['pull cpqv ranking across all active groups for the last 60 days','reduce budget 15–20% on the 3 highest-cpqv groups; reallocate to top generic and symptoms groups','set a program-wide cpqv target and review monthly against that benchmark','benchmark microsoft cpcs against google — microsoft should be 50–65% of google'],
+      ['expected cpqv reduction: 15–30%','timeline: 30–60 days']),
+    rc('med','monthly search term audit to recover 5–10% of budget','broad and phrase match keywords capture irrelevant queries. a monthly 30-minute review is the simplest cost efficiency lever in the program.',
+      ['pull search terms reports for last 60 days on google and microsoft separately','add irrelevant terms as exact match negatives','create shared negative keyword list across dtc accounts','schedule monthly 30-minute review as a standing agenda item'],
+      ['expected budget recovered: 5–10%','timeline: ongoing']),
+  ].join('');
+}
+
+function tgR(id){document.getElementById(id).classList.toggle('open');}
+
+// ── COMPETITIVE INTELLIGENCE ───────────────────────────
+function bCI(){
+  // Load Brekiya DTC ad copy from YTD_Ad Copy tab
+  var adTabName='YTD_Ad Copy';
+  var url='https://sheets.googleapis.com/v4/spreadsheets/'+encodeURIComponent(ID)+'/values/'+encodeURIComponent(adTabName)+'?key='+encodeURIComponent(K)+'&valueRenderOption=FORMATTED_VALUE';
+  var loadEl=document.getElementById('ciLoading');
+  var tblEl=document.getElementById('ciAdTbl');
+  if(loadEl)loadEl.style.display='block';
+  if(tblEl)tblEl.style.display='none';
+
+  fetch(url).then(function(res){
+    if(!res.ok)throw new Error('status '+res.status);
+    return res.json();
+  }).then(function(j){
+    var raw=j.values||[];
+    if(raw.length<2){if(loadEl)loadEl.textContent='no ad copy data found in YTD_Ad Copy tab.';return;}
+    var hdrs=raw[0];
+    // Map key columns
+    var qIdx=0,acctIdx=1,campIdx=2,stateIdx=3;
+    var h1Idx=hdrs.findIndex(function(h){return(h||'').toLowerCase().includes('headline 1');});
+    var clIdx=hdrs.findIndex(function(h){return(h||'').toLowerCase()==='clicks';});
+    var imIdx=hdrs.findIndex(function(h){return(h||'').toLowerCase()==='impressions';});
+    var ctrIdx=hdrs.findIndex(function(h){return(h||'').toLowerCase()==='ctr';});
+    var costIdx=hdrs.findIndex(function(h){return(h||'').toLowerCase()==='cost';});
+    if(h1Idx<0)h1Idx=4;
+    if(clIdx<0)clIdx=hdrs.length-4;
+    if(imIdx<0)imIdx=hdrs.length-3;
+    if(ctrIdx<0)ctrIdx=hdrs.length-1;
+    if(costIdx<0)costIdx=hdrs.length-2;
+
+    var rows=raw.slice(1).filter(function(r){return r&&r.length>2;});
+    // Filter DTC rows (exclude HCP)
+    var dtcRows=rows.filter(function(r){
+      var acct=(r[acctIdx]||'').toLowerCase();
+      var camp=(r[campIdx]||'').toLowerCase();
+      return !acct.includes('hcp')&&!camp.includes('hcp');
+    });
+    if(!dtcRows.length)dtcRows=rows; // fallback: show all
+
+    var bodyHtml=dtcRows.slice(0,30).map(function(r){
+      var quarter=r[qIdx]||'';
+      var camp=(r[campIdx]||'').replace(/brekiya[\s_-]*/i,'').toLowerCase();
+      var state=(r[stateIdx]||'').toLowerCase();
+      var headline=(r[h1Idx]||'').toLowerCase();
+      var clicks=r[clIdx]||'—';
+      var impr=r[imIdx]||'—';
+      var ctr=r[ctrIdx]||'—';
+      var cost=r[costIdx]||'—';
+      return'<tr><td>'+quarter+'</td><td>'+camp+'</td><td style="color:var(--text3)">'+state+'</td><td>'+headline+'</td><td class="tbl-num">'+clicks+'</td><td class="tbl-num">'+impr+'</td><td class="tbl-num">'+ctr+'</td><td class="tbl-num">'+cost+'</td></tr>';
+    }).join('');
+
+    if(loadEl)loadEl.style.display='none';
+    var tbody=document.getElementById('ciAdBody');
+    if(tbody)tbody.innerHTML=bodyHtml;
+    if(tblEl)tblEl.style.display='table';
+  }).catch(function(e){
+    if(loadEl)loadEl.textContent='could not load ad copy: '+e.message+'. confirm YTD_Ad Copy tab is accessible.';
+  });
+
+  // Populate competitor sections with SEMrush data fetched at build time
+  var nurtecEl=document.getElementById('ciNurtec');
+  var ubrelvyEl=document.getElementById('ciUbrelvy');
+  if(nurtecEl)nurtecEl.innerHTML=ciAdRows(ciNurtecAds);
+  if(ubrelvyEl)ubrelvyEl.innerHTML=ciAdRows(ciUbrelvyAds);
+}
+
+// SEMrush competitor ad copy — live data pulled Nov 2026
+var ciNurtecAds=[
+  {title:'Nurtec® ODT (rimegepant)',desc:'',kw:9,url:'nurtec.com'},
+  {title:'Nurtec® ODT (rimegepant) | Official Product Website',desc:'',kw:7,url:'nurtec.com'},
+  {title:'Nurtec® ODT (rimegepant) - See How It Works',desc:'',kw:5,url:'nurtec.com'},
+  {title:'Nurtec® ODT (rimegepant) - Find Out If You\'re Covered',desc:'',kw:5,url:'nurtec.com'},
+  {title:'Nurtec® ODT (rimegepant) - Orally Disintegrating Tablet',desc:'Learn More About How Nurtec® ODT Works And If It Could Be An Option For You.',kw:3,url:'nurtec.com'},
+  {title:'Nurtec® ODT (rimegepant) - View Dosing Information',desc:'',kw:3,url:'nurtec.com'},
+  {title:'Nurtec® ODT (rimegepant) - Savings & Support',desc:'',kw:3,url:'nurtec.com'},
+  {title:'Nurtec® ODT (rimegepant) | Side Effects | Safety Profile',desc:'',kw:2,url:'nurtec.com'},
+];
+
+var ciUbrelvyAds=[
+  {title:'UBRELVY® (ubrogepant) - How Does UBRELVY® Work?',desc:'Learn More About This Treatment Option. Download UBRELVY® Resources on Site. Get Treatment Information About UBRELVY®. See Patient Site for Details.',kw:10,url:'ubrelvy.com'},
+  {title:'UBRELVY® (ubrogepant) - UBRELVY® Savings Card',desc:'',kw:4,url:'ubrelvy.com'},
+  {title:'UBRELVY® (ubrogepant) - Savings Card Information',desc:'',kw:4,url:'ubrelvy.com'},
+  {title:'UBRELVY® (ubrogepant) - Learn About Savings Program',desc:'Learn More About This Treatment Option. Download UBRELVY® Resources on Site. Get Treatment Information. UBRELVY® Savings Card.',kw:3,url:'ubrelvy.com'},
+  {title:'UBRELVY® (ubrogepant) - Ask About UBRELVY®',desc:'',kw:3,url:'ubrelvy.com'},
+  {title:'UBRELVY® (ubrogepant) - Information About UBRELVY®',desc:'Get Treatment Information About UBRELVY®. See Website for Details. You May Be Eligible to Save on Your Rx.',kw:2,url:'ubrelvy.com'},
+  {title:'UBRELVY® (ubrogepant) - Understand UBRELVY®',desc:'Get Resources to Learn About UBRELVY® Treatment. Speak to a Doctor Online. Discover if UBRELVY® is Right for You.',kw:1,url:'ubrelvy.com'},
+  {title:'UBRELVY® (ubrogepant) - UBRELVY® Tablets',desc:'Learn More About This Treatment Option. Download UBRELVY® Resources on Site. Get Treatment Information About UBRELVY®.',kw:1,url:'ubrelvy.com'},
+];
+
+function ciAdRows(ads){
+  if(!ads||!ads.length)return'<div style="color:var(--text3);font-size:11px;padding:8px 0">no data available</div>';
+  return ads.map(function(ad){
+    var kwBadge=ad.kw?'<span style="font-size:9px;padding:1px 6px;background:rgba(149,175,75,.1);color:var(--text3);border-radius:8px;margin-left:6px">'+ad.kw+' kw</span>':'';
+    return'<div style="padding:10px 0;border-bottom:1px solid var(--border)">'
+      +'<div style="font-size:11px;color:var(--leaf);font-weight:400;margin-bottom:3px">'+ad.title+kwBadge+'</div>'
+      +(ad.desc?'<div style="font-size:10px;color:var(--text2);font-weight:200;line-height:1.5;margin-bottom:4px">'+ad.desc+'</div>':'')
+      +'<div style="font-size:9px;color:var(--text3)">'+ad.url+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function ciSw(pane,btn){
+  document.querySelectorAll('.ci-pane').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.ci-tab').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('ci-'+pane).classList.add('on');
+  btn.classList.add('on');
+}
+
+// ── STAT CARD ──────────────────────────────────────────
+function mkStatCard(section,rows){
+  var rowsHtml=rows.map(function(r){return'<div class="sc-row"><span class="sc-k">'+r[0]+'</span><span class="sc-v">'+r[1]+'</span></div>';}).join('');
+  return'<div class="stat-card"><div class="sc-section">'+section+'</div>'+rowsHtml+'</div>';
+}
+
+// ── SEG / NAV ──────────────────────────────────────────
+function sw(n,b){
+  document.querySelectorAll('.pan').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.nt').forEach(function(x){x.classList.remove('on');});
+  document.getElementById('pan-'+n).classList.add('on');b.classList.add('on');curT=n;
+  var sb=document.getElementById('segbar');
+  if(STABS.includes(n)){sb.style.display='flex';}else{sb.style.display='none';}
+}
+function rst(){fP=null;fA=null;}
+
+// ── CHART HELPERS ──────────────────────────────────────
+function dch(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+function co(o){
+  o=o||{};var yf=o.yf||function(v){return v;};
+  return{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{ticks:{color:'rgba(168,176,144,.5)',font:{family:'Outfit',size:9,weight:'300'}},grid:{color:'rgba(42,61,32,.8)'}},
+      y:{ticks:{color:'rgba(160,160,160,.4)',font:{family:'Outfit',size:9,weight:'300'},callback:yf},grid:{color:'rgba(42,42,42,.5)'}}
+    }
+  };
+}
+
+// ── ERRORS ─────────────────────────────────────────────
+function shE(msg){var e=document.getElementById('eB');if(e){e.textContent=msg;e.style.display='block';}}
+function hdE(){var e=document.getElementById('eB'),d=document.getElementById('dB');if(e)e.style.display='none';if(d)d.style.display='none';}
+function shD(e){var b=document.getElementById('dB');if(b){b.style.display='block';b.textContent='debug: '+(e&&e.message?e.message:String(e));}}
+
+// ── DEMO ───────────────────────────────────────────────
+function loadDemo(){
+  var demoRaw=[
+    ['Run Date','Metric','Section','Value','Value2','Value3'],
+    ['2026-11-16','Media Spend','Combined','$2,423,381.12','',''],
+    ['2026-11-16','Clicks','Combined','860,365','0.61%',''],
+    ['2026-11-16','Site Visits','Combined','936,927','$3.45',''],
+    ['2026-11-16','Qualified Visits','Combined','634,805','$5.08',''],
+    ['2026-11-16','QVR','Combined','64.39%','',''],
+    ['2026-11-16','Spend by Channel','Combined','Paid Social','$995,967.68',''],
+    ['2026-11-16','Spend by Channel','Combined','Paid Search','$731,367.23',''],
+    ['2026-11-16','Spend by Channel','Combined','Programmatic','$659,604.90',''],
+    ['2026-11-16','Media Spend','HCP','$1,226,416.50','',''],
+    ['2026-11-16','Clicks','HCP','198,136','0.80%',''],
+    ['2026-11-16','Site Visits','HCP','296,000','$6.43',''],
+    ['2026-11-16','Qualified Visits','HCP','217,379','$8.83',''],
+    ['2026-11-16','QVR','HCP','72.64%','',''],
+    ['2026-11-16','Media Spend','DTC','$1,195,057.27','',''],
+    ['2026-11-16','Clicks','DTC','662,214','0.57%',''],
+    ['2026-11-16','Site Visits','DTC','605,000','$2.13',''],
+    ['2026-11-16','Qualified Visits','DTC','396,425','$3.29',''],
+    ['2026-11-16','QVR','DTC','67.75%','',''],
+    ['2026-11-16','Keyword','HCP','CLUSTER HEADACHE','5,887','6.89%'],
+    ['2026-11-16','Keyword','HCP','WHAT IS A MIGRAINE','2,391','1.65%'],
+    ['2026-11-16','Keyword','HCP','TREAT MIGRAINES','3,227','6.08%'],
+    ['2026-11-16','Keyword','HCP','MIGRAINE SOLUTIONS','3,157','6.07%'],
+    ['2026-11-16','Keyword','HCP','SUMATRIPTAN','2,683','7.89%'],
+    ['2026-11-16','Keyword','DTC','HEADACHE MEDICATION FOR MIGRAINES','29,400','20.27%'],
+    ['2026-11-16','Keyword','DTC','TREAT MIGRAINES','6,099','9.37%'],
+    ['2026-11-16','Keyword','DTC','CLUSTER HEADACHE','4,066','4.50%'],
+    ['2026-11-16','Keyword','DTC','SUMATRIPTAN','5,555','4.43%'],
+    ['2026-11-16','Publisher','HCP','DART Search : Google','67,051','5.52%'],
+    ['2026-11-16','Publisher','HCP','DART Search : MSN','6,387','2.99%'],
+    ['2026-11-16','Publisher','DTC','DART Search : Google','86,568','3.69%'],
+    ['2026-11-16','Publisher','DTC','DART Search : MSN','8,139','3.14%'],
+    // October data for month selector demo
+    ['2026-10-31','Media Spend','Combined','$2,180,500.00','',''],
+    ['2026-10-31','Clicks','Combined','780,210','0.58%',''],
+    ['2026-10-31','Qualified Visits','Combined','571,000','$5.21',''],
+    ['2026-10-31','QVR','Combined','62.10%','',''],
+    ['2026-10-31','Media Spend','HCP','$1,100,000.00','',''],
+    ['2026-10-31','Clicks','HCP','175,000','0.78%',''],
+    ['2026-10-31','Qualified Visits','HCP','195,000','$9.10',''],
+    ['2026-10-31','QVR','HCP','70.50%','',''],
+    ['2026-10-31','Media Spend','DTC','$1,080,500.00','',''],
+    ['2026-10-31','Clicks','DTC','605,210','0.55%',''],
+    ['2026-10-31','Qualified Visits','DTC','376,000','$3.42',''],
+    ['2026-10-31','QVR','DTC','60.80%','',''],
+    ['2026-10-31','Keyword','HCP','CLUSTER HEADACHE','5,344','6.71%'],
+    ['2026-10-31','Keyword','HCP','TREAT MIGRAINES','2,980','5.90%'],
+    ['2026-10-31','Keyword','DTC','HEADACHE MEDICATION FOR MIGRAINES','27,100','19.80%'],
+    ['2026-10-31','Publisher','HCP','DART Search : Google','60,100','5.41%'],
+    ['2026-10-31','Publisher','DTC','DART Search : Google','80,100','3.52%'],
+  ];
+  parseLooker(demoRaw);
+  document.getElementById('sd').classList.add('live');
+  document.getElementById('st2').textContent='demo data — 2026-11-16';
+  document.getElementById('lu').textContent='demo mode';
+  document.getElementById('bR').style.display='inline-block';
+  document.getElementById('bS').style.display='inline-block';
+  document.getElementById('cW').style.display='none';
+  document.getElementById('dash').style.display='block';
+  bAll();
+}
+</script>
+</body>
+</html>
